@@ -17,9 +17,22 @@
     gate(false); chip(u);
     var name = u.displayName || (u.email ? u.email.split('@')[0] : 'Member');
     fs.collection('profiles').doc(u.uid).set({ name: name, avatarUrl: u.photoURL || null, updated: Date.now() }, { merge: true }).catch(function () {});
-    ADMIN = fs.collection('admins').doc(u.uid).get().then(function (d) { return d.exists; }, function () { return false; });
+    ADMIN = fs.collection('admins').doc(u.uid).get().then(function (d) { debug(u, d.exists ? 'yes' : 'no (no admins document with this user ID)'); return d.exists; },
+      function (e) { debug(u, 'no (database refused: ' + ((e && e.code) || e) + ')'); return false; });
+    fs.collection('characters').doc('_admin').get().then(function () { debugDb('ok'); }, function (e) { debugDb('refused: ' + ((e && e.code) || e)); });
     signedIn(u);
   });
+
+  // ---------- check panel: open the site with ?check at the end of the address ----------
+  var DBG = { user: '', admin: 'checking\u2026', db: 'checking\u2026' };
+  function debug(u, a) { DBG.user = (u.email || u.displayName || '') + '\nUser ID: ' + u.uid; DBG.admin = a; paintDebug(); console.info('[Boxedables] Admin:', a, 'User ID:', u.uid); }
+  function debugDb(r) { DBG.db = r; paintDebug(); }
+  function paintDebug() {
+    if (!/[?&]check\b/.test(location.search) || !document.body) return;
+    var b = document.getElementById('bxdebug');
+    if (!b) { b = document.createElement('pre'); b.id = 'bxdebug'; b.style.cssText = 'position:fixed;left:10px;top:10px;z-index:100000;background:#fff;color:#10302D;border:3px solid #10302D;border-radius:12px;padding:10px 12px;font:13px/1.5 monospace;white-space:pre-wrap;max-width:min(92vw,520px);user-select:all'; document.body.appendChild(b); }
+    b.textContent = 'Signed in as ' + DBG.user + '\nAdmin: ' + DBG.admin + '\nDatabase rules: ' + DBG.db;
+  }
 
   // ---------- Firestore doesn't allow arrays inside arrays: wrap them on write, unwrap on read ----------
   function enc(v, inArr) {
