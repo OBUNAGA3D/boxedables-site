@@ -12,16 +12,60 @@
   // ---------- sign-in: every feature waits until the visitor is signed in ----------
   var signedIn, whenSignedIn = new Promise(function (r) { signedIn = r; });
   var ADMIN = null;   // promise of true/false
+  var PROFILE = {};   // this member's own profile (name and picture they chose)
+  function joinedOf(u) { return Date.parse((u.metadata && u.metadata.creationTime) || '') || Date.now(); }
   auth.onAuthStateChanged(function (u) {
     if (!u) { gate(true); return; }
     gate(false); chip(u);
-    var name = u.displayName || (u.email ? u.email.split('@')[0] : 'Member');
-    fs.collection('profiles').doc(u.uid).set({ name: name, avatarUrl: u.photoURL || null, joined: Date.parse((u.metadata && u.metadata.creationTime) || '') || Date.now(), updated: Date.now() }, { merge: true }).catch(function () {});
-    ADMIN = fs.collection('admins').doc(u.uid).get().then(function (d) { debug(u, d.exists ? 'yes' : 'no (no admins document with this user ID)'); return d.exists; },
-      function (e) { debug(u, 'no (database refused: ' + ((e && e.code) || e) + ')'); return false; });
-    fs.collection('characters').doc('_admin').get().then(function () { debugDb('ok'); }, function (e) { debugDb('refused: ' + ((e && e.code) || e)); });
-    signedIn(u);
+    var ref = fs.collection('profiles').doc(u.uid);
+    ref.get().then(function (d) {
+      if (d.exists && d.data().name) { PROFILE = d.data(); return ref.set({ updated: Date.now(), joined: PROFILE.joined || joinedOf(u) }, { merge: true }); }
+      PROFILE = { name: u.displayName || (u.email ? u.email.split('@')[0] : 'Member'), avatarUrl: u.photoURL || null, joined: joinedOf(u) };
+      return ref.set(Object.assign({ updated: Date.now() }, PROFILE), { merge: true });
+    }).catch(function () {}).then(function () {
+      ADMIN = fs.collection('admins').doc(u.uid).get().then(function (d) { debug(u, d.exists ? 'yes' : 'no (no admins document with this user ID)'); return d.exists; },
+        function (e) { debug(u, 'no (database refused: ' + ((e && e.code) || e) + ')'); return false; });
+      fs.collection('characters').doc('_admin').get().then(function () { debugDb('ok'); }, function (e) { debugDb('refused: ' + ((e && e.code) || e)); });
+      signedIn(u);
+    });
   });
+
+  // ---------- account settings for members (used by the page's Account window) ----------
+  function provider(u) { return (u.providerData || []).some(function (p) { return p && p.providerId === 'password'; }) ? 'password' : 'google'; }
+  function reauth(u, pw) {
+    if (provider(u) === 'password') return u.reauthenticateWithCredential(firebase.auth.EmailAuthProvider.credential(u.email, pw || ''));
+    return u.reauthenticateWithPopup(new firebase.auth.GoogleAuthProvider());
+  }
+  function delAll(q) { return q.get().then(function (s) { return Promise.all(s.docs.map(function (d) { return d.ref.delete(); })); }); }
+  window.BX_ACCOUNT = {
+    info: function () {
+      var u = auth.currentUser; if (!u) return {};
+      return { uid: u.uid, name: PROFILE.name || u.displayName || 'Member', email: u.email || '', provider: provider(u),
+        avatarUrl: PROFILE.avatarUrl === undefined ? u.photoURL : PROFILE.avatarUrl, googlePhoto: u.photoURL || null, joined: PROFILE.joined || joinedOf(u) };
+    },
+    setName: function (n) {
+      var u = auth.currentUser; return fs.collection('profiles').doc(u.uid).set({ name: n }, { merge: true })
+        .then(function () { PROFILE.name = n; return u.updateProfile({ displayName: n }).catch(function () {}); });
+    },
+    setAvatar: function (url) {
+      var u = auth.currentUser; return fs.collection('profiles').doc(u.uid).set({ avatarUrl: url || null }, { merge: true }).then(function () { PROFILE.avatarUrl = url || null; });
+    },
+    changePassword: function (oldPw, newPw) { var u = auth.currentUser; return reauth(u, oldPw).then(function () { return u.updatePassword(newPw); }); },
+    sendReset: function () { return auth.sendPasswordResetEmail(auth.currentUser.email); },
+    signOut: function () { return auth.signOut().then(function () { location.reload(); }); },
+    deleteAccount: function (pw) {
+      var u = auth.currentUser, id = u.uid;
+      return reauth(u, pw).then(function () {
+        return Promise.all([
+          delAll(fs.collection('data/users/' + id)),
+          delAll(fs.collection('community').where('by', '==', id)),
+          delAll(fs.collection('shares').where('by', '==', id))
+        ]);
+      }).then(function () {
+        return Promise.all(['chat', 'stats', 'feedback', 'profiles'].map(function (c) { return fs.collection(c).doc(id).delete().catch(function () {}); }));
+      }).then(function () { return u.delete(); }).then(function () { setTimeout(function () { location.reload(); }, 1500); });
+    }
+  };
 
   // ---------- check panel: open the site with ?check at the end of the address ----------
   var DBG = { user: '', admin: 'checking\u2026', db: 'checking\u2026' };
@@ -93,9 +137,7 @@
     isOwner: function () { return whenSignedIn.then(function () { return ADMIN; }); },
     canEdit: function () { return whenSignedIn.then(function () { return ADMIN; }); },
     me: function () {
-      return whenSignedIn.then(function (u) {
-        return { id: u.uid, name: u.displayName || (u.email ? u.email.split('@')[0] : 'Member'), avatarUrl: u.photoURL || null };
-      });
+      return whenSignedIn.then(function () { var i = window.BX_ACCOUNT.info(); return { id: i.uid, name: i.name, avatarUrl: i.avatarUrl || null }; });
     },
     profiles: function (ids) {
       ids = (ids || []).filter(function (x, i, a) { return x && a.indexOf(x) === i; });
@@ -187,6 +229,7 @@
       '<div class="or">or with email</div>' +
       '<input type="email" placeholder="Email" autocomplete="email"><input type="password" placeholder="Password (6+ characters)" autocomplete="current-password">' +
       '<button type="button" class="e">Sign in</button><button type="button" class="l">New here? Create an account</button>' +
+      '<button type="button" class="l f">Forgot password?</button>' +
       '<div class="msg" aria-live="polite"></div></div>';
     document.body.appendChild(g);
     // use the site's own logo picture (falls back to the text if it isn't there yet)
@@ -206,7 +249,11 @@
     };
     q('.g').onclick = function () { msg.textContent = ''; auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(say); };
     q('.l').onclick = function () { creating = !creating; q('.e').textContent = creating ? 'Create account' : 'Sign in'; q('.l').textContent = creating ? 'I have an account' : 'New here? Create an account'; msg.textContent = ''; };
-    q('.e').onclick = function () {
+    q('.f').onclick = function () {
+      var em = q('input[type=email]').value.trim(); if (!em) { msg.textContent = 'Type your email above first.'; return; }
+      auth.sendPasswordResetEmail(em).then(function () { msg.style.color = '#00716B'; msg.textContent = 'If that email has an account, a reset link is on its way.'; }, say);
+    };
+    q('.e').onclick = function () { msg.style.color = '';
       var em = q('input[type=email]').value.trim(), pw = q('input[type=password]').value; msg.textContent = '';
       (creating ? auth.createUserWithEmailAndPassword(em, pw) : auth.signInWithEmailAndPassword(em, pw)).catch(say);
     };
@@ -216,6 +263,7 @@
   function chip(u) {
     if (!document.body) { document.addEventListener('DOMContentLoaded', function () { chip(u); }); return; }
     addCss();
+    return;   // sign out is in the Account window now
     if (!chipEl) { chipEl = document.createElement('button'); chipEl.type = 'button'; chipEl.className = 'bxchip'; document.body.appendChild(chipEl);
       chipEl.onclick = function () { auth.signOut().then(function () { location.reload(); }); }; }
     chipEl.textContent = 'Sign out'; chipEl.title = 'Signed in as ' + (u.email || u.displayName || '') + '\nUser ID: ' + u.uid;

@@ -652,6 +652,30 @@ body { padding-bottom: 70px; }
 .memacts { display: flex; gap: 4px; flex-wrap: wrap; justify-content: flex-end; }
 .memacts .galdel { align-self: center; }
 .memcount { margin: 0 0 8px; color: var(--muted); font-size: 13px; }
+.acctop { display: flex; align-items: center; gap: 14px; margin-bottom: 4px; }
+.acctop b { display: block; font: 600 20px "Fredoka", sans-serif; color: var(--ink-dark); }
+.acctop small { color: var(--muted); }
+.acctav { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; border: 3px solid var(--ink-dark); background: #FFFFFF; flex: none; }
+.acctsec { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 4px; }
+.acctsec input[type="text"], .acctsec input[type="password"] { flex: 1 1 180px; min-width: 0; font: 600 16px "Figtree", sans-serif; padding: 9px 12px; border-radius: 12px; border: 2px solid var(--ink-dark); background: #FFFFFF; color: var(--ink-dark); }
+.acbtn { border: 2px solid var(--ink-dark); border-radius: 10px; background: #FFFFFF; color: var(--ink-dark); font: 700 13px "Figtree", sans-serif; padding: 8px 12px; cursor: pointer; }
+.acbtn.pri { background: #F9E11B; }
+.acbtn.red { color: #B3261E; }
+.acbtn:disabled { opacity: .5; cursor: default; }
+.acctmsg { min-height: 18px; font-size: 13px; font-weight: 700; color: var(--teal-dark); width: 100%; }
+.acctmsg.bad { color: #B3261E; }
+.avgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(46px, 1fr)); gap: 6px; margin: 4px 0 6px; }
+.avgrid button { padding: 0; border: 3px solid transparent; border-radius: 50%; background: none; cursor: pointer; aspect-ratio: 1; }
+.avgrid button:hover { border-color: var(--teal); }
+.avgrid button[aria-pressed="true"] { border-color: #F9C800; }
+.avgrid img { display: block; width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+.acctstats { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 8px; margin-bottom: 8px; }
+.acctstats div { background: #FFFFFF; border: 2px solid var(--parch-d); border-radius: 12px; padding: 8px 10px; }
+.acctstats b { display: block; font: 600 20px "Fredoka", sans-serif; color: var(--ink-dark); }
+.acctstats span { font-size: 12px; font-weight: 700; color: var(--muted); }
+.dangerz { border: 2px dashed #B3261E; border-radius: 12px; padding: 10px 12px; }
+.dangerz p { margin: 0 0 8px; font-size: 13px; }
+.acctpic { display: block; width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
 @media (max-width: 760px) { .memrow { grid-template-columns: 34px 1fr auto; } .memrow .memx { display: none; } }
 .fbhead { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .fbstatus { margin-left: auto; font: 700 12px "Figtree", sans-serif; padding: 2px 6px; border-radius: 8px; }
@@ -3366,6 +3390,7 @@ var DECO = (function () {
   var acct = document.getElementById('btnAccount');
   acct.addEventListener('click', function () {
     openModal('Account', function (b) {
+      if (window.BX_ACCOUNT && UID) { accountSettings(b); return; }   // real site: members' own settings
       var p = document.createElement('p');
       p.textContent = UID ? 'You\u2019re signed in for this test, so Save, Share and My gallery work. On the real website this becomes \u201cLog in with Patreon\u201d, and your tier decides which characters you can download.'
         : 'You\u2019re not signed in here. On the real website this button becomes \u201cLog in with Patreon\u201d.';
@@ -3379,7 +3404,111 @@ var DECO = (function () {
       var nm = (me && me.name) || '';
       document.getElementById('acctName').textContent = nm ? nm.split(' ')[0] : 'Account';
       if (nm) document.getElementById('acctInitial').textContent = nm.charAt(0).toUpperCase();
+      if (me && me.avatarUrl) { var ai = document.getElementById('acctInitial'), pic = document.createElement('img'); pic.className = 'acctpic'; pic.alt = ''; pic.src = me.avatarUrl; ai.textContent = ''; ai.appendChild(pic); }
     });
+  }
+  // ---------- Account settings (real site only) ----------
+  var AV_BG = ['#01948C', '#F9E11B', '#FF8A3D', '#4AA6FF', '#E5487A', '#7A5CFA', '#3DBE6A', '#10302D'];
+  function avatarFrom(draw) {   // a 128 px round-ready picture
+    var c = document.createElement('canvas'); c.width = c.height = 128; var x = c.getContext('2d'); draw(x, 128); return c.toDataURL('image/jpeg', 0.86);
+  }
+  function avatarIcon(kind, bg) {
+    return avatarFrom(function (x, n) {
+      x.fillStyle = bg; x.fillRect(0, 0, n, n);
+      var t = document.createElement('canvas'); t.width = t.height = 84; EMOJIS.draw(t.getContext('2d'), kind, 84, bg === '#F9E11B' ? '#10302D' : '#FFFFFF');
+      x.drawImage(t, 22, 22);
+    });
+  }
+  function avatarImage(src) {
+    return new Promise(function (res, rej) {
+      var im = new Image(); im.onload = function () {
+        res(avatarFrom(function (x, n) { x.fillStyle = '#E3F4F2'; x.fillRect(0, 0, n, n); var s = Math.min(im.width, im.height); x.drawImage(im, (im.width - s) / 2, (im.height - s) / 2, s, s, 0, 0, n, n); }));
+      }; im.onerror = rej; im.src = src;
+    });
+  }
+  function accountSettings(b) {
+    var A = window.BX_ACCOUNT, info = A.info();
+    var top = el('div', 'acctop'), av = el('img', 'acctav'), who = el('div'), whoName = el('b', '', info.name);
+    av.alt = ''; av.src = info.avatarUrl || DEFAULT_AV; who.appendChild(whoName); who.appendChild(el('small', '', info.email || ''));
+    top.appendChild(av); top.appendChild(who); b.appendChild(top);
+    function sec(t) { b.appendChild(el('b', 'admsub', t)); var s = el('div', 'acctsec'); b.appendChild(s); return s; }
+    function btn(host, t, cls, fn) { var x = el('button', 'acbtn' + (cls ? ' ' + cls : ''), t); x.type = 'button'; x.addEventListener('click', fn); host.appendChild(x); return x; }
+    function say(m, t, bad) { m.textContent = t; m.classList.toggle('bad', !!bad); }
+    function mine(name, url) { CHAT.names[UID] = { name: name, avatarUrl: url }; if (CHAT.loaded) chatRender(); refreshAccount(); }
+    // 1. display name
+    var s1 = sec('Display name'), ni = el('input'); ni.type = 'text'; ni.maxLength = 30; ni.value = info.name; ni.setAttribute('aria-label', 'Display name'); s1.appendChild(ni);
+    var m1 = el('span', 'acctmsg');
+    btn(s1, 'Save name', 'pri', function () {
+      var v = ni.value.replace(/\s+/g, ' ').trim(); if (v.length < 2) { say(m1, 'Use at least 2 characters.', true); return; }
+      A.setName(v).then(function () { info.name = v; whoName.textContent = v; mine(v, info.avatarUrl); say(m1, 'Saved. Your new name shows in the chat and the gallery.'); }, function () { say(m1, 'Couldn\u2019t save. Try again.', true); });
+    });
+    s1.appendChild(m1);
+    // 2. profile picture
+    var s2 = sec('Profile picture'), grid = el('div', 'avgrid'), m2 = el('span', 'acctmsg');
+    s2.style.display = 'block'; s2.appendChild(el('small', '', 'Pick a Boxedables picture or upload your own.')); s2.appendChild(grid);
+    function setPic(url, pressed) {
+      grid.querySelectorAll('button').forEach(function (x) { x.setAttribute('aria-pressed', String(x === pressed)); });
+      A.setAvatar(url).then(function () { info.avatarUrl = url; av.src = url || DEFAULT_AV; mine(info.name, url); say(m2, 'Picture saved.'); }, function () { say(m2, 'Couldn\u2019t save the picture.', true); });
+    }
+    function opt(url, label) { var o = el('button'); o.type = 'button'; o.title = label; o.setAttribute('aria-label', label); var im = el('img'); im.alt = ''; im.src = url; o.appendChild(im); o.addEventListener('click', function () { setPic(url, o); }); grid.appendChild(o); }
+    var chars = realChars().filter(function (e) { return e.thumb; });
+    Promise.all(chars.map(function (e) { return avatarImage(e.thumb).then(function (u) { return [u, e.name]; }, function () { return null; }); })).then(function (list) {
+      list.forEach(function (x) { if (x) opt(x[0], x[1]); });
+      EMOJIS.list.forEach(function (it, i) { opt(avatarIcon(it[0], AV_BG[i % AV_BG.length]), it[1]); });
+    });
+    var up = el('input'); up.type = 'file'; up.accept = 'image/*'; up.hidden = true; s2.appendChild(up);
+    var row2 = el('div', 'acctsec'); s2.appendChild(row2);
+    btn(row2, 'Upload a photo', '', function () { up.click(); });
+    up.addEventListener('change', function () {
+      var f = up.files && up.files[0]; up.value = ''; if (!f) return;
+      if (f.size > 8e6) { say(m2, 'That picture is too big (8 MB at most).', true); return; }
+      var r = new FileReader(); r.onload = function () { avatarImage(r.result).then(function (u) { setPic(u, null); }, function () { say(m2, 'That file isn\u2019t a picture we can read.', true); }); }; r.readAsDataURL(f);
+    });
+    if (info.googlePhoto) btn(row2, 'Use my Google photo', '', function () { setPic(info.googlePhoto, null); });
+    btn(row2, 'Remove picture', '', function () { setPic(null, null); });
+    s2.appendChild(m2);
+    // 3. password
+    var s3 = sec('Password'), m3 = el('span', 'acctmsg');
+    if (info.provider === 'password') {
+      var p0 = el('input'), p1 = el('input'); p0.type = p1.type = 'password'; p0.placeholder = 'Current password'; p1.placeholder = 'New password (6+ characters)';
+      p0.autocomplete = 'current-password'; p1.autocomplete = 'new-password'; s3.appendChild(p0); s3.appendChild(p1);
+      btn(s3, 'Change password', 'pri', function () {
+        if (p1.value.length < 6) { say(m3, 'Use at least 6 characters.', true); return; }
+        A.changePassword(p0.value, p1.value).then(function () { p0.value = p1.value = ''; say(m3, 'Password changed.'); }, function (e) { say(m3, /wrong-password|invalid-credential/.test((e && e.code) || '') ? 'Your current password is wrong.' : 'Couldn\u2019t change it. Try again.', true); });
+      });
+      btn(s3, 'Email me a reset link', '', function () { A.sendReset().then(function () { say(m3, 'Sent. Check your email (and the spam folder).'); }, function () { say(m3, 'Couldn\u2019t send the email.', true); }); });
+    } else s3.appendChild(el('small', '', 'You sign in with Google, so there\u2019s no password to manage here.'));
+    s3.appendChild(m3);
+    // 4. my stuff
+    var s4 = sec('My stuff'), stats = el('div', 'acctstats'); s4.style.display = 'block'; s4.appendChild(stats);
+    function stat(n, t) { var d = el('div'); d.appendChild(el('b', '', String(n))); d.appendChild(el('span', '', t)); stats.appendChild(d); return d.firstChild; }
+    var have = realChars().filter(function (e) { return COLLECTED[e.id]; }).length;
+    var joinedB = stat(info.joined ? new Date(info.joined).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' }) : '\u2014', 'joined');
+    var dlB = stat('\u2026', 'downloads'), visB = stat('\u2026', 'visits'); stat(have + ' of ' + realChars().length, 'in my collection');
+    DBX.collection('stats').doc(UID).get().then(function (d) { var x = d.exists ? d.data() : {}; dlB.textContent = String((x.events || []).length); visB.textContent = String(x.visits || 1);
+      if (!info.joined && x.first) joinedB.textContent = new Date(x.first).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' }); }).catch(function () { dlB.textContent = visB.textContent = '\u2014'; });
+    var row4 = el('div', 'acctsec'); s4.appendChild(row4);
+    function openGal(tab) { closeModal(); setTimeout(function () { document.getElementById('btnGallery').click(); setTimeout(function () { var t = [].slice.call(document.querySelectorAll('.mtabs button')).filter(function (x) { return x.textContent.trim() === tab; })[0]; if (t) t.click(); }, 60); }, 60); }
+    btn(row4, 'My designs', '', function () { openGal('My designs'); });
+    btn(row4, 'My collection', '', function () { openGal('Collection'); });
+    // 5. sign out
+    var s5 = sec('Sign out'); btn(s5, 'Sign out', '', function () { A.signOut(); });
+    // 6. delete
+    b.appendChild(el('b', 'admsub', 'Delete my account'));
+    var dz = el('div', 'dangerz'); b.appendChild(dz);
+    dz.appendChild(el('p', '', 'This removes your profile, saved designs, gallery posts, share links, chat messages and stats for good. It can\u2019t be undone.'));
+    var s6 = el('div', 'acctsec'); dz.appendChild(s6); var m6 = el('span', 'acctmsg');
+    var conf = el('input'); conf.type = 'text'; conf.placeholder = 'Type DELETE to confirm'; conf.setAttribute('aria-label', 'Type DELETE to confirm'); s6.appendChild(conf);
+    var dpw = null; if (info.provider === 'password') { dpw = el('input'); dpw.type = 'password'; dpw.placeholder = 'Your password'; dpw.autocomplete = 'current-password'; s6.appendChild(dpw); }
+    var db = btn(s6, 'Delete my account', 'red', function () {
+      if (conf.value.trim() !== 'DELETE') { say(m6, 'Type DELETE (in capitals) first.', true); return; }
+      db.disabled = true; say(m6, 'Deleting\u2026');
+      A.deleteAccount(dpw ? dpw.value : null).then(function () { say(m6, 'Your account is deleted. Goodbye!'); }, function (e) {
+        db.disabled = false; var c = (e && e.code) || '';
+        say(m6, /wrong-password|invalid-credential/.test(c) ? 'Your password is wrong.' : /popup-closed|cancelled/.test(c) ? 'Sign in again in the window that opens to confirm.' : 'Couldn\u2019t delete the account. Try again.', true);
+      });
+    });
+    s6.appendChild(m6);
   }
   // shared link: #s-...
   function openShared() {
