@@ -4590,7 +4590,7 @@ var DECO = (function () {
     body.appendChild(el('b', 'admsub', 'Maintenance mode'));
     var mOn = check('Show members a \u201cBack soon\u201d screen (admins still see the page)', st.maintenance, 'admMaint');
     body.appendChild(el('b', 'admsub', 'Defaults for new visitors'));
-    var mu = check('Music on by default (starts on their first tap)', st.musicDefault === 'on', 'admMusic');
+    var mu = check('Music on by default (starts on their first tap)', st.musicDefault !== 'off', 'admMusic');
     body.appendChild(el('label', 'field', 'Random box colors (ticked colors can be picked; takes effect from each visitor\u2019s next visit)'));
     var pool = st.boxPool || [], sw = el('div', 'admgroups');
     SWATCHES.forEach(function (s) { var l = el('label', 'check'), c = el('input'); c.type = 'checkbox'; c.value = s[1]; c.checked = pool.length ? pool.indexOf(s[1]) >= 0 : (s[0] !== 'Black' && s[0] !== 'Grey' && s[0] !== 'White'); var dot = el('i', 'swdot'); dot.style.background = s[1]; l.appendChild(c); l.appendChild(dot); l.appendChild(document.createTextNode(' ' + s[0])); sw.appendChild(l); });
@@ -4919,10 +4919,10 @@ var DECO = (function () {
     sp.classList.add('out'); setTimeout(function () { sp.remove(); maybeTips(); }, REDUCE_MOTION ? 0 : 450);
   }
   setTimeout(hideSplash, 20000);   // never leave the splash up
-  // sounds: made on the fly, off unless the member turns them on
+  // sounds: made on the fly, on unless the member turns them off
   var SFX = (function () {
-    var on = false, ctx = null;
-    try { on = localStorage.getItem('bx-sound') === 'on'; } catch (e) {}
+    var on = true, ctx = null;
+    try { on = localStorage.getItem('bx-sound') !== 'off'; } catch (e) {}
     function ac() { if (!ctx) { var C = window.AudioContext || window.webkitAudioContext; if (C) ctx = new C(); } return ctx; }
     function tone(f, t0, dur, type, vol) {
       var c = ac(); if (!c) return; var o = c.createOscillator(), g = c.createGain(); o.type = type || 'sine'; o.frequency.setValueAtTime(f, c.currentTime + t0);
@@ -5001,9 +5001,9 @@ var DECO = (function () {
   // ---------- background music: a cheerful lobby loop, made live in the browser (no audio files) ----------
   var MUSIC = (function () {
     // background music: "Arcade Game" by raspberrymusic, stored next to the page and looped at background volume.
-    // Same on/off rules as before: off by default, remembered per browser, starts on the first tap, fades when the tab is hidden.
-    var SRC = '/_blob/481f3e1b5901e221471ffb2bd68defa0', VOL = 0.22, on = false, el = null, fadeT = 0;
-    try { on = localStorage.getItem('bx-music') === 'on'; } catch (e) {}
+    // On by default (Admin can change that), remembered per browser, starts on the first tap (browser rule), fades when the tab is hidden.
+    var SRC = '/_blob/481f3e1b5901e221471ffb2bd68defa0', VOL = 0.22, on = true, el = null, fadeT = 0;
+    try { on = localStorage.getItem('bx-music') !== 'off'; } catch (e) {}
     function audio() {
       if (el) return el;
       el = new Audio(SRC); el.loop = true; el.preload = 'auto'; el.volume = 0;
@@ -5295,9 +5295,9 @@ var DECO = (function () {
     document.body.classList.toggle('maint-admin', !!(st.maintenance && IS_ADMIN));
     try { if (st.boxPool && st.boxPool.length) localStorage.setItem('bx-boxpool', JSON.stringify(st.boxPool)); else localStorage.removeItem('bx-boxpool'); } catch (e) {}
     var chose = null; try { chose = localStorage.getItem('bx-music'); } catch (e) {}
-    if (chose === null && st.musicDefault === 'on' && !MUSIC.isOn()) {   // music on for new visitors: it starts on their first tap
-      MUSIC.set(true); paintMusic(); try { localStorage.removeItem('bx-music'); } catch (e) {}
-      document.addEventListener('pointerdown', function () { if (MUSIC.isOn()) MUSIC.set(true); }, { once: true, capture: true });
+    if (chose === null) {   // visitors who never chose follow the Admin default (on unless set to off); music starts on their first tap
+      var want = st.musicDefault !== 'off';
+      if (want !== MUSIC.isOn()) { MUSIC.set(want); paintMusic(); try { localStorage.removeItem('bx-music'); } catch (e) {} }
     }
   }
   function chatReady() {
