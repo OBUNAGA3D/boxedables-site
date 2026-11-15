@@ -16,7 +16,7 @@
     if (!u) { gate(true); return; }
     gate(false); chip(u);
     var name = u.displayName || (u.email ? u.email.split('@')[0] : 'Member');
-    fs.collection('profiles').doc(u.uid).set({ name: name, avatarUrl: u.photoURL || null, updated: Date.now() }, { merge: true }).catch(function () {});
+    fs.collection('profiles').doc(u.uid).set({ name: name, avatarUrl: u.photoURL || null, joined: Date.parse((u.metadata && u.metadata.creationTime) || '') || Date.now(), updated: Date.now() }, { merge: true }).catch(function () {});
     ADMIN = fs.collection('admins').doc(u.uid).get().then(function (d) { debug(u, d.exists ? 'yes' : 'no (no admins document with this user ID)'); return d.exists; },
       function (e) { debug(u, 'no (database refused: ' + ((e && e.code) || e) + ')'); return false; });
     fs.collection('characters').doc('_admin').get().then(function () { debugDb('ok'); }, function (e) { debugDb('refused: ' + ((e && e.code) || e)); });

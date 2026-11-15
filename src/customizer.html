@@ -1,5 +1,4 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -639,6 +638,16 @@ body { padding-bottom: 70px; }
 .inboxbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 10px; }
 .inboxbar .seg button { padding: 4px 10px; font-size: 12.5px; }
 .inboxq { flex: 1 1 180px; min-width: 0; }
+.memrow { display: grid; grid-template-columns: 34px minmax(120px, 1.4fr) repeat(5, minmax(56px, .7fr)) 236px; align-items: center; gap: 8px; padding: 7px 10px; border: 2px solid var(--parch-d); border-radius: 12px; background: #FFFFFF; margin-bottom: 6px; color: var(--ink-dark); font-size: 13px; }
+.memrow.memhead { background: none; border-color: transparent; font-weight: 700; font-size: 12px; color: var(--muted); padding-top: 0; padding-bottom: 0; margin-bottom: 2px; }
+.memrow img { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 2px solid var(--ink-dark); }
+.memrow b { font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.memrow small { display: block; font-weight: 700; font-size: 11px; }
+.memrow small.ban { color: #B3261E; } .memrow small.mute { color: #8A5A00; } .memrow small.newm { color: #01948C; }
+.memacts { display: flex; gap: 4px; flex-wrap: wrap; justify-content: flex-end; }
+.memacts .galdel { align-self: center; }
+.memcount { margin: 0 0 8px; color: var(--muted); font-size: 13px; }
+@media (max-width: 760px) { .memrow { grid-template-columns: 34px 1fr auto; } .memrow .memx { display: none; } }
 .fbhead { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .fbstatus { margin-left: auto; font: 700 12px "Figtree", sans-serif; padding: 2px 6px; border-radius: 8px; }
 .fbcard.done { opacity: .6; }
@@ -3418,10 +3427,10 @@ var DECO = (function () {
     e.preventDefault(); histGo(k === 'y' || e.shiftKey ? 1 : -1);
   });
   if (window.claude && window.claude.use) {
-    window.claude.use('db').then(function (d) { DBX = d; openShared(); loadPublished(); });
+    window.claude.use('db').then(function (d) { DBX = d; openShared(); loadPublished(); trackVisit(); });
     window.claude.use('user').then(function (u) {
       USR = u; if (!u) return;
-      u.id().then(function (id) { UID = id; loadCollection(); });
+      u.id().then(function (id) { UID = id; loadCollection(); trackVisit(); });
       refreshAccount();
       Promise.all([u.isOwner(), u.canEdit()]).then(function (r) { IS_ADMIN = !!(r[0] || r[1]); applySiteSettings(); document.getElementById('btnAdmin').hidden = !IS_ADMIN; document.body.classList.toggle('is-admin', IS_ADMIN); if (IS_ADMIN) admBadgeStart(); }).catch(function () {});
     });
@@ -3439,9 +3448,22 @@ var DECO = (function () {
   function appendMine(col, key, item, cap) {
     var ref = DBX.collection(col).doc(UID);
     return ref.get().then(function (d) {
-      var arr = (d.exists && d.data()[key]) || []; arr.push(item); if (arr.length > cap) arr = arr.slice(arr.length - cap);
-      var o = {}; o[key] = arr; return ref.set(o);
+      var o = Object.assign({}, d.exists ? d.data() : {});   // keep the other fields (like visit times)
+      var arr = (o[key] || []).slice(); arr.push(item); if (arr.length > cap) arr = arr.slice(arr.length - cap);
+      o[key] = arr; return ref.set(o);
     });
+  }
+  // visits: first and last visit and a visit count, kept in the member's own stats document
+  function trackVisit() {
+    if (!DBX || !UID || trackVisit.done) return; trackVisit.done = true;
+    var ref = DBX.collection('stats').doc(UID), now = Date.now();
+    ref.get().then(function (d) {
+      var o = Object.assign({}, d.exists ? d.data() : {});
+      if (!o.first) o.first = now;
+      if (!o.last || now - o.last > 30 * 6e4) o.visits = (o.visits || 0) + 1;   // a new visit after 30 minutes away
+      o.last = now; return ref.set(o);
+    }).catch(function () {});
+    setInterval(function () { if (document.hidden) return; ref.get().then(function (d) { var o = Object.assign({}, d.exists ? d.data() : {}); o.last = Date.now(); return ref.set(o); }).catch(function () {}); }, 10 * 6e4);
   }
   function afterDownload(which) {
     confetti(); SFX.play('reward');
@@ -3591,9 +3613,9 @@ var DECO = (function () {
   adminBtn.addEventListener('click', function () {
     openModal('Admin', function (b) {
       b.closest('.mpanel').classList.add('wide');
-      tabs(b, ['Dashboard', 'Characters', 'Inbox', 'Moderation', 'Settings', 'Files'], function (n, body) {
+      tabs(b, ['Dashboard', 'Members', 'Characters', 'Inbox', 'Moderation', 'Settings', 'Files'], function (n, body) {
         restash();
-        ({ Dashboard: adminDashboard, Characters: adminCharacters, Inbox: adminInbox, Moderation: adminModeration, Settings: adminSettings, Files: adminFiles })[n](body);
+        ({ Dashboard: adminDashboard, Members: adminMembers, Characters: adminCharacters, Inbox: adminInbox, Moderation: adminModeration, Settings: adminSettings, Files: adminFiles })[n](body);
       });
     });
   });
@@ -4188,16 +4210,21 @@ var DECO = (function () {
   function adminDashboard(body) {
     if (!DBX) { body.appendChild(el('p', 'note', 'Sign in on the live page to see this.')); return; }
     var done = loading(body, 'Gathering numbers\u2026'), get = function (c, n) { return DBX.collection(c).limit(n).get().catch(function () { return { docs: [] }; }); };
-    Promise.all([get('stats', 1000), get('feedback', 500), get('chat', 500), get('community', 500)]).then(function (r) {
+    Promise.all([get('stats', 1000), get('feedback', 500), get('chat', 500), get('community', 500), membersLoad()]).then(function (r) {
       var evs = [], now = Date.now(), wk = 7 * 864e5; r[0].docs.forEach(function (d) { evs = evs.concat(d.data().events || []); });
       var fb = []; r[1].docs.forEach(function (d) { (d.data().items || []).forEach(function (x) { fb.push(x); }); });
       var msgs = 0, talkers = 0; r[2].docs.forEach(function (d) { if (d.id === '_meta') return; var m = (d.data().msgs || []).filter(function (x) { return now - x.t < wk; }); msgs += m.length; if (m.length) talkers++; });
       var open = fb.filter(function (x) { return (ADM.fb[x.by + ':' + x.t] || 'new') !== 'done'; }).length, reports = fb.filter(function (x) { return x.kind === 'Report' && (ADM.fb[x.by + ':' + x.t] || 'new') !== 'done'; }).length;
       var downloaders = {}; evs.forEach(function (x) { if (x.by) downloaders[x.by] = 1; });
       done('');
+      var mem = r[4], day = 864e5, mtop = el('div', 'kpis'); body.appendChild(mtop);
+      kpi(mtop, mem.length, 'members', 'everyone who has visited');
+      kpi(mtop, mem.filter(function (m) { return m.first && now - m.first < wk; }).length, 'new this week');
+      kpi(mtop, mem.filter(function (m) { return m.last && now - m.last < day; }).length, 'active today');
+      kpi(mtop, mem.filter(function (m) { return m.last && now - m.last < wk; }).length, 'active this week');
       var top = el('div', 'kpis'); body.appendChild(top);
       kpi(top, evs.length, 'downloads', evs.filter(function (x) { return now - x.t < wk; }).length + ' this week');
-      kpi(top, r[0].docs.length, 'members downloading');
+      kpi(top, r[0].docs.filter(function (d) { return (d.data().events || []).length; }).length, 'members downloading');
       kpi(top, r[3].docs.length, 'community designs');
       kpi(top, msgs, 'chat messages', talkers + ' members this week');
       kpi(top, open, 'open in the inbox', reports ? reports + ' chat report' + (reports > 1 ? 's' : '') : 'no open reports');
@@ -4209,6 +4236,69 @@ var DECO = (function () {
       bars(grid, 'Textures', c.texture); bars(grid, 'Patterns', c.pattern); bars(grid, 'Box shapes', c.shape);
       if (!evs.length) body.appendChild(el('p', 'note', 'No downloads recorded yet. The charts fill in as members download.'));
     });
+  }
+  // ---------- Admin: members (everyone who has visited, downloaded or chatted) ----------
+  function membersLoad() {
+    var get = function (c, n) { return DBX.collection(c).limit(n).get().catch(function () { return { docs: [] }; }); };
+    return Promise.all([get('stats', 2000), get('chat', 1000), get('feedback', 1000), get('profiles', 5000)]).then(function (r) {
+      var M = {}, mx = function (a, b) { return Math.max(a || 0, b || 0); }, mn = function (a, b) { return !a ? b : !b ? a : Math.min(a, b); };
+      function m(id) { return M[id] || (M[id] = { uid: id, first: 0, last: 0, visits: 0, dl: 0, msgs: 0 }); }
+      r[0].docs.forEach(function (d) { var x = d.data(), o = m(d.id), ev = x.events || []; o.dl = ev.length; o.visits = x.visits || 0; o.first = mn(o.first, x.first); o.last = mx(o.last, x.last);
+        ev.forEach(function (e) { o.first = mn(o.first, e.t); o.last = mx(o.last, e.t); }); });
+      r[1].docs.forEach(function (d) { if (d.id === '_meta') return; var x = d.data(), o = m(d.id), ms = x.msgs || []; o.msgs = ms.length; o.last = mx(o.last, x.seen);
+        ms.forEach(function (e) { o.first = mn(o.first, e.t); o.last = mx(o.last, e.t); }); });
+      r[2].docs.forEach(function (d) { var o = m(d.id); (d.data().items || []).forEach(function (e) { o.first = mn(o.first, e.t); o.last = mx(o.last, e.t); }); });
+      r[3].docs.forEach(function (d) { var x = d.data(), o = m(d.id); o.first = mn(o.first, x.joined); o.last = mx(o.last, x.updated); });
+      return Object.keys(M).map(function (k) { return M[k]; });
+    });
+  }
+  function adminMembers(body) {
+    if (!DBX) { body.appendChild(el('p', 'note', 'Sign in on the live page to see this.')); return; }
+    var done = loading(body, 'Loading members\u2026'), rows = [], ps = {}, view = { q: '', sort: 'last', show: 'all' };
+    var bar = el('div', 'inboxbar'), count = el('p', 'memcount'), list = el('div');
+    function when(t) { if (!t) return '\u2014'; var d = Math.floor((Date.now() - t) / 864e5); return d <= 0 ? 'today' : d === 1 ? 'yesterday' : d < 30 ? d + ' days ago' : new Date(t).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' }); }
+    function nm(r) { return (ps[r.uid] && ps[r.uid].name) || 'Member'; }
+    function seg(opts, key) { var g = el('div', 'seg'); opts.forEach(function (o) { var b = el('button', '', o[1]); b.type = 'button'; b.setAttribute('aria-pressed', String(view[key] === o[0])); b.addEventListener('click', function () { view[key] = o[0]; g.querySelectorAll('button').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); }); draw(); }); g.appendChild(b); }); return g; }
+    function draw() {
+      list.textContent = '';
+      var now = Date.now(), wk = 7 * 864e5;
+      var shown = rows.filter(function (r) {
+        var banned = !!ADM.mod.banned[r.uid], muted = ADM.mod.muted[r.uid] > now;
+        if (view.show === 'new' && !(r.first && now - r.first < wk)) return false;
+        if (view.show === 'active' && !(r.last && now - r.last < wk)) return false;
+        if (view.show === 'blocked' && !banned && !muted) return false;
+        return !view.q || nm(r).toLowerCase().indexOf(view.q.toLowerCase()) >= 0 || r.uid.toLowerCase().indexOf(view.q.toLowerCase()) >= 0;
+      });
+      shown.sort(function (a, b) { return view.sort === 'name' ? nm(a).localeCompare(nm(b)) : (b[view.sort] || 0) - (a[view.sort] || 0); });
+      count.textContent = shown.length + ' of ' + rows.length + ' member' + (rows.length === 1 ? '' : 's');
+      var head = el('div', 'memrow memhead'); ['', 'Name', 'Joined', 'Last visit', 'Visits', 'Downloads', 'Messages', ''].forEach(function (t, i) { head.appendChild(el('span', i >= 2 && i <= 6 ? 'memx' : '', t)); }); list.appendChild(head);
+      if (!shown.length) list.appendChild(el('p', 'note', 'Nobody here.'));
+      shown.slice(0, 300).forEach(function (r) {
+        var row = el('div', 'memrow'), banned = !!ADM.mod.banned[r.uid], muted = ADM.mod.muted[r.uid] > now;
+        var im = el('img'); im.alt = ''; im.loading = 'lazy'; im.src = (ps[r.uid] && ps[r.uid].avatarUrl) || DEFAULT_AV; row.appendChild(im);
+        var who = el('div'); who.appendChild(el('b', '', nm(r))); who.title = 'User ID: ' + r.uid;
+        if (banned) who.appendChild(el('small', 'ban', 'Banned')); else if (muted) who.appendChild(el('small', 'mute', 'Muted until ' + new Date(ADM.mod.muted[r.uid]).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })));
+        else if (r.first && now - r.first < wk) who.appendChild(el('small', 'newm', 'New'));
+        row.appendChild(who);
+        row.appendChild(el('span', 'memx', when(r.first))); row.appendChild(el('span', 'memx', when(r.last)));
+        row.appendChild(el('span', 'memx', String(r.visits || '\u2014'))); row.appendChild(el('span', 'memx', String(r.dl))); row.appendChild(el('span', 'memx', String(r.msgs)));
+        var acts = el('div', 'memacts');
+        function act(t, what, ms) { var b = el('button', 'galdel', t); b.type = 'button'; b.addEventListener('click', function () { b.disabled = true; modSet(r.uid, what, ms).then(draw); }); acts.appendChild(b); }
+        if (r.uid === UID) acts.appendChild(el('small', '', 'you'));
+        else { if (muted) act('Unmute', 'unmute'); else { act('Mute 24 h', 'mute', 864e5); act('Mute 7 days', 'mute', 7 * 864e5); } if (banned) act('Unban', 'unban'); else act('Ban', 'ban'); }
+        row.appendChild(acts); list.appendChild(row);
+      });
+    }
+    membersLoad().then(function (r) { rows = r; return names(rows.map(function (x) { return x.uid; })).then(function (p) { ps = p; }); }).then(function () {
+      done(rows.length ? '' : 'No members yet. Members show up here after their first visit.');
+      if (!rows.length) return;
+      bar.appendChild(seg([['all', 'All'], ['new', 'New this week'], ['active', 'Active this week'], ['blocked', 'Muted or banned']], 'show'));
+      var so = el('select', 'fbstatus'); so.setAttribute('aria-label', 'Sort members');
+      [['last', 'Last visit'], ['first', 'Newest'], ['dl', 'Most downloads'], ['msgs', 'Most messages'], ['visits', 'Most visits'], ['name', 'Name']].forEach(function (o) { var op = el('option', '', 'Sort: ' + o[1]); op.value = o[0]; so.appendChild(op); });
+      so.addEventListener('change', function () { view.sort = so.value; draw(); }); bar.appendChild(so);
+      var q = el('input', 'inboxq'); q.type = 'search'; q.placeholder = 'Search by name'; q.setAttribute('aria-label', 'Search members'); q.addEventListener('input', function () { view.q = q.value; draw(); }); bar.appendChild(q);
+      body.appendChild(bar); body.appendChild(count); body.appendChild(list); draw();
+    }).catch(function () { done('Couldn\u2019t load the members.'); });
   }
   // ---------- Admin: inbox (feedback and chat reports) ----------
   function adminInbox(body) {
@@ -6408,5 +6498,3 @@ var DECO = (function () {
 </script>
 </body>
 </html>
-
-</body></html>
