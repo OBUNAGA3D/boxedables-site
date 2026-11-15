@@ -651,16 +651,16 @@ body { padding-bottom: 70px; }
 .acctop b { display: block; font: 400 26px/1.1 "Lilita One", sans-serif; color: #FFFFFF; -webkit-text-stroke: 5px var(--ink-dark); paint-order: stroke fill; letter-spacing: .3px; overflow-wrap: anywhere; }
 .acctop small { display: block; margin-top: 2px; font: 700 13px "Figtree", sans-serif; color: #FFFFFF; text-shadow: 0 1px 0 rgba(0,0,0,.35); overflow-wrap: anywhere; }
 .acctav { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; border: 4px solid var(--ink-dark); background: #FFFFFF; box-shadow: 0 3px 0 var(--ink-dark); flex: none; }
-.accard { margin: 14px 0 0; padding: 10px 14px 12px; border: 3px solid var(--ink-dark); border-radius: 16px; background: linear-gradient(180deg, #FFFFFF, #FFF4D6); box-shadow: 0 4px 0 var(--ink-dark); }
+.accard { margin: 14px 0 0; padding: 10px 14px 12px; border: 3px solid var(--ink-dark); border-radius: 16px; background: #FFFFFF; box-shadow: 0 4px 0 var(--ink-dark); }
 .actitle { display: block; margin: 0 0 8px; font: 400 20px "Lilita One", sans-serif; color: #FFD84A; -webkit-text-stroke: 5px var(--ink-dark); paint-order: stroke fill; letter-spacing: .4px; }
-.accard.danger { background: linear-gradient(180deg, #FFF3F0, #FFDCD4); }
+.accard.danger { background: #FFFFFF; border-color: #B3261E; box-shadow: 0 4px 0 #7A1712; }
 .accard.danger .actitle { color: #FF6B57; }
 .accard p, .accard small { margin: 0 0 8px; font: 600 13.5px "Figtree", sans-serif; color: var(--ink-dark); display: block; }
 .acctsec { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 .acctsec + .acctsec { margin-top: 8px; }
 .acctsec input[type="text"], .acctsec input[type="password"] { flex: 1 1 170px; min-width: 0; font: 600 16px "Figtree", sans-serif; padding: 10px 12px; border-radius: 12px; border: 3px solid var(--ink-dark); background: #FFFFFF; color: var(--ink-dark); box-shadow: inset 0 3px 0 rgba(16,48,45,.08); }
 .acctsec input:focus { outline: 3px solid #FFD000; outline-offset: 1px; }
-.acbtn { border: 3px solid var(--ink-dark); border-radius: 12px; padding: 8px 14px; font: 600 15px "Fredoka", sans-serif; color: var(--ink-dark); cursor: pointer; background: linear-gradient(180deg, #FFFFFF 0%, #FFFFFF 47%, #EFE6CC 53%, #E2D6B4 100%); box-shadow: inset 0 2px 0 rgba(255,255,255,.8), 0 4px 0 var(--ink-dark); transition: transform .08s, box-shadow .08s, filter .12s; white-space: nowrap; }
+.acbtn { border: 3px solid var(--ink-dark); border-radius: 12px; padding: 8px 14px; font: 600 15px "Fredoka", sans-serif; color: var(--ink-dark); cursor: pointer; background: linear-gradient(180deg, #FFFFFF 0%, #FFFFFF 47%, #E3E8E9 53%, #CBD3D5 100%); box-shadow: inset 0 2px 0 rgba(255,255,255,.8), 0 4px 0 var(--ink-dark); transition: transform .08s, box-shadow .08s, filter .12s; white-space: nowrap; }
 .acbtn:hover:not(:disabled) { filter: brightness(1.06); transform: translateY(-1px); box-shadow: inset 0 2px 0 rgba(255,255,255,.8), 0 5px 0 var(--ink-dark); }
 .acbtn:active:not(:disabled) { transform: translateY(4px); box-shadow: inset 0 2px 0 rgba(255,255,255,.5), 0 0 0 var(--ink-dark); filter: brightness(.95); }
 .acbtn.pri { background: linear-gradient(180deg, #FFF09A 0%, #FFD84A 47%, #F7B500 53%, #E99E00 100%); }
@@ -679,9 +679,44 @@ body { padding-bottom: 70px; }
 .avgrid button[aria-pressed="true"] { outline: 4px solid #FFD000; outline-offset: 1px; transform: scale(1.08); }
 .avgrid img { display: block; width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
 .acctstats { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 8px; margin-bottom: 10px; }
-.acctstats div { text-align: center; padding: 8px 6px; border: 3px solid var(--ink-dark); border-radius: 14px; background: linear-gradient(180deg, #FFFFFF, #EAF6FF); box-shadow: 0 3px 0 var(--ink-dark); }
+.acctstats div { text-align: center; padding: 8px 6px; border: 3px solid var(--ink-dark); border-radius: 14px; background: #FFFFFF; box-shadow: 0 3px 0 var(--ink-dark); }
 .acctstats b { display: block; font: 400 22px/1.15 "Lilita One", sans-serif; color: var(--ink-dark); }
 .acctstats span { font: 700 12px "Figtree", sans-serif; color: #4A6B86; }
+/* ---------- grey windows (Admin and Account) ---------- */
+.mpanel.gpanel { background-color: #B9C3C6; background-image: linear-gradient(180deg, #D7DEE0 0%, #B9C3C6 45%, #9CA8AB 100%), radial-gradient(circle, rgba(255,255,255,.22) 2px, transparent 2.5px); background-size: 100% 100%, 22px 22px; background-attachment: local, local; box-shadow: inset 0 0 0 4px rgba(255,255,255,.35), 0 8px 0 var(--ink-dark); }
+.gpanel .note { color: #22302F !important; font-weight: 600; }
+.gpanel .admsub { display: block; margin: 0 0 8px; font: 400 20px "Lilita One", sans-serif; color: #FFD84A; -webkit-text-stroke: 5px var(--ink-dark); paint-order: stroke fill; letter-spacing: .4px; }
+.gpanel .admsub.nocard { margin-top: 4px; }
+.admcard { margin: 0 0 14px; padding: 10px 14px 12px; border: 3px solid var(--ink-dark); border-radius: 16px; background: #FFFFFF; box-shadow: 0 4px 0 var(--ink-dark); }
+.admcard .note { margin-top: 0; }
+.gpanel .seg { background: linear-gradient(180deg, #8FA9A6 0%, #7A9692 47%, #5D7975 53%, #4A6460 100%) !important; border: 3px solid var(--ink-dark) !important; border-radius: 14px !important; box-shadow: inset 0 2px 0 rgba(255,255,255,.3), 0 3px 0 var(--ink-dark) !important; }
+.gpanel .seg button { color: #FFFFFF !important; font: 600 15px "Fredoka", sans-serif !important; text-shadow: 0 1px 0 rgba(0,0,0,.4); }
+.gpanel .seg button:hover:not([aria-pressed="true"]) { background: rgba(255,255,255,.16) !important; }
+.gpanel .seg button[aria-pressed="true"] { background: linear-gradient(180deg, #FFF09A 0%, #FFD84A 47%, #F7B500 53%, #E99E00 100%) !important; color: var(--ink-dark) !important; text-shadow: 0 1px 0 rgba(255,255,255,.5) !important; }
+.gpanel .kpi, .gpanel .statsec, .gpanel .fbcard, .gpanel .admrow, .gpanel .memrow:not(.memhead), .gpanel .modcard, .gpanel .admbox { background: #FFFFFF !important; border: 3px solid var(--ink-dark) !important; border-radius: 14px; box-shadow: 0 3px 0 var(--ink-dark) !important; }
+.gpanel .admbox { padding: 10px 14px 14px; box-shadow: 0 4px 0 var(--ink-dark) !important; }
+.gpanel .kpi b { font-size: 30px; }
+.gpanel .kpi small { color: #4E6663; }
+.gpanel .statsec > b { font-size: 17px; }
+.gpanel .statrow em { background: #E3E8E9; }
+.gpanel .memhead, .gpanel .memcount { color: var(--ink-dark) !important; font-weight: 700; }
+.gpanel .fbcard.progress { border-left-width: 9px !important; border-left-color: #F7B500 !important; }
+.gpanel .modcard.feat { box-shadow: 0 0 0 4px #FFD000, 0 3px 0 var(--ink-dark) !important; }
+.gpanel .modcard { gap: 6px; }
+.gpanel .modcard img { background: linear-gradient(180deg, #D7DEE0, #B9C3C6); border: 2px solid var(--ink-dark); }
+.gpanel .modcard .galdel { align-self: stretch; }
+.gpanel .inboxq, .gpanel select, .gpanel textarea { font: 600 15px "Figtree", sans-serif; color: var(--ink-dark); background: #FFFFFF; border: 3px solid var(--ink-dark); border-radius: 12px; padding: 8px 12px; box-shadow: inset 0 3px 0 rgba(16,48,45,.08); }
+.gpanel select { padding: 6px 10px; cursor: pointer; }
+.gpanel .fbstatus { font-size: 13px !important; padding: 3px 8px; border-width: 2.5px; }
+.gpanel input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--teal); vertical-align: -3px; }
+.gpanel .galdel { align-self: center; border: 2.5px solid var(--ink-dark); border-radius: 10px; padding: 5px 11px; font: 600 13.5px "Fredoka", sans-serif; color: var(--ink-dark); background: linear-gradient(180deg, #FFFFFF 0%, #FFFFFF 47%, #E3E8E9 53%, #CBD3D5 100%); box-shadow: inset 0 2px 0 rgba(255,255,255,.8), 0 3px 0 var(--ink-dark); cursor: pointer; transition: transform .08s, box-shadow .08s; }
+.gpanel .galdel:hover:not(:disabled) { transform: translateY(-1px); box-shadow: inset 0 2px 0 rgba(255,255,255,.8), 0 4px 0 var(--ink-dark); }
+.gpanel .galdel:active:not(:disabled) { transform: translateY(3px); box-shadow: inset 0 2px 0 rgba(255,255,255,.5), 0 0 0 var(--ink-dark); }
+.gpanel .galdel.danger { color: #FFFFFF; background: linear-gradient(180deg, #FF9A80 0%, #FF6B57 47%, #E53935 53%, #C62828 100%); text-shadow: 0 1px 0 rgba(0,0,0,.3); }
+.gpanel .galdel:disabled { opacity: .55; cursor: default; }
+.gpanel .dropzone { border-color: var(--ink-dark); background: repeating-linear-gradient(135deg, #FFFFFF 0 14px, #EEF1F2 14px 28px); }
+.gpanel .dropzone:hover, .gpanel .dropzone.over { border-color: var(--teal); background: #E3E8E9; }
+.gpanel .dropzone span { color: #4E6663; }
 .acctpic { display: block; width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
 @media (max-width: 760px) { .memrow { grid-template-columns: 34px 1fr auto; } .memrow .memx { display: none; } }
 .fbhead { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
@@ -3248,7 +3283,7 @@ var DECO = (function () {
   var modal = document.getElementById('modal'), modalBody = document.getElementById('modalBody'), modalTitle = document.getElementById('modalTitle'), lastFocus = null;
   function restash() { var st = document.getElementById('adminStash'); ['partsBox', 'loadBox'].forEach(function (id) { var el = document.getElementById(id); if (el && el.parentNode !== st) st.appendChild(el); }); }
   function openModal(title, build) {
-    restash(); lastFocus = document.activeElement; modalTitle.textContent = title; modalBody.textContent = ''; build(modalBody); modal.hidden = false;
+    restash(); lastFocus = document.activeElement; modalTitle.textContent = title; modalBody.textContent = ''; var mp = modalBody.closest('.mpanel'); if (mp) mp.classList.remove('wide', 'gpanel'); build(modalBody); modal.hidden = false;
     var f = modal.querySelector('input, button:not(#modalClose)'); (f || document.getElementById('modalClose')).focus();
   }
   function closeModal() { restash(); modal.hidden = true; if (lastFocus) lastFocus.focus(); }
@@ -3397,7 +3432,7 @@ var DECO = (function () {
   var acct = document.getElementById('btnAccount');
   acct.addEventListener('click', function () {
     openModal('Account', function (b) {
-      if (window.BX_ACCOUNT && UID) { accountSettings(b); return; }   // real site: members' own settings
+      if (window.BX_ACCOUNT && UID) { b.closest('.mpanel').classList.add('gpanel'); accountSettings(b); return; }   // real site: members' own settings
       var p = document.createElement('p');
       p.textContent = UID ? 'You\u2019re signed in for this test, so Save, Share and My gallery work. On the real website this becomes \u201cLog in with Patreon\u201d, and your tier decides which characters you can download.'
         : 'You\u2019re not signed in here. On the real website this button becomes \u201cLog in with Patreon\u201d.';
@@ -3758,13 +3793,24 @@ var DECO = (function () {
   var adminBtn = document.getElementById('btnAdmin');
   adminBtn.addEventListener('click', function () {
     openModal('Admin', function (b) {
-      b.closest('.mpanel').classList.add('wide');
+      b.closest('.mpanel').classList.add('wide', 'gpanel');
       tabs(b, ['Dashboard', 'Members', 'Characters', 'Inbox', 'Moderation', 'Settings', 'Files'], function (n, body) {
         restash();
         ({ Dashboard: adminDashboard, Members: adminMembers, Characters: adminCharacters, Inbox: adminInbox, Moderation: adminModeration, Settings: adminSettings, Files: adminFiles })[n](body);
+        cardify(body);
+        if (!body._cardMo) { body._cardMo = new MutationObserver(function () { cardify(body); }); body._cardMo.observe(body, { childList: true }); }
       });
     });
   });
+  // each section title (and what follows it, up to the next title) goes into its own white card
+  function cardify(body) {
+    var kids = [].slice.call(body.children), card = null;
+    kids.forEach(function (k) {
+      if (k.classList.contains('admsub') && !k.classList.contains('nocard')) { card = el('div', 'admcard'); body.insertBefore(card, k); }
+      else if (k.classList.contains('admsub') || k.classList.contains('admcard') || k.classList.contains('mtabs')) { card = null; return; }
+      if (card) card.appendChild(k);
+    });
+  }
   // ---------- Admin: saving character files ----------
   var formSeq = 0;
   function slotMemory() { try { return JSON.parse(localStorage.getItem('bx-slotnames') || '{}') || {}; } catch (e) { return {}; } }
@@ -4363,12 +4409,12 @@ var DECO = (function () {
       var open = fb.filter(function (x) { return (ADM.fb[x.by + ':' + x.t] || 'new') !== 'done'; }).length, reports = fb.filter(function (x) { return x.kind === 'Report' && (ADM.fb[x.by + ':' + x.t] || 'new') !== 'done'; }).length;
       var downloaders = {}; evs.forEach(function (x) { if (x.by) downloaders[x.by] = 1; });
       done('');
-      var mem = r[4], day = 864e5, mtop = el('div', 'kpis'); body.appendChild(mtop);
+      var mem = r[4], day = 864e5, mtop = el('div', 'kpis'); body.appendChild(el('b', 'admsub nocard', 'Members')); body.appendChild(mtop);
       kpi(mtop, mem.length, 'members', 'everyone who has visited');
       kpi(mtop, mem.filter(function (m) { return m.first && now - m.first < wk; }).length, 'new this week');
       kpi(mtop, mem.filter(function (m) { return m.last && now - m.last < day; }).length, 'active today');
       kpi(mtop, mem.filter(function (m) { return m.last && now - m.last < wk; }).length, 'active this week');
-      var top = el('div', 'kpis'); body.appendChild(top);
+      var top = el('div', 'kpis'); body.appendChild(el('b', 'admsub nocard', 'Activity')); body.appendChild(top);
       kpi(top, evs.length, 'downloads', evs.filter(function (x) { return now - x.t < wk; }).length + ' this week');
       kpi(top, r[0].docs.filter(function (d) { return (d.data().events || []).length; }).length, 'members downloading');
       kpi(top, r[3].docs.length, 'community designs');
@@ -4429,7 +4475,7 @@ var DECO = (function () {
         row.appendChild(el('span', 'memx', when(r.first))); row.appendChild(el('span', 'memx', when(r.last)));
         row.appendChild(el('span', 'memx', String(r.visits || '\u2014'))); row.appendChild(el('span', 'memx', String(r.dl))); row.appendChild(el('span', 'memx', String(r.msgs)));
         var acts = el('div', 'memacts');
-        function act(t, what, ms) { var b = el('button', 'galdel', t); b.type = 'button'; b.addEventListener('click', function () { b.disabled = true; modSet(r.uid, what, ms).then(draw); }); acts.appendChild(b); }
+        function act(t, what, ms) { var b = el('button', 'galdel' + (t === 'Ban' ? ' danger' : ''), t); b.type = 'button'; b.addEventListener('click', function () { b.disabled = true; modSet(r.uid, what, ms).then(draw); }); acts.appendChild(b); }
         if (r.uid === UID) acts.appendChild(el('small', '', 'you'));
         else { if (muted) act('Unmute', 'unmute'); else { act('Mute 24 h', 'mute', 864e5); act('Mute 7 days', 'mute', 7 * 864e5); } if (banned) act('Unban', 'unban'); else act('Ban', 'ban'); }
         row.appendChild(acts); list.appendChild(row);
@@ -4499,25 +4545,12 @@ var DECO = (function () {
   }
   function adminModeration(body) {
     if (!DBX) { body.appendChild(el('p', 'note', 'Sign in on the live page to see this.')); return; }
-    body.appendChild(el('b', 'admsub', 'Chat members'));
-    var cm = el('div'); body.appendChild(cm); var done = loading(cm, 'Loading the chat\u2026');
-    DBX.collection('chat').get().then(function (snap) {
-      var rows = snap.docs.filter(function (d) { return d.id !== '_meta'; }).map(function (d) { var x = d.data(), m = x.msgs || []; return { uid: d.id, n: m.length, last: Math.max.apply(null, m.map(function (y) { return y.t; }).concat([x.seen || 0])) }; });
-      Object.keys(ADM.mod.banned).concat(Object.keys(ADM.mod.muted)).forEach(function (u) { if (!rows.some(function (r) { return r.uid === u; })) rows.push({ uid: u, n: 0, last: 0 }); });
-      rows.sort(function (a, b) { return b.last - a.last; });
-      return names(rows.map(function (r) { return r.uid; })).then(function (ps) {
-        done(rows.length ? '' : 'Nobody has chatted yet.');
-        rows.forEach(function (r) {
-          var row = el('div', 'admrow'), muted = ADM.mod.muted[r.uid] > Date.now(), banned = !!ADM.mod.banned[r.uid];
-          row.appendChild(el('span', '', ((ps[r.uid] && ps[r.uid].name) || 'Member') + ' \u00b7 ' + r.n + ' messages' + (r.last ? ' \u00b7 active ' + new Date(r.last).toLocaleDateString() : '') + (banned ? ' \u00b7 BANNED' : muted ? ' \u00b7 muted' : '')));
-          function act(t, what, ms) { var b = el('button', 'galdel', t); b.type = 'button'; b.addEventListener('click', function () { modSet(r.uid, what, ms).then(function () { cm.textContent = ''; adminModerationRefresh(body); }); }); row.appendChild(b); }
-          if (r.uid === UID) { row.appendChild(el('small', '', 'you')); cm.appendChild(row); return; }
-          if (muted) act('Unmute', 'unmute'); else { act('Mute 24 h', 'mute', 864e5); act('Mute 7 days', 'mute', 7 * 864e5); }
-          if (banned) act('Unban', 'unban'); else act('Ban', 'ban');
-          cm.appendChild(row);
-        });
-      });
-    }).catch(function () { done('Couldn\u2019t load the chat.'); });
+    body.appendChild(el('b', 'admsub', 'Muting and banning'));
+    var nMu = Object.keys(ADM.mod.muted).filter(function (u) { return ADM.mod.muted[u] > Date.now(); }).length, nBa = Object.keys(ADM.mod.banned).length;
+    body.appendChild(el('p', 'note', 'Mute or ban members in the Members tab. Right now: ' + nMu + ' muted, ' + nBa + ' banned.'));
+    var goMem = el('button', 'galdel', 'Open Members'); goMem.type = 'button';
+    goMem.addEventListener('click', function () { var t = [].slice.call(document.querySelectorAll('.mtabs button')).filter(function (x) { return x.textContent.trim() === 'Members'; })[0]; if (t) t.click(); });
+    body.appendChild(goMem);
     body.appendChild(el('b', 'admsub', 'Blocked words'));
     var wl = el('label', 'field', 'Words members can\u2019t send (separate with commas). Existing messages show them as ****.'), wi = el('textarea', 'fbtext'); wi.id = 'admWords'; wi.rows = 2; wi.value = ADM.mod.words.join(', '); wl.htmlFor = wi.id;
     var ws = el('button', 'galdel', 'Save words'); ws.type = 'button';
@@ -4533,7 +4566,7 @@ var DECO = (function () {
         c.appendChild(el('span', '', x.title || 'Boxedable'));
         function tog(t, sect) { var b = el('button', 'galdel', t); b.type = 'button'; b.addEventListener('click', function () { var g = { featured: Object.assign({}, ADM.gallery.featured), hidden: Object.assign({}, ADM.gallery.hidden) }; if (g[sect][d.id]) delete g[sect][d.id]; else g[sect][d.id] = true; admSave({ gallery: g }).then(function () { gl.textContent = ''; adminModerationRefresh(body); }); }); c.appendChild(b); }
         tog(ADM.gallery.featured[d.id] ? 'Unfeature' : '\u2605 Feature', 'featured'); tog(ADM.gallery.hidden[d.id] ? 'Show' : 'Hide', 'hidden');
-        var del = el('button', 'galdel', 'Delete'); del.type = 'button'; del.addEventListener('click', function () { if (del.dataset.sure !== '1') { del.dataset.sure = '1'; del.textContent = 'Sure?'; return; } DBX.collection('community').doc(d.id).delete().then(function () { c.remove(); toast('Deleted.'); }); }); c.appendChild(del);
+        var del = el('button', 'galdel danger', 'Delete'); del.type = 'button'; del.addEventListener('click', function () { if (del.dataset.sure !== '1') { del.dataset.sure = '1'; del.textContent = 'Sure?'; return; } DBX.collection('community').doc(d.id).delete().then(function () { c.remove(); toast('Deleted.'); }); }); c.appendChild(del);
         gl.appendChild(c);
       });
     }).catch(function () { gd('Couldn\u2019t load the gallery.'); });
