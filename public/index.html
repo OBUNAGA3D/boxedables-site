@@ -168,6 +168,15 @@ details.card > summary::after { transition: none; }
 .libtile small { font: 500 10.5px "Figtree", sans-serif; }
 .libtile[aria-selected="true"] { border-color: var(--teal); }
 .libtile.soon { cursor: default; }
+.libtile.pending { position: relative; cursor: progress; }
+.libtile.pending img { opacity: .6; }
+.libtile.pending .ph { animation: libPulse 1.1s ease-in-out infinite; }
+.libtile.pending[aria-selected="true"]::after { display: none; }
+.libtile.pending::before { content: ""; position: absolute; z-index: 2; top: 7px; right: 7px; width: 14px; height: 14px; border: 3px solid rgba(16,48,45,.25); border-top-color: var(--ink-dark); border-radius: 50%; animation: libSpin .8s linear infinite; }
+.libtile.pending[aria-selected="true"] img { opacity: .85; }
+@keyframes libSpin { to { transform: rotate(360deg); } }
+@keyframes libPulse { 0%, 100% { opacity: .45; } 50% { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .libtile.pending::before, .libtile.pending .ph { animation: none; } }
 .libtile.soon .ph { font: 700 26px "Fredoka", sans-serif; }
 .libtile.add { border-style: dashed; border-color: var(--teal); }
 .libtile.add .ph { font: 600 34px "Fredoka", sans-serif; color: var(--teal); }
@@ -3763,6 +3772,16 @@ var DECO = (function () {
   });
   // published characters from the admin page join the library for everyone
   var pubLoaded = false;
+  // characters still downloading show as loading tiles; the list (names and pictures) is remembered in this browser for next time
+  var PENDING = [], pendingPick = null;
+  function libCacheRead() { try { return (JSON.parse(localStorage.getItem('bx-libcache') || '[]') || []).filter(function (x) { return x && x.id && x.name; }); } catch (e) { return []; } }
+  function libCacheSave() {
+    try {
+      var list = LIB.filter(function (e) { return /^c-/.test(e.id); }).map(function (e) { return { id: e.id, name: e.name, theme: e.theme, thumb: e.thumb, badge: e.badge || '', order: e.order }; });
+      localStorage.setItem('bx-libcache', JSON.stringify(list));
+    } catch (e) {}   // full or blocked storage: tiles just appear a moment later
+  }
+  function pendingDone(id) { PENDING = PENDING.filter(function (p) { return p.id !== id; }); if (pendingPick === id) pendingPick = null; }
   function b64ToBuf(s) { var bin = atob(s), u = new Uint8Array(bin.length); for (var i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return u.buffer; }
   // colors by filament: every unnamed part on the same filament slot becomes one color, named in Admin
   // names the page already uses for something else (Body, Box, Name, Part 1...) get "color" added inside, so they stay normal changeable colors
@@ -3782,7 +3801,9 @@ var DECO = (function () {
     LIB.push({ id: 'c-' + id, name: data.name, theme: data.theme || 'Animals', colorable: data.colorable && data.colorable.length ? data.colorable : undefined, parts: parts, thumb: makeThumb(parts), note: data.note || '', rest: typeof data.rest === 'number' ? data.rest : undefined, badge: data.badge || '', order: typeof data.order === 'number' ? data.order : 1e6 + (1e13 - (data.created || 0)) / 1e13 });
     LIB.sort(function (a, b) { return a.id === 'kingkong' ? -1 : b.id === 'kingkong' ? 1 : (a.order || 0) - (b.order || 0); });
     if (THEMES.indexOf(data.theme) < 0 && data.theme) THEMES.push(data.theme);
-    renderThemes(); renderLib();
+    var wanted = pendingPick === 'c-' + id; pendingDone('c-' + id);
+    renderThemes(); renderLib(); libCacheSave();
+    if (wanted) selectChar('c-' + id);   // the member tapped it while it was loading
   }
   // King Kong is built in; his print note and rest height can be changed in Admin (saved in characters/_kingkong)
   function builtInSet(o) {
@@ -3795,11 +3816,18 @@ var DECO = (function () {
     DBX.collection('characters').doc('_kingkong').get().then(function (d) { if (d.exists) builtInSet(d.data()); }).catch(function () {});
     admLoad();
     DBX.collection('characters').where('published', '==', true).get().then(function (snap) {
-      snap.docs.forEach(function (d) {
-        var data = d.data(); if (!data.asset) return;
-        if (data.kind === 'hat') return;   // left over from the removed hat feature
-        if (data.releaseAt && data.releaseAt > Date.now()) return;   // scheduled: appears on its release date
-        fetch('/_blob/' + data.asset).then(function (r) { return r.text(); }).then(function (txt) { addPublished(d.id, data, b64ToBuf(txt.trim())); }).catch(function () {});
+      var docs = snap.docs.filter(function (d) { var data = d.data(); return data.asset && data.kind !== 'hat' && !(data.releaseAt && data.releaseAt > Date.now()); });   // hats were removed; scheduled ones wait for their date
+      var known = {}; PENDING.forEach(function (p) { known[p.id] = p; });
+      PENDING = docs.filter(function (d) { return !LIB.some(function (e) { return e.id === 'c-' + d.id; }); }).map(function (d) {
+        var data = d.data(), id = 'c-' + d.id, old = known[id] || {};
+        return { id: id, name: data.name, theme: data.theme || 'Animals', thumb: old.thumb || null, badge: data.badge || '', order: typeof data.order === 'number' ? data.order : 1e6 + (1e13 - (data.created || 0)) / 1e7 };
+      });
+      renderLib();
+      if (!docs.length) libCacheSave();
+      docs.forEach(function (d) {
+        var data = d.data();
+        fetch('/_blob/' + data.asset).then(function (r) { return r.text(); }).then(function (txt) { addPublished(d.id, data, b64ToBuf(txt.trim())); })
+          .catch(function () { pendingDone('c-' + d.id); renderLib(); });
       });
     }).catch(function () {});
   }
@@ -6520,6 +6548,8 @@ var DECO = (function () {
   }
   // ---------- character library ----------
   var LIB = [], libSel = null, libTheme = 'All', BOX_PARTS = [], THEMES = ['All', 'Animals'];
+  PENDING = libCacheRead();   // tiles from the last visit, shown right away
+  PENDING.forEach(function (p) { if (p.theme && THEMES.indexOf(p.theme) < 0) THEMES.push(p.theme); });
   // ---------- the standard switch: every character sits on the same keyboard switch ----------
   // A part named "switch" (or "switchslot") only lines a character up; the standard switch then replaces it.
   // A character without one is placed like King Kong: centered left to right, same front/back spot, same bottom height.
@@ -6596,9 +6626,21 @@ var DECO = (function () {
   }
   function renderLib() {
     libGrid.textContent = '';
-    LIB.filter(function (e) { return libTheme === 'All' || e.theme === libTheme; }).forEach(function (e) {
+    var all = LIB.concat(PENDING.filter(function (p) { return !LIB.some(function (e) { return e.id === p.id; }); }).map(function (p) { var q = {}; Object.keys(p).forEach(function (k) { q[k] = p[k]; }); q.pending = true; return q; }));
+    all.sort(function (a, b) { return a.id === 'kingkong' ? -1 : b.id === 'kingkong' ? 1 : (a.order || 0) - (b.order || 0); });
+    all.filter(function (e) { return libTheme === 'All' || e.theme === libTheme; }).forEach(function (e) {
+      if (e.pending) {   // still downloading: same tile, with a small spinner
+        var pb = document.createElement('button'); pb.type = 'button'; pb.className = 'libtile pending'; pb.setAttribute('role', 'option');
+        pb.setAttribute('aria-selected', String(e.id === pendingPick)); pb.title = e.name + ' (loading)'; pb.setAttribute('aria-label', e.name + ', loading');
+        if (e.thumb) { var pim = document.createElement('img'); pim.src = e.thumb; pim.alt = ''; pb.appendChild(pim); }
+        else { var pph = document.createElement('span'); pph.className = 'ph'; pph.textContent = e.name.charAt(0); pb.appendChild(pph); }
+        var pnm = document.createElement('span'); pnm.textContent = e.name; pb.appendChild(pnm);
+        var pth = document.createElement('small'); pth.textContent = 'Loading\u2026'; pb.appendChild(pth);
+        pb.addEventListener('click', function () { pendingPick = e.id; renderLib(); });   // opens as soon as it's ready
+        libGrid.appendChild(pb); return;
+      }
       var b = document.createElement('button'); b.type = 'button'; b.className = 'libtile'; b.setAttribute('role', 'option');
-      b.setAttribute('aria-selected', String(e.id === libSel)); b.title = e.name;
+      b.setAttribute('aria-selected', String(e.id === libSel && !pendingPick)); b.title = e.name;
       if (e.thumb) { var im = document.createElement('img'); im.src = e.thumb; im.alt = ''; b.appendChild(im); }
       else { var ph = document.createElement('span'); ph.className = 'ph'; ph.textContent = e.name.charAt(0); b.appendChild(ph); }
       if (e.badge) { var bd = document.createElement('i'); bd.className = 'libbadge ' + e.badge; bd.textContent = e.badge === 'new' ? 'NEW' : '\u2605'; bd.title = e.badge === 'new' ? 'New' : 'Featured'; b.appendChild(bd); }
