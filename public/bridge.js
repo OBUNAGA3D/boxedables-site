@@ -169,7 +169,8 @@
       '.bxg{position:fixed;inset:0;z-index:99999;display:grid;place-items:center;background:rgba(16,48,45,.55);backdrop-filter:blur(6px);font:15px/1.5 Figtree,system-ui,sans-serif;color:#10302D}' +
       '.bxg[hidden]{display:none}' +
       '.bxg .card{width:min(92vw,380px);background:#fff;border:3px solid #10302D;border-radius:24px;padding:26px 24px;box-shadow:0 10px 0 #10302D;text-align:center}' +
-      '.bxg h2{font:400 34px/1 "Lilita One",Fredoka,sans-serif;color:#01948C;margin:0 0 4px;letter-spacing:.5px}' +
+      '.bxg h2{font:400 34px/1 "Lilita One",Fredoka,sans-serif;color:#01948C;margin:0 0 10px;letter-spacing:.5px}' +
+      '.bxg .bxglogo{display:block;height:64px;width:auto;max-width:100%;margin:2px auto 0;filter:url(#bxOutline)}.bxg [hidden]{display:none}' +
       '.bxg p{margin:0 0 16px;color:#5E6F6C}' +
       '.bxg button{width:100%;font:600 16px Figtree,sans-serif;border-radius:14px;padding:12px;cursor:pointer;border:3px solid #10302D;margin-top:8px}' +
       '.bxg .g{background:#F9E11B;color:#10302D}.bxg .e{background:#01948C;color:#fff}.bxg .l{background:none;border:0;color:#00716B;text-decoration:underline;padding:6px;margin:0}' +
@@ -181,13 +182,20 @@
   function buildGate() {
     addCss();
     var g = document.createElement('div'); g.className = 'bxg';
-    g.innerHTML = '<div class="card" role="dialog" aria-labelledby="bxgT"><h2 id="bxgT">BOXEDABLES</h2><p>Sign in to use the customizer.</p>' +
+    g.innerHTML = '<div class="card" role="dialog" aria-labelledby="bxgT"><h2 id="bxgT"><img class="bxglogo" alt="Boxedables" hidden><span>BOXEDABLES</span></h2><p>Sign in to use the customizer.</p>' +
       '<button type="button" class="g">Sign in with Google</button>' +
       '<div class="or">or with email</div>' +
       '<input type="email" placeholder="Email" autocomplete="email"><input type="password" placeholder="Password (6+ characters)" autocomplete="current-password">' +
       '<button type="button" class="e">Sign in</button><button type="button" class="l">New here? Create an account</button>' +
       '<div class="msg" aria-live="polite"></div></div>';
     document.body.appendChild(g);
+    // use the site's own logo picture (falls back to the text if it isn't there yet)
+    var useLogo = function () {
+      var src = document.querySelector('header.brand .brandlogo, .brandlogo'), im = g.querySelector('.bxglogo');
+      if (!src || !src.src) return false;
+      im.src = src.src; im.hidden = false; g.querySelector('#bxgT span').hidden = true; return true;
+    };
+    if (!useLogo()) document.addEventListener('DOMContentLoaded', useLogo);
     var q = function (s) { return g.querySelector(s); }, msg = q('.msg'), creating = false;
     var say = function (e) {
       var c = (e && e.code) || '';
