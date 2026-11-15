@@ -2315,7 +2315,7 @@ var DECO = (function () {
       var c = BX.classify(rp.name);
       if (!S.groups[c.group]) {
         var col = rp.filColor || BX.defaultColor(c.group, S.groupOrder.length);
-        S.groups[c.group] = { color: col, mat: new THREE.MeshPhysicalMaterial({ color: new THREE.Color(col).convertSRGBToLinear(), roughness: 0.6, metalness: 0, clearcoat: 0.45, clearcoatRoughness: 0.35, envMapIntensity: 0.32 * light.bright }),
+        S.groups[c.group] = { color: col, mat: new THREE.MeshPhysicalMaterial({ color: softWhite(new THREE.Color(col).convertSRGBToLinear()), roughness: 0.6, metalness: 0, clearcoat: 0.45, clearcoatRoughness: 0.35, envMapIntensity: 0.32 * light.bright }),
           label: c.pick ? BX.label(c.pick) + ': ' + c.option : BX.label(c.group) };
         S.groupOrder.push(c.group);
         if (/^slot\d+$/.test(c.group)) {   // label filament groups by their color, keeping labels unique
@@ -2548,8 +2548,10 @@ var DECO = (function () {
   });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && openGroup !== null) { openGroup = null; renderColors(); } });
   function nameDefault() { return S.groups.box && S.groups.box.color.toUpperCase() === '#F4F4F2' ? '#01948C' : '#F4F4F2'; }
+  // white and very light colors: real white plastic doesn't reflect all the light, so keep its shading instead of glowing (bright colors like yellow are untouched)
+  function softWhite(c) { var mn = Math.min(c.r, c.g, c.b), mx = Math.max(c.r, c.g, c.b); if (mn > 0.55 && mx > 0.62) c.multiplyScalar(0.62 / mx); return c; }
   function setColor(g, hex) {
-    if (decoColors[g]) decoColors[g] = hex.toUpperCase(); S.groups[g].color = hex.toUpperCase(); S.groups[g].mat.color.set(hex).convertSRGBToLinear();
+    if (decoColors[g]) decoColors[g] = hex.toUpperCase(); S.groups[g].color = hex.toUpperCase(); softWhite(S.groups[g].mat.color.set(hex).convertSRGBToLinear());
     // the keychain hook follows the box color until the member picks its own
     if (g === 'hook' && !setColor.auto) HOOK.follow = false;
     if (g === 'box' && typeof HOOK !== 'undefined' && HOOK.follow) {
@@ -3758,7 +3760,9 @@ var DECO = (function () {
   var pubLoaded = false;
   function b64ToBuf(s) { var bin = atob(s), u = new Uint8Array(bin.length); for (var i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return u.buffer; }
   // colors by filament: every unnamed part on the same filament slot becomes one color, named in Admin
-  function slotSlug(name, slot) { return String(name || '').toLowerCase().replace(/[^a-z0-9]+/g, '') || 'color' + slot; }
+  // names the page already uses for something else (Body, Box, Name, Part 1...) get "color" added inside, so they stay normal changeable colors
+  function safeSlug(g) { return /^(part|object|body|mesh|shape|character|box|name|text|latch|switch|switchslot|clickerattach|hook|support)\d*$/.test(g) || /^support/.test(g) ? g + 'color' : g; }
+  function slotSlug(name, slot) { return safeSlug(String(name || '').toLowerCase().replace(/[^a-z0-9]+/g, '')) || 'color' + slot; }
   function applySlotNames(parts, slots) {
     if (!slots) return parts;
     return parts.map(function (p) {
@@ -6631,7 +6635,7 @@ var DECO = (function () {
     var raw = place.parts.map(function (p) { return { name: p.name, obj: 0, geom: p.geom, slot: p.slot, filColor: p.filColor }; }).concat(currentBoxParts().map(function (p) { return { name: p.name, obj: 1, geom: p.geom }; }));
     CLICK_REST = typeof e.rest === 'number' ? e.rest : 5;   // how high this character floats before a press
     loadDesign(e.name, raw, 0, objs, DESIGN.switch);
-    var colOk = e.colorable && e.colorable.map(function (g) { return BX.classify(g).group; });   // a color named "Body" is the main body group
+    var colOk = e.colorable && e.colorable.map(safeSlug);   // older saves may hold a plain reserved name like "body"
     if (colOk) S.groupOrder.forEach(function (g) { if (!onBox(g) && !SUB[g] && colOk.indexOf(g) < 0) S.locked[g] = true; });
     if (colOk) {   // list the changeable colors in the character's own order (Fur, Skin, Eyes)
       var rank = function (g) { var k = colOk.indexOf(g); return k < 0 ? 99 : k; }, pos = {};
