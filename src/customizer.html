@@ -647,29 +647,41 @@ body { padding-bottom: 70px; }
 .memacts { display: flex; gap: 4px; flex-wrap: wrap; justify-content: flex-end; }
 .memacts .galdel { align-self: center; }
 .memcount { margin: 0 0 8px; color: var(--muted); font-size: 13px; }
-.acctop { display: flex; align-items: center; gap: 14px; margin-bottom: 4px; }
-.acctop b { display: block; font: 600 20px "Fredoka", sans-serif; color: var(--ink-dark); }
-.acctop small { color: var(--muted); }
-.acctav { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; border: 3px solid var(--ink-dark); background: #FFFFFF; flex: none; }
-.acctsec { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 4px; }
-.acctsec input[type="text"], .acctsec input[type="password"] { flex: 1 1 180px; min-width: 0; font: 600 16px "Figtree", sans-serif; padding: 9px 12px; border-radius: 12px; border: 2px solid var(--ink-dark); background: #FFFFFF; color: var(--ink-dark); }
-.acbtn { border: 2px solid var(--ink-dark); border-radius: 10px; background: #FFFFFF; color: var(--ink-dark); font: 700 13px "Figtree", sans-serif; padding: 8px 12px; cursor: pointer; }
-.acbtn.pri { background: #F9E11B; }
-.acbtn.red { color: #B3261E; }
-.acbtn:disabled { opacity: .5; cursor: default; }
-.acctmsg { min-height: 18px; font-size: 13px; font-weight: 700; color: var(--teal-dark); width: 100%; }
+.acctop { display: flex; align-items: center; gap: 14px; padding: 12px 14px; border: 3px solid var(--ink-dark); border-radius: 18px; background: linear-gradient(180deg, #5EE0D4 0%, #2FC4B8 47%, #01A096 53%, #017E77 100%); box-shadow: inset 0 3px 0 rgba(255,255,255,.45), 0 4px 0 var(--ink-dark); }
+.acctop b { display: block; font: 400 26px/1.1 "Lilita One", sans-serif; color: #FFFFFF; -webkit-text-stroke: 5px var(--ink-dark); paint-order: stroke fill; letter-spacing: .3px; overflow-wrap: anywhere; }
+.acctop small { display: block; margin-top: 2px; font: 700 13px "Figtree", sans-serif; color: #FFFFFF; text-shadow: 0 1px 0 rgba(0,0,0,.35); overflow-wrap: anywhere; }
+.acctav { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; border: 4px solid var(--ink-dark); background: #FFFFFF; box-shadow: 0 3px 0 var(--ink-dark); flex: none; }
+.accard { margin: 14px 0 0; padding: 10px 14px 12px; border: 3px solid var(--ink-dark); border-radius: 16px; background: linear-gradient(180deg, #FFFFFF, #FFF4D6); box-shadow: 0 4px 0 var(--ink-dark); }
+.actitle { display: block; margin: 0 0 8px; font: 400 20px "Lilita One", sans-serif; color: #FFD84A; -webkit-text-stroke: 5px var(--ink-dark); paint-order: stroke fill; letter-spacing: .4px; }
+.accard.danger { background: linear-gradient(180deg, #FFF3F0, #FFDCD4); }
+.accard.danger .actitle { color: #FF6B57; }
+.accard p, .accard small { margin: 0 0 8px; font: 600 13.5px "Figtree", sans-serif; color: var(--ink-dark); display: block; }
+.acctsec { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.acctsec + .acctsec { margin-top: 8px; }
+.acctsec input[type="text"], .acctsec input[type="password"] { flex: 1 1 170px; min-width: 0; font: 600 16px "Figtree", sans-serif; padding: 10px 12px; border-radius: 12px; border: 3px solid var(--ink-dark); background: #FFFFFF; color: var(--ink-dark); box-shadow: inset 0 3px 0 rgba(16,48,45,.08); }
+.acctsec input:focus { outline: 3px solid #FFD000; outline-offset: 1px; }
+.acbtn { border: 3px solid var(--ink-dark); border-radius: 12px; padding: 8px 14px; font: 600 15px "Fredoka", sans-serif; color: var(--ink-dark); cursor: pointer; background: linear-gradient(180deg, #FFFFFF 0%, #FFFFFF 47%, #EFE6CC 53%, #E2D6B4 100%); box-shadow: inset 0 2px 0 rgba(255,255,255,.8), 0 4px 0 var(--ink-dark); transition: transform .08s, box-shadow .08s, filter .12s; white-space: nowrap; }
+.acbtn:hover:not(:disabled) { filter: brightness(1.06); transform: translateY(-1px); box-shadow: inset 0 2px 0 rgba(255,255,255,.8), 0 5px 0 var(--ink-dark); }
+.acbtn:active:not(:disabled) { transform: translateY(4px); box-shadow: inset 0 2px 0 rgba(255,255,255,.5), 0 0 0 var(--ink-dark); filter: brightness(.95); }
+.acbtn.pri { background: linear-gradient(180deg, #FFF09A 0%, #FFD84A 47%, #F7B500 53%, #E99E00 100%); }
+.acbtn.red { color: #FFFFFF; background: linear-gradient(180deg, #FF9A80 0%, #FF6B57 47%, #E53935 53%, #C62828 100%); text-shadow: 0 1px 0 rgba(0,0,0,.3); }
+.acbtn.busy { cursor: progress; transform: translateY(4px); box-shadow: inset 0 2px 0 rgba(255,255,255,.5), 0 0 0 var(--ink-dark); }
+.acbtn.done { color: #FFFFFF; background: linear-gradient(180deg, #9BF0A8 0%, #6BEA7F 47%, #34C759 53%, #239C45 100%); text-shadow: 0 1px 0 rgba(0,0,0,.3); animation: acpop .3s ease-out; }
+.acbtn:disabled:not(.busy):not(.done) { opacity: .5; cursor: default; }
+@keyframes acpop { 0% { transform: scale(.92); } 60% { transform: scale(1.06); } 100% { transform: scale(1); } }
+.acctmsg { width: 100%; min-height: 0; font: 700 13px "Figtree", sans-serif; color: #1E8C3A; }
+.acctmsg:empty { display: none; }
 .acctmsg.bad { color: #B3261E; }
-.avgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(46px, 1fr)); gap: 6px; margin: 4px 0 6px; }
-.avgrid button { padding: 0; border: 3px solid transparent; border-radius: 50%; background: none; cursor: pointer; aspect-ratio: 1; }
-.avgrid button:hover { border-color: var(--teal); }
-.avgrid button[aria-pressed="true"] { border-color: #F9C800; }
+.avgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(46px, 1fr)); gap: 8px; margin: 2px 0 10px; }
+.avgrid button { padding: 0; border: 3px solid var(--ink-dark); border-radius: 50%; background: #FFFFFF; cursor: pointer; aspect-ratio: 1; box-shadow: 0 3px 0 var(--ink-dark); transition: transform .1s, box-shadow .1s; }
+.avgrid button:hover { transform: translateY(-2px); box-shadow: 0 5px 0 var(--ink-dark); }
+.avgrid button:active { transform: translateY(3px); box-shadow: 0 0 0 var(--ink-dark); }
+.avgrid button[aria-pressed="true"] { outline: 4px solid #FFD000; outline-offset: 1px; transform: scale(1.08); }
 .avgrid img { display: block; width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
-.acctstats { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 8px; margin-bottom: 8px; }
-.acctstats div { background: #FFFFFF; border: 2px solid var(--parch-d); border-radius: 12px; padding: 8px 10px; }
-.acctstats b { display: block; font: 600 20px "Fredoka", sans-serif; color: var(--ink-dark); }
-.acctstats span { font-size: 12px; font-weight: 700; color: var(--muted); }
-.dangerz { border: 2px dashed #B3261E; border-radius: 12px; padding: 10px 12px; }
-.dangerz p { margin: 0 0 8px; font-size: 13px; }
+.acctstats { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 8px; margin-bottom: 10px; }
+.acctstats div { text-align: center; padding: 8px 6px; border: 3px solid var(--ink-dark); border-radius: 14px; background: linear-gradient(180deg, #FFFFFF, #EAF6FF); box-shadow: 0 3px 0 var(--ink-dark); }
+.acctstats b { display: block; font: 400 22px/1.15 "Lilita One", sans-serif; color: var(--ink-dark); }
+.acctstats span { font: 700 12px "Figtree", sans-serif; color: #4A6B86; }
 .acctpic { display: block; width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
 @media (max-width: 760px) { .memrow { grid-template-columns: 34px 1fr auto; } .memrow .memx { display: none; } }
 .fbhead { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
@@ -3426,17 +3438,23 @@ var DECO = (function () {
     var top = el('div', 'acctop'), av = el('img', 'acctav'), who = el('div'), whoName = el('b', '', info.name);
     av.alt = ''; av.src = info.avatarUrl || DEFAULT_AV; who.appendChild(whoName); who.appendChild(el('small', '', info.email || ''));
     top.appendChild(av); top.appendChild(who); b.appendChild(top);
-    function sec(t) { b.appendChild(el('b', 'admsub', t)); var s = el('div', 'acctsec'); b.appendChild(s); return s; }
+    function sec(t, cls) { var card = el('div', 'accard' + (cls ? ' ' + cls : '')); card.appendChild(el('b', 'actitle', t)); var s = el('div', 'acctsec'); card.appendChild(s); b.appendChild(card); return s; }
+    function busy(x, p, okText) {   // pressed look while saving, then a green tick
+      var t = x.textContent; x.disabled = true; x.classList.add('busy'); x.textContent = 'Saving…';
+      return p.then(function (r) { x.classList.remove('busy'); x.classList.add('done'); x.textContent = '✓ ' + okText; setTimeout(function () { x.classList.remove('done'); x.textContent = t; x.disabled = false; }, 1600); return r; },
+        function (e) { x.classList.remove('busy'); x.textContent = t; x.disabled = false; throw e; });
+    }
     function btn(host, t, cls, fn) { var x = el('button', 'acbtn' + (cls ? ' ' + cls : ''), t); x.type = 'button'; x.addEventListener('click', fn); host.appendChild(x); return x; }
     function say(m, t, bad) { m.textContent = t; m.classList.toggle('bad', !!bad); }
     function mine(name, url) { CHAT.names[UID] = { name: name, avatarUrl: url }; if (CHAT.loaded) chatRender(); refreshAccount(); }
     // 1. display name
     var s1 = sec('Display name'), ni = el('input'); ni.type = 'text'; ni.maxLength = 30; ni.value = info.name; ni.setAttribute('aria-label', 'Display name'); s1.appendChild(ni);
     var m1 = el('span', 'acctmsg');
-    btn(s1, 'Save name', 'pri', function () {
+    var saveB = btn(s1, 'Save name', 'pri', function () {
       var v = ni.value.replace(/\s+/g, ' ').trim(); if (v.length < 2) { say(m1, 'Use at least 2 characters.', true); return; }
-      A.setName(v).then(function () { info.name = v; whoName.textContent = v; mine(v, info.avatarUrl); say(m1, 'Saved. Your new name shows in the chat and the gallery.'); }, function () { say(m1, 'Couldn\u2019t save. Try again.', true); });
+      say(m1, ''); busy(saveB, A.setName(v), 'Saved').then(function () { info.name = v; whoName.textContent = v; mine(v, info.avatarUrl); say(m1, 'Saved. Your new name shows in the chat and the gallery.'); }, function () { say(m1, 'Couldn\u2019t save. Try again.', true); });
     });
+    ni.addEventListener('keydown', function (e) { if (e.key === 'Enter') saveB.click(); });
     s1.appendChild(m1);
     // 2. profile picture
     var s2 = sec('Profile picture'), grid = el('div', 'avgrid'), m2 = el('span', 'acctmsg');
@@ -3467,11 +3485,11 @@ var DECO = (function () {
     if (info.provider === 'password') {
       var p0 = el('input'), p1 = el('input'); p0.type = p1.type = 'password'; p0.placeholder = 'Current password'; p1.placeholder = 'New password (6+ characters)';
       p0.autocomplete = 'current-password'; p1.autocomplete = 'new-password'; s3.appendChild(p0); s3.appendChild(p1);
-      btn(s3, 'Change password', 'pri', function () {
+      var cpB = btn(s3, 'Change password', 'pri', function () {
         if (p1.value.length < 6) { say(m3, 'Use at least 6 characters.', true); return; }
-        A.changePassword(p0.value, p1.value).then(function () { p0.value = p1.value = ''; say(m3, 'Password changed.'); }, function (e) { say(m3, /wrong-password|invalid-credential/.test((e && e.code) || '') ? 'Your current password is wrong.' : 'Couldn\u2019t change it. Try again.', true); });
+        say(m3, ''); busy(cpB, A.changePassword(p0.value, p1.value), 'Changed').then(function () { p0.value = p1.value = ''; say(m3, 'Password changed.'); }, function (e) { say(m3, /wrong-password|invalid-credential/.test((e && e.code) || '') ? 'Your current password is wrong.' : 'Couldn\u2019t change it. Try again.', true); });
       });
-      btn(s3, 'Email me a reset link', '', function () { A.sendReset().then(function () { say(m3, 'Sent. Check your email (and the spam folder).'); }, function () { say(m3, 'Couldn\u2019t send the email.', true); }); });
+      var rsB = btn(s3, 'Email me a reset link', '', function () { say(m3, ''); busy(rsB, A.sendReset(), 'Sent').then(function () { say(m3, 'Sent. Check your email (and the spam folder).'); }, function () { say(m3, 'Couldn\u2019t send the email.', true); }); });
     } else s3.appendChild(el('small', '', 'You sign in with Google, so there\u2019s no password to manage here.'));
     s3.appendChild(m3);
     // 4. my stuff
@@ -3489,8 +3507,7 @@ var DECO = (function () {
     // 5. sign out
     var s5 = sec('Sign out'); btn(s5, 'Sign out', '', function () { A.signOut(); });
     // 6. delete
-    b.appendChild(el('b', 'admsub', 'Delete my account'));
-    var dz = el('div', 'dangerz'); b.appendChild(dz);
+ var dzs = sec('Delete my account', 'danger'), dz = dzs.parentNode; dz.classList.add('dangerz'); dz.removeChild(dzs);
     dz.appendChild(el('p', '', 'This removes your profile, saved designs, gallery posts, share links, chat messages and stats for good. It can\u2019t be undone.'));
     var s6 = el('div', 'acctsec'); dz.appendChild(s6); var m6 = el('span', 'acctmsg');
     var conf = el('input'); conf.type = 'text'; conf.placeholder = 'Type DELETE to confirm'; conf.setAttribute('aria-label', 'Type DELETE to confirm'); s6.appendChild(conf);
