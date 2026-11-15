@@ -214,9 +214,16 @@
       '.bxg h2{font:400 34px/1 "Lilita One",Fredoka,sans-serif;color:#01948C;margin:0 0 10px;letter-spacing:.5px}' +
       '.bxg .bxglogo{display:block;width:min(82%,270px);height:auto;margin:8px auto 0;filter:url(#bxOutline)}.bxg [hidden]{display:none}' +
       '.bxg p{margin:0 0 16px;color:#5E6F6C}' +
-      '.bxg button{width:100%;font:600 16px Figtree,sans-serif;border-radius:14px;padding:12px;cursor:pointer;border:3px solid #10302D;margin-top:8px}' +
-      '.bxg .g{background:#F9E11B;color:#10302D}.bxg .e{background:#01948C;color:#fff}.bxg .l{background:none;border:0;color:#00716B;text-decoration:underline;padding:6px;margin:0}' +
-      '.bxg input{width:100%;box-sizing:border-box;font:16px Figtree,sans-serif;border:2px solid #E7E4D6;border-radius:12px;padding:10px 12px;margin-top:8px}' +
+      '.bxg button{width:100%;font:600 17px Fredoka,Figtree,sans-serif;border-radius:14px;padding:11px 12px;cursor:pointer;border:3px solid #10302D;margin-top:10px;box-shadow:inset 0 2px 0 rgba(255,255,255,.55),0 4px 0 #10302D;transition:transform .08s,box-shadow .08s,filter .12s}' +
+      '.bxg button:hover:not(:disabled){filter:brightness(1.06);transform:translateY(-1px);box-shadow:inset 0 2px 0 rgba(255,255,255,.55),0 5px 0 #10302D}' +
+      '.bxg button:active:not(:disabled),.bxg button.busy{transform:translateY(4px);box-shadow:inset 0 2px 0 rgba(255,255,255,.35),0 0 0 #10302D;filter:brightness(.95)}' +
+      '.bxg button:disabled{cursor:progress}' +
+      '.bxg .g{background:linear-gradient(180deg,#FFF09A 0%,#FFD84A 47%,#F7B500 53%,#E99E00 100%);color:#10302D}' +
+      '.bxg .e{background:linear-gradient(180deg,#5EE0D4 0%,#2FC4B8 47%,#01A096 53%,#017E77 100%);color:#fff;text-shadow:0 1px 0 rgba(0,0,0,.3)}' +
+      '.bxg .l{background:none;border:0;box-shadow:none;color:#00716B;text-decoration:underline;padding:6px;margin:0;font:600 15px Figtree,sans-serif}' +
+      '.bxg .l:hover:not(:disabled){transform:none;box-shadow:none;color:#01948C}.bxg .l:active:not(:disabled){transform:scale(.96);box-shadow:none}' +
+      '.bxg input{width:100%;box-sizing:border-box;font:16px Figtree,sans-serif;border:3px solid #10302D;border-radius:12px;padding:10px 12px;margin-top:8px;box-shadow:inset 0 3px 0 rgba(16,48,45,.08);color:#10302D}' +
+      '.bxg input:focus{outline:3px solid #FFD000;outline-offset:1px}' +
       '.bxg .or{margin:14px 0 2px;color:#5E6F6C;font-size:13px}.bxg .msg{min-height:20px;margin-top:8px;color:#B3261E;font-size:14px}' +
       '.bxchip{position:fixed;right:10px;bottom:10px;z-index:9999;font:600 12px Figtree,sans-serif;background:#fff;border:2px solid #10302D;border-radius:999px;padding:5px 10px;cursor:pointer;color:#10302D;opacity:.8}.bxchip:hover{opacity:1}';
     document.head.appendChild(css);
@@ -247,16 +254,24 @@
         /weak-password/.test(c) ? 'Use at least 6 characters.' : /invalid-email/.test(c) ? 'That email doesn’t look right.' :
         /popup-closed|cancelled-popup/.test(c) ? '' : 'Couldn’t sign in. Try again.';
     };
-    q('.g').onclick = function () { msg.textContent = ''; auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(say); };
+    // pressed look and a "please wait" label while Firebase answers
+    function busy(b, label, p) {
+      var t = b.textContent; b.disabled = true; b.classList.add('busy'); b.textContent = label;
+      var done = function () { b.disabled = false; b.classList.remove('busy'); b.textContent = t; };
+      return p.then(function (r) { done(); return r; }, function (e) { done(); throw e; });
+    }
+    q('.g').onclick = function () { msg.textContent = ''; busy(q('.g'), 'Opening Google\u2026', auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())).catch(say); };
     q('.l').onclick = function () { creating = !creating; q('.e').textContent = creating ? 'Create account' : 'Sign in'; q('.l').textContent = creating ? 'I have an account' : 'New here? Create an account'; msg.textContent = ''; };
     q('.f').onclick = function () {
-      var em = q('input[type=email]').value.trim(); if (!em) { msg.textContent = 'Type your email above first.'; return; }
-      auth.sendPasswordResetEmail(em).then(function () { msg.style.color = '#00716B'; msg.textContent = 'If that email has an account, a reset link is on its way.'; }, say);
+      var em = q('input[type=email]').value.trim(); if (!em) { msg.style.color = ''; msg.textContent = 'Type your email above first.'; return; }
+      busy(q('.f'), 'Sending\u2026', auth.sendPasswordResetEmail(em)).then(function () { msg.style.color = '#00716B'; msg.textContent = 'If that email has an account, a reset link is on its way.'; }, say);
     };
     q('.e').onclick = function () { msg.style.color = '';
       var em = q('input[type=email]').value.trim(), pw = q('input[type=password]').value; msg.textContent = '';
-      (creating ? auth.createUserWithEmailAndPassword(em, pw) : auth.signInWithEmailAndPassword(em, pw)).catch(say);
+      if (!em || !pw) { msg.textContent = 'Type your email and password first.'; return; }
+      busy(q('.e'), creating ? 'Creating account\u2026' : 'Signing in\u2026', creating ? auth.createUserWithEmailAndPassword(em, pw) : auth.signInWithEmailAndPassword(em, pw)).catch(say);
     };
+    g.querySelector('input[type=password]').addEventListener('keydown', function (e) { if (e.key === 'Enter') q('.e').click(); });
     return g;
   }
   var chipEl = null;
