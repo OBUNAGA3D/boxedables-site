@@ -170,7 +170,7 @@
       '.bxg[hidden]{display:none}' +
       '.bxg .card{width:min(92vw,380px);background:#fff;border:3px solid #10302D;border-radius:24px;padding:26px 24px;box-shadow:0 10px 0 #10302D;text-align:center}' +
       '.bxg h2{font:400 34px/1 "Lilita One",Fredoka,sans-serif;color:#01948C;margin:0 0 10px;letter-spacing:.5px}' +
-      '.bxg .bxglogo{display:block;height:64px;width:auto;max-width:100%;margin:2px auto 0;filter:url(#bxOutline)}.bxg [hidden]{display:none}' +
+      '.bxg .bxglogo{display:block;width:min(82%,270px);height:auto;margin:8px auto 0;filter:url(#bxOutline)}.bxg [hidden]{display:none}' +
       '.bxg p{margin:0 0 16px;color:#5E6F6C}' +
       '.bxg button{width:100%;font:600 16px Figtree,sans-serif;border-radius:14px;padding:12px;cursor:pointer;border:3px solid #10302D;margin-top:8px}' +
       '.bxg .g{background:#F9E11B;color:#10302D}.bxg .e{background:#01948C;color:#fff}.bxg .l{background:none;border:0;color:#00716B;text-decoration:underline;padding:6px;margin:0}' +
