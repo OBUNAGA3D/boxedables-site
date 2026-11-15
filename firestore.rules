@@ -1,0 +1,92 @@
+rules_version = '2';
+// Boxedables: who can read and write what. Paste into Firebase → Firestore → Rules → Publish.
+// Admins: add a document admins/{your user ID} (any content) in the Firestore Data tab.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() { return request.auth != null; }
+    function me() { return request.auth.uid; }
+    function isAdmin() { return signedIn() && exists(/databases/$(database)/documents/admins/$(me())); }
+    function adminDoc() { return get(/databases/$(database)/documents/characters/_admin).data; }
+    function hasAdminDoc() { return exists(/databases/$(database)/documents/characters/_admin); }
+    function banned() { return hasAdminDoc() && adminDoc().get('mod', {}).get('banned', {}).get(me(), false) == true; }
+    function muted() { return hasAdminDoc() && adminDoc().get('mod', {}).get('muted', {}).get(me(), 0) > request.time.toMillis(); }
+    function blocked() { return banned() || muted(); }
+    function msgCount(d) { return d.get('msgs', []).size(); }
+
+    // admin list: only readable by that person, changed only in the Firebase console
+    match /admins/{uid} {
+      allow read: if signedIn() && (uid == me() || isAdmin());
+      allow write: if false;
+    }
+
+    // names and pictures shown in chat and the gallery
+    match /profiles/{uid} {
+      allow read: if signedIn();
+      allow write: if signedIn() && uid == me();
+    }
+
+    // characters, the built-in character's settings (_kingkong) and Admin settings (_admin)
+    match /characters/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // uploaded character files, stored in pieces
+    match /assets/{id} {
+      allow read: if signedIn();
+      allow write: if isAdmin();
+      match /parts/{part} {
+        allow read: if signedIn();
+        allow write: if isAdmin();
+      }
+    }
+
+    // shared design links
+    match /shares/{id} {
+      allow read: if true;
+      allow create: if signedIn() && request.resource.data.by == me();
+      allow update, delete: if isAdmin() || (signedIn() && resource.data.by == me());
+    }
+
+    // community gallery: anyone signed in can like; only the author or an admin can change or remove a post
+    match /community/{id} {
+      allow read: if signedIn();
+      allow create: if signedIn() && !banned() && request.resource.data.by == me();
+      allow update: if isAdmin()
+        || (signedIn() && resource.data.by == me())
+        || (signedIn() && !banned() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likes']));
+      allow delete: if isAdmin() || (signedIn() && resource.data.by == me());
+    }
+
+    // each member's own saved designs and collection
+    match /data/users/{uid}/{doc} {
+      allow read, write: if signedIn() && uid == me();
+    }
+
+    // download stats and feedback: one document per member, only the admin reads them all
+    match /stats/{uid} {
+      allow read: if isAdmin() || (signedIn() && uid == me());
+      allow write: if isAdmin() || (signedIn() && uid == me());
+    }
+    match /feedback/{uid} {
+      allow read: if isAdmin() || (signedIn() && uid == me());
+      allow write: if isAdmin() || (signedIn() && uid == me());
+    }
+
+    // community chat: one document per member. Banned or muted members can still stay "online"
+    // and delete their own messages, but can't add new ones. _meta (staff, pinned message) is admin only.
+    match /chat/{id} {
+      allow read: if signedIn();
+      allow create: if isAdmin() || id != '_meta' && signedIn() && id == me() && (!blocked() || msgCount(request.resource.data) == 0);
+      allow update: if isAdmin()
+        || (id != '_meta' && signedIn() && id == me() && (!blocked() || msgCount(request.resource.data) <= msgCount(resource.data)));
+      allow delete: if isAdmin() || (signedIn() && id == me());
+    }
+
+    // anything else: closed
+    match /{path=**} {
+      allow read, write: if false;
+    }
+  }
+}
