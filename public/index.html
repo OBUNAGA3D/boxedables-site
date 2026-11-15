@@ -3616,7 +3616,7 @@ var DECO = (function () {
     window.claude.use('db').then(function (d) { DBX = d; openShared(); loadPublished(); trackVisit(); });
     window.claude.use('user').then(function (u) {
       USR = u; if (!u) return;
-      u.id().then(function (id) { UID = id; loadCollection(); trackVisit(); });
+      u.id().then(function (id) { UID = id; loadCollection(); trackVisit(); clkLoad(); });
       refreshAccount();
       Promise.all([u.isOwner(), u.canEdit()]).then(function (r) { IS_ADMIN = !!(r[0] || r[1]); applySiteSettings(); document.getElementById('btnAdmin').hidden = !IS_ADMIN; document.body.classList.toggle('is-admin', IS_ADMIN); if (IS_ADMIN) admBadgeStart(); }).catch(function () {});
     });
@@ -5227,7 +5227,8 @@ var DECO = (function () {
     CHAT.writing = CHAT.writing.catch(function () {}).then(function () {
       var keep = {}; Object.keys(CHAT.mine.reacts || {}).forEach(function (k) { if (CHAT.byId[k]) keep[k] = CHAT.mine.reacts[k]; });
       CHAT.mine.reacts = keep; CHAT.lastBeat = Date.now();
-      return DBX.collection('chat').doc(UID).set({ msgs: CHAT.mine.msgs, reacts: keep, seen: CHAT.lastBeat, clicks: CLK.day.d === dayKey() ? CLK.day : null });
+      CLK.dirty = false;
+      return DBX.collection('chat').doc(UID).set({ msgs: CHAT.mine.msgs, reacts: keep, seen: CHAT.lastBeat, clicks: { d: CLK.day.d === dayKey() ? CLK.day.d : '', n: todayMine(), total: CLK.mine } });
     });
     return CHAT.writing;
   }
@@ -6414,8 +6415,18 @@ var DECO = (function () {
   }
 
   // click counter: your own presses, plus everyone's presses today (shared through each member's chat record)
-  var CLK = { mine: 0, day: { d: '', n: 0 }, others: 0, t: 0 };
-  try { CLK.mine = +localStorage.getItem('bx-clicks') || 0; CLK.day = JSON.parse(localStorage.getItem('bx-clicks-day') || 'null') || CLK.day; } catch (e) {}
+  var CLK = { mine: 0, day: { d: '', n: 0 }, others: 0, t: 0, key: '', dirty: false };
+  // each account keeps its own count (several members can share one browser); the account's chat record keeps it across devices
+  function clkLoad() {
+    CLK.key = UID ? ':' + UID : '';
+    try { CLK.mine = +localStorage.getItem('bx-clicks' + CLK.key) || 0; CLK.day = JSON.parse(localStorage.getItem('bx-clicks-day' + CLK.key) || 'null') || { d: '', n: 0 }; } catch (e) {}
+    if (typeof myClicks !== 'undefined' && myClicks) paintClicks(false);   // the counter may not be on the page yet
+  }
+  clkLoad();
+  function clkStore() { try { localStorage.setItem('bx-clicks' + CLK.key, String(CLK.mine)); localStorage.setItem('bx-clicks-day' + CLK.key, JSON.stringify(CLK.day)); } catch (e) {} }
+  function clkSave() { if (CLK.dirty && DBX && UID && CHAT.loaded) writeMine().catch(function () { CLK.dirty = true; }); }
+  document.addEventListener('visibilitychange', function () { if (document.hidden) clkSave(); });   // save before the member leaves
+  window.addEventListener('pagehide', clkSave);
   function dayKey() { return new Date().toISOString().slice(0, 10); }
   function todayMine() { return CLK.day.d === dayKey() ? CLK.day.n : 0; }
   var clickPill = document.getElementById('clickPill'), myClicks = document.getElementById('myClicks'), allClicks = document.getElementById('allClicks');
@@ -6427,15 +6438,20 @@ var DECO = (function () {
   }
   function clickAdd() {
     CLK.mine++; if (CLK.day.d !== dayKey()) CLK.day = { d: dayKey(), n: 0 }; CLK.day.n++;
-    try { localStorage.setItem('bx-clicks', String(CLK.mine)); localStorage.setItem('bx-clicks-day', JSON.stringify(CLK.day)); } catch (e) {}
+    clkStore(); CLK.dirty = true;
     paintClicks(true);
-    clearTimeout(CLK.t); CLK.t = setTimeout(function () { if (DBX && UID && CHAT.loaded) writeMine().catch(function () {}); }, 15000);   // one quiet save after the clicking stops
+    clearTimeout(CLK.t); CLK.t = setTimeout(clkSave, 2500);   // one quiet save shortly after the clicking stops
   }
   function clicksFromChat(docs) {
     var others = 0, d = dayKey();
     docs.forEach(function (doc) {
-      var c = doc.data && doc.data() && doc.data().clicks; if (!c || c.d !== d) return;
-      if (doc.id === UID) { if (c.n > todayMine()) CLK.day = { d: d, n: c.n }; return; }   // the same member on another device
+      var c = doc.data && doc.data() && doc.data().clicks; if (!c) return;
+      if (doc.id === UID) {   // this account, maybe from another device
+        if (+c.total > CLK.mine) { CLK.mine = +c.total; clkStore(); }
+        if (c.d === d && c.n > todayMine()) { CLK.day = { d: d, n: c.n }; clkStore(); }
+        return;
+      }
+      if (c.d !== d) return;
       others += Math.max(0, Math.min(1e6, +c.n || 0));
     });
     CLK.others = others; paintClicks(false);
