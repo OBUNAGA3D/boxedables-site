@@ -3820,7 +3820,7 @@ var DECO = (function () {
     return fetch('/kingkong-seed.json', { cache: 'no-store' }).then(function (r) { if (!r.ok) throw new Error('no-seed'); return r.text(); }).then(function (txt) {
       claude.use('assets').then(function (assets) { return assets && assets.upload(new Blob([txt], { type: 'text/plain' })); })
         .then(function (up) { if (up && up.id) { var d = {}; Object.keys(o || {}).forEach(function (k) { d[k] = o[k]; }); d.asset = up.id; return DBX.collection('characters').doc('_kingkong').set(d); } })
-        .catch(function () {});   // members can't write: they just use the seed until an admin visits
+        .then(function () { window.BX_KONG_SEED = 'saved to the database'; }, function (e) { window.BX_KONG_SEED = 'not saved (' + ((e && (e.code || e.message)) || 'error') + ')'; });   // members can't write: they just use the seed until an admin visits
       return txt;
     });
   }
