@@ -110,7 +110,16 @@ input[type="text"]:disabled { opacity: .55; }
 .emojigrid button { color: var(--ink); border-radius: 12px; padding: 6px 4px 5px; font: 500 12px "Figtree", sans-serif; display: flex; flex-direction: column; align-items: center; gap: 2px; cursor: pointer; }
 .emojigrid canvas { width: 36px; height: 36px; }
 .emojigrid button[aria-pressed="true"] { border-color: var(--teal); }
-#nameReset { margin-top: 10px; }
+#nameSec > summary > span { white-space: nowrap; }
+#nameHint { max-width: 6.5em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.namerow { position: relative; }
+.namerow input { box-sizing: border-box; width: 100%; padding-right: 62px; }
+#nameSec[open] #nameHint { display: none; }
+.namecount { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); font: 700 12px "Figtree", sans-serif; color: #4E6663; pointer-events: none; }
+.namecount.full { color: #B3261E; }
+#nameColor { margin-bottom: 2px; }
+#nameColor .crow { margin-top: 0; }
+.namefoot { display: flex; justify-content: flex-end; margin-top: 12px; }
 details.card > summary { display: flex; align-items: center; gap: 10px; list-style: none; cursor: pointer; font: 600 17px "Fredoka", sans-serif; }
 details.card > summary::-webkit-details-marker { display: none; }
 details.card > summary span { flex: 1; }
@@ -1191,7 +1200,7 @@ body.maint-admin::before { content: "Maintenance mode is on: members see a “Ba
     <details class="card" id="nameSec">
       <summary><i class="ico pink" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 18 9 5l5 13M6 13.5h6M15 18v-7m0 0c0-1.5 1-2.5 2.5-2.5S20 9.5 20 11v7" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></i><span>Name on the box</span><em id="nameHint"></em><button type="button" class="switch sm" role="switch" id="nameToggle" aria-checked="false" aria-label="Name on the box on or off"></button></summary>
       <div class="cardbody">
-      <input type="text" id="name" maxlength="20" placeholder="Type a name" aria-label="Name on the box" autocomplete="off" spellcheck="false">
+      <div class="namerow"><input type="text" id="name" maxlength="20" placeholder="Type a name" aria-label="Name on the box" autocomplete="off" spellcheck="false"><span class="namecount" id="nameCount" aria-hidden="true"></span></div>
       <p class="note" id="nameNote"></p>
       <div id="nameOpts">
         <label class="field">Lettering</label>
@@ -1200,14 +1209,15 @@ body.maint-admin::before { content: "Maintenance mode is on: members see a “Ba
           <button type="button" data-font="sans" aria-pressed="false">Bold sans</button>
           <button type="button" data-font="serif" aria-pressed="false">Classic</button>
         </div>
+        <label class="field">Letter color</label>
+        <div class="colors sub" id="nameColor"></div>
         <label class="field" for="size">Letter height (mm)</label>
         <div class="range"><input type="range" id="size" min="4" max="8" step="0.1" value="4.8"><output for="size">4.8</output></div>
         <label class="field" for="lift">Move up or down (mm)</label>
         <div class="range"><input type="range" id="lift" min="-10" max="10" step="0.5" value="0"><output for="lift">0</output></div>
       </div>
       <p class="status" id="nameStatus" role="status"></p>
-      <button type="button" class="ghost" id="nameReset">Reset name</button>
-      <div class="colors sub" id="nameColor"></div>
+      <div class="namefoot"><button type="button" class="colreset" id="nameReset" title="Name, lettering, color, size and position">↺ Reset name and style</button></div>
     </div>
     </details>
     <details class="card" id="logoSec">
@@ -3297,6 +3307,11 @@ var DECO = (function () {
     if (on) { ES.kind = FEAT.lastEmoji || 'smile'; openCard('emojiSec'); pressEmoji(ES.kind); traceEmoji(); }
     else { if (ES.kind) FEAT.lastEmoji = ES.kind; ES.kind = null; ES.groups = null; pressEmoji(null); rebuildDeco(); }
   });
+  (function () {   // letters used out of 20, inside the name box
+    var ni = document.getElementById('name'), nc = document.getElementById('nameCount');
+    function paint() { var n = ni.value.length; nc.textContent = n + ' / ' + ni.maxLength; nc.classList.toggle('full', n >= ni.maxLength); }
+    ni.addEventListener('input', paint); paint(); setInterval(function () { if (document.activeElement !== ni) paint(); }, 1000);   // also after resets and character switches
+  })();
   document.getElementById('nameReset').addEventListener('click', function () {
     S.name = S.defaultName || ''; document.getElementById('name').value = S.name; S.nameOff = false; S.font = 'joy';
     document.querySelectorAll('[data-font]').forEach(function (x) { x.setAttribute('aria-pressed', String(x.dataset.font === 'joy')); });
