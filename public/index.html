@@ -4357,11 +4357,11 @@ var DECO = (function () {
     DBX.collection('characters').orderBy('created', 'desc').get().then(function (snap) {
       var docs = snap.docs.filter(function (d) { return d.id.charAt(0) !== '_'; });
       done(docs.length ? '' : 'Nothing published yet. Characters you publish here appear next to King Kong.');
-      // King Kong is built into the page: only his print note can be changed here
+      // King Kong (No. 1) is stored in the database like the others, but always comes first and can't be hidden or deleted: only his print note and rest height change here
       var kk = LIB.filter(function (e) { return e.id === 'kingkong'; })[0];
       if (kk) {
         var kw = el('div'), kr = el('div', 'admrow'), kp = el('div', 'admbox admedit'); kp.hidden = true;
-        kr.appendChild(el('span', '', 'King Kong \u00b7 built in'));
+        kr.appendChild(el('span', '', 'King Kong \u00b7 Animals \u00b7 No. 1, always first'));
         var kb = el('button', 'galdel', 'Edit'); kb.type = 'button'; kr.appendChild(kb);
         kb.addEventListener('click', function () {
           kp.hidden = !kp.hidden; if (kp.hidden) return; kp.textContent = '';
