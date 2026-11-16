@@ -746,6 +746,33 @@ body { padding-bottom: 70px; }
 .modcard.feat { box-shadow: 0 0 0 3px #FFD000; }
 .ordbtn { flex: none; width: 26px; height: 26px; padding: 0; border: 2px solid var(--ink-dark); border-radius: 8px; background: #FFFFFF; font-size: 10px; cursor: pointer; }
 .ordbtn:disabled { opacity: .35; cursor: default; }
+.admrow.chrow { display: grid; grid-template-columns: 18px 28px 68px minmax(0, 1fr) 80px auto; align-items: center; gap: 10px; padding: 8px 12px; }
+.admrow.chrow.kk { grid-template-columns: 68px minmax(0, 1fr) 80px auto; }
+.chgrip { cursor: grab; color: #8FA9A6; font-size: 18px; line-height: 1; text-align: center; user-select: none; }
+.chord { display: flex; flex-direction: column; gap: 4px; }
+.chord .ordbtn { width: 26px; height: 22px; }
+.chthumb { width: 68px; height: 68px; border-radius: 12px; border: 3px solid var(--ink-dark); background: radial-gradient(120% 90% at 50% 8%, #BFEAFF 0%, #5CC3FF 38%, #1E8FE0 72%, #0F5EA8 100%); display: grid; place-items: center; overflow: hidden; }
+.chthumb img { width: 100%; height: 100%; object-fit: contain; }
+.chthumb span { font: 400 30px "Lilita One", sans-serif; color: #FFFFFF; -webkit-text-stroke: 5px var(--ink-dark); paint-order: stroke fill; }
+.chinfo { min-width: 0; }
+.chinfo b { display: block; font: 400 21px/1.15 "Lilita One", sans-serif; color: var(--ink-dark); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.chmeta { display: flex; gap: 8px; flex-wrap: wrap; font: 700 12.5px "Figtree", sans-serif; color: #4E6663; }
+.chmeta .chnum { color: var(--ink-dark); }
+.chchips { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 5px; }
+.chchip { font: 700 11.5px "Figtree", sans-serif; padding: 2px 9px; border-radius: 999px; border: 2px solid var(--ink-dark); background: #FFFFFF; color: var(--ink-dark); white-space: nowrap; }
+.chchip.live { background: #34C759; color: #FFFFFF; text-shadow: 0 1px 0 rgba(0,0,0,.25); }
+.chchip.hid { background: #CBD3D5; }
+.chchip.sch { background: #4AA6FF; color: #FFFFFF; text-shadow: 0 1px 0 rgba(0,0,0,.25); }
+.chchip.bdg { background: #FFD84A; }
+.chstat { text-align: center; }
+.chstat b { display: block; font: 400 24px/1.1 "Lilita One", sans-serif; color: var(--ink-dark); }
+.chstat small { font: 700 11px "Figtree", sans-serif; color: #4E6663; }
+.chacts { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; max-width: 460px; }
+.admrow.chrow.dragging { opacity: .45; }
+.admrow.chrow.dropto { outline: 4px dashed #F7B500; outline-offset: 2px; }
+.admrow.chrow span { flex: none; }
+.chsum { margin: 0 0 10px; font: 700 13.5px "Figtree", sans-serif; color: var(--ink-dark); }
+@media (max-width: 760px) { .admrow.chrow { grid-template-columns: 18px 68px minmax(0, 1fr); } .admrow.chrow .chord, .admrow.chrow .chstat { display: none; } .chacts { grid-column: 1 / -1; justify-content: flex-start; max-width: none; } .admrow.chrow.kk { grid-template-columns: 68px minmax(0, 1fr); } }
 .libtile { position: relative; }
 .libbadge { position: absolute; top: 4px; left: 4px; z-index: 1; padding: 0 5px; border: 1.5px solid var(--ink-dark); border-radius: 6px; font: 800 9.5px/15px "Figtree", sans-serif; font-style: normal; color: #FFFFFF; background: #E53935; }
 .libbadge.featured { background: #F7B500; color: var(--ink-dark); }
@@ -4346,18 +4373,40 @@ var DECO = (function () {
     body.appendChild(el('b', 'admsub', 'Published characters'));
     var listHost = el('div'); body.appendChild(listHost); adminList(listHost);
   }
+  // ---------- Admin: published characters as cards ----------
+  function chThumb(id, name) {
+    var e = LIB.filter(function (x) { return x.id === id; })[0], t = el('div', 'chthumb');
+    if (e && e.thumb) { var im = el('img'); im.src = e.thumb; im.alt = ''; t.appendChild(im); } else t.appendChild(el('span', '', (name || '?').charAt(0).toUpperCase()));
+    return t;
+  }
+  function chChip(host, text, cls) { host.appendChild(el('span', 'chchip' + (cls ? ' ' + cls : ''), text)); }
+  function chTry(id) {   // close Admin and show the character in the preview
+    if (!LIB.some(function (e) { return e.id === id; })) return false;
+    closeModal(); setTimeout(function () { selectChar(id); }, 60); return true;
+  }
   function adminList(host) {
     if (!DBX) { host.appendChild(el('p', 'note', 'Sign in on the live page to see this.')); return; }
     host.textContent = ''; var done = loading(host, 'Loading\u2026');
     DBX.collection('characters').orderBy('created', 'desc').get().then(function (snap) {
       var docs = snap.docs.filter(function (d) { return d.id.charAt(0) !== '_'; });
       done(docs.length ? '' : 'Nothing published yet. Characters you publish here appear next to King Kong.');
+      var nowT = Date.now(), nLive = docs.filter(function (d) { var x = d.data(); return x.published && !(x.releaseAt && x.releaseAt > nowT); }).length;
+      var nHid = docs.filter(function (d) { return !d.data().published; }).length, nSch = docs.filter(function (d) { var x = d.data(); return x.published && x.releaseAt && x.releaseAt > nowT; }).length;
+      host.appendChild(el('p', 'chsum', (docs.length + 1) + ' characters \u00b7 ' + (nLive + 1) + ' live' + (nSch ? ' \u00b7 ' + nSch + ' scheduled' : '') + (nHid ? ' \u00b7 ' + nHid + ' hidden' : '') + '. Drag a card to change the order.'));
+      var dlCells = {}, dragFrom = null;
+      function statCell(name) { var st = el('div', 'chstat'), b = el('b', '', '\u2026'); st.appendChild(b); st.appendChild(el('small', '', 'downloads')); dlCells[String(name || '').toLowerCase()] = b; return st; }
       // King Kong (No. 1) is stored in the database like the others, but always comes first and can't be hidden or deleted: only his print note and rest height change here
       var kk = LIB.filter(function (e) { return e.id === 'kingkong'; })[0];
       if (kk) {
-        var kw = el('div'), kr = el('div', 'admrow'), kp = el('div', 'admbox admedit'); kp.hidden = true;
-        kr.appendChild(el('span', '', 'King Kong \u00b7 Animals \u00b7 No. 1, always first'));
-        var kb = el('button', 'galdel', 'Edit'); kb.type = 'button'; kr.appendChild(kb);
+        var kw = el('div'), kr = el('div', 'admrow chrow kk'), kp = el('div', 'admbox admedit'); kp.hidden = true;
+        kr.appendChild(chThumb('kingkong', 'King Kong'));
+        var ki = el('div', 'chinfo'); ki.appendChild(el('b', '', 'King Kong'));
+        var km = el('div', 'chmeta'); km.appendChild(el('span', 'chnum', 'No. 1')); km.appendChild(el('span', '', 'Animals')); ki.appendChild(km);
+        var kc = el('div', 'chchips'); chChip(kc, 'Live', 'live'); chChip(kc, 'Always first'); chChip(kc, '3 colors to change'); ki.appendChild(kc); kr.appendChild(ki);
+        kr.appendChild(statCell('King Kong'));
+        var ka = el('div', 'chacts'); kr.appendChild(ka);
+        var kt = el('button', 'galdel', 'Try it'); kt.type = 'button'; ka.appendChild(kt); kt.addEventListener('click', function () { chTry('kingkong'); });
+        var kb = el('button', 'galdel', 'Edit'); kb.type = 'button'; ka.appendChild(kb);
         kb.addEventListener('click', function () {
           kp.hidden = !kp.hidden; if (kp.hidden) return; kp.textContent = '';
           var l = el('label', 'field', 'Print note'), i = el('input'); i.type = 'text'; i.id = 'admKKNote'; i.maxLength = 80; i.value = kk.note || ''; l.htmlFor = i.id;
@@ -4381,14 +4430,35 @@ var DECO = (function () {
           .catch(function () { toast('Couldn\u2019t save the new order.'); });
       }
       docs.forEach(function (d, di) {
-        var data = d.data(), wrap = el('div'), row = el('div', 'admrow'), panel = el('div', 'admbox admedit'); panel.hidden = true;
+        var data = d.data(), wrap = el('div'), row = el('div', 'admrow chrow'), panel = el('div', 'admbox admedit'); panel.hidden = true;
         var up = el('button', 'ordbtn', '\u25b2'), dn = el('button', 'ordbtn', '\u25bc'); up.type = dn.type = 'button'; up.setAttribute('aria-label', 'Move ' + data.name + ' up'); dn.setAttribute('aria-label', 'Move ' + data.name + ' down');
         up.disabled = di === 0; dn.disabled = di === docs.length - 1; up.addEventListener('click', function () { moveTo(di, di - 1); }); dn.addEventListener('click', function () { moveTo(di, di + 1); });
-        row.appendChild(up); row.appendChild(dn);
-        var tags = (data.badge ? ' \u00b7 ' + (data.badge === 'new' ? 'NEW' : '\u2605 Featured') : '') + (data.releaseAt && data.releaseAt > Date.now() ? ' \u00b7 releases ' + new Date(data.releaseAt).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : '') + (data.published ? '' : ' \u00b7 hidden');
-        row.appendChild(el('span', '', data.name + ' \u00b7 ' + (data.theme || '') + tags));
-        function btn(t) { var b = el('button', 'galdel', t); b.type = 'button'; row.appendChild(b); return b; }
-        var ed = btn('Edit'), rp = btn('Replace file'), hs = (data.history || []).length ? btn('History') : null, pub = btn(data.published ? 'Hide' : 'Publish'), del = btn('Delete');
+        var grip = el('span', 'chgrip', '\u2630'); grip.title = 'Drag to change the order'; grip.setAttribute('aria-hidden', 'true'); row.appendChild(grip);
+        var ordBox = el('div', 'chord'); ordBox.appendChild(up); ordBox.appendChild(dn); row.appendChild(ordBox);
+        row.appendChild(chThumb('c-' + d.id, data.name));
+        // drag a card onto another to move it there
+        row.draggable = true;
+        row.addEventListener('dragstart', function (e) { dragFrom = di; row.classList.add('dragging'); try { e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', String(di)); } catch (x) {} });
+        row.addEventListener('dragend', function () { row.classList.remove('dragging'); [].forEach.call(host.querySelectorAll('.chrow.dropto'), function (x) { x.classList.remove('dropto'); }); dragFrom = null; });
+        row.addEventListener('dragover', function (e) { if (dragFrom === null || dragFrom === di) return; e.preventDefault(); row.classList.add('dropto'); });
+        row.addEventListener('dragleave', function () { row.classList.remove('dropto'); });
+        row.addEventListener('drop', function (e) { e.preventDefault(); row.classList.remove('dropto'); if (dragFrom !== null && dragFrom !== di) moveTo(dragFrom, di); dragFrom = null; });
+        var info = el('div', 'chinfo'), nameEl = el('b', '', data.name); info.appendChild(nameEl);
+        var meta = el('div', 'chmeta'); meta.appendChild(el('span', 'chnum', 'No. ' + (di + 2))); meta.appendChild(el('span', '', data.theme || 'Animals')); info.appendChild(meta);
+        var chips = el('div', 'chchips');
+        if (!data.published) chChip(chips, 'Hidden', 'hid');
+        else if (data.releaseAt && data.releaseAt > Date.now()) chChip(chips, 'Releases ' + new Date(data.releaseAt).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }), 'sch');
+        else chChip(chips, 'Live', 'live');
+        if (data.badge) chChip(chips, data.badge === 'new' ? 'NEW' : '\u2605 Featured', 'bdg');
+        var nCol = (data.colorable || []).length; chChip(chips, nCol ? nCol + (nCol === 1 ? ' color' : ' colors') + ' to change' : 'Colors locked');
+        if ((data.history || []).length) chChip(chips, (data.history || []).length + ' earlier ' + ((data.history || []).length === 1 ? 'file' : 'files'));
+        info.appendChild(chips); row.appendChild(info);
+        row.appendChild(statCell(data.name));
+        var acts = el('div', 'chacts'); row.appendChild(acts);
+        function btn(t) { var b = el('button', 'galdel', t); b.type = 'button'; acts.appendChild(b); return b; }
+        var tryB = btn('Try it'); if (!LIB.some(function (e) { return e.id === 'c-' + d.id; })) { tryB.disabled = true; tryB.title = 'Publish it first to try it in the preview'; }
+        tryB.addEventListener('click', function () { chTry('c-' + d.id); });
+        var ed = btn('Edit'), rp = btn('Replace file'), hs = (data.history || []).length ? btn('History') : null, pub = btn(data.published ? 'Hide' : 'Publish'), del = btn('Delete'); del.classList.add('danger');
         if (hs) hs.addEventListener('click', function () { open('history'); });
         function open(which) {
           if (!panel.hidden && panel.dataset.which === which) { panel.hidden = true; return; }
@@ -4398,7 +4468,7 @@ var DECO = (function () {
               var upd = Object.assign(out, extra || {}, { updated: Date.now() });
               return DBX.collection('characters').doc(d.id).update(upd).then(function () {
                 var merged = Object.assign({}, data, upd); refreshChar(d.id, merged, buf); data = merged;
-                row.firstChild.textContent = data.name + ' \u00b7 ' + (data.theme || '');
+                nameEl.textContent = data.name;
                 return which === 'edit' ? 'Saved. The library shows the changes now.' : 'Replaced. Saved and shared designs keep working with the new file.';
               });
             };
@@ -4444,6 +4514,10 @@ var DECO = (function () {
         del.addEventListener('click', function () { if (del.dataset.sure !== '1') { del.dataset.sure = '1'; del.textContent = 'Sure?'; return; } DBX.collection('characters').doc(d.id).delete().then(function () { toast('Deleted.'); adminList(host); }); });
         wrap.appendChild(row); wrap.appendChild(panel); host.appendChild(wrap);
       });
+      DBX.collection('stats').limit(2000).get().then(function (ss) {
+        var n = {}; ss.docs.forEach(function (sd) { (sd.data().events || []).forEach(function (ev) { var k = String(ev.char || '').toLowerCase(); n[k] = (n[k] || 0) + 1; }); });
+        Object.keys(dlCells).forEach(function (k) { dlCells[k].textContent = String(n[k] || 0); });
+      }).catch(function () { Object.keys(dlCells).forEach(function (k) { dlCells[k].textContent = '\u2014'; }); });
     }).catch(function () { done('Couldn\u2019t load characters.'); });
   }
   function bars(host, title, counts) {
