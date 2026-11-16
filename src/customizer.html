@@ -733,6 +733,14 @@ body { padding-bottom: 70px; }
 .gpanel .slots li small { color: #4E6663; }
 .go.gook, .go.gook:disabled { opacity: 1 !important; cursor: default; background: linear-gradient(180deg, #9BF0A8 0%, #6BEA7F 47%, #34C759 53%, #239C45 100%) !important; box-shadow: inset 0 3px 0 rgba(255,255,255,.6), inset 0 -4px 0 rgba(0,90,30,.35), 0 6px 0 var(--ink-dark) !important; animation: acpop .3s ease-out; }
 .galdel.gook, .gpanel .galdel.gook { color: #FFFFFF; background: linear-gradient(180deg, #9BF0A8 0%, #6BEA7F 47%, #34C759 53%, #239C45 100%); text-shadow: 0 1px 0 rgba(0,0,0,.3); }
+.kkcols { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 4px 0 4px; }
+.kkcol { display: inline-flex; align-items: center; gap: 4px; font: 600 14px "Figtree", sans-serif; color: var(--ink-dark); cursor: pointer; }
+.colfoot { display: flex; justify-content: flex-end; margin-top: 10px; }
+.colreset { border: 2.5px solid var(--ink-dark); border-radius: 10px; padding: 6px 13px; font: 600 14px "Fredoka", sans-serif; color: var(--ink-dark); cursor: pointer; background: linear-gradient(180deg, #FFFFFF 0%, #FFFFFF 47%, #E3E8E9 53%, #CBD3D5 100%); box-shadow: inset 0 2px 0 rgba(255,255,255,.8), 0 3px 0 var(--ink-dark); transition: transform .08s, box-shadow .08s; }
+.colreset:hover:not(:disabled) { transform: translateY(-1px); box-shadow: inset 0 2px 0 rgba(255,255,255,.8), 0 4px 0 var(--ink-dark); }
+.colreset:active:not(:disabled) { transform: translateY(3px); box-shadow: inset 0 2px 0 rgba(255,255,255,.5), 0 0 0 var(--ink-dark); }
+.colreset:disabled { opacity: .45; cursor: default; }
+.colmerge { font-size: 12.5px; margin-top: 8px; }
 .acctpic { display: block; width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
 @media (max-width: 760px) { .memrow { grid-template-columns: 34px 1fr auto; } .memrow .memx { display: none; } }
 .fbhead { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
@@ -1128,6 +1136,8 @@ body.maint-admin::before { content: "Maintenance mode is on: members see a “Ba
       <div class="cardbody">
       <div class="styles" id="charStyles" hidden><label class="field">Color style</label><div class="seg" role="group" aria-label="Color style" id="styleSeg"></div></div>
       <div class="colors" id="colors"></div>
+      <div class="colfoot"><button type="button" class="colreset" id="colReset">↺ Reset colors</button></div>
+      <p class="note colmerge" id="colMergeNote">Parts with exactly the same color print with one filament (one AMS slot). The character's original colors can look alike but are slightly different, so they stay separate. Pick the same swatch for both if you want them on one filament.</p>
       <p class="note" id="lockNote" hidden></p>
     </div>
     </details>
@@ -2358,7 +2368,7 @@ var DECO = (function () {
       var c = BX.classify(rp.name);
       if (!S.groups[c.group]) {
         var col = rp.filColor || BX.defaultColor(c.group, S.groupOrder.length);
-        S.groups[c.group] = { color: col, mat: new THREE.MeshPhysicalMaterial({ color: softWhite(new THREE.Color(col).convertSRGBToLinear()), roughness: 0.6, metalness: 0, clearcoat: 0.45, clearcoatRoughness: 0.35, envMapIntensity: 0.32 * light.bright }),
+        S.groups[c.group] = { color: col, def: col, mat: new THREE.MeshPhysicalMaterial({ color: softWhite(new THREE.Color(col).convertSRGBToLinear()), roughness: 0.6, metalness: 0, clearcoat: 0.45, clearcoatRoughness: 0.35, envMapIntensity: 0.32 * light.bright }),
           label: c.pick ? BX.label(c.pick) + ': ' + c.option : BX.label(c.group) };
         S.groupOrder.push(c.group);
         if (/^slot\d+$/.test(c.group)) {   // label filament groups by their color, keeping labels unique
@@ -2583,7 +2593,14 @@ var DECO = (function () {
       ci.addEventListener('change', renderColors);
       cw.appendChild(ci); chips.appendChild(cw); row.appendChild(chips); host.appendChild(row);
     });
+    paintColReset();
   }
+  function colChanged(g) { var G = S.groups[g]; return !(g === 'support' || SUB[g] || onBox(g) || S.locked[g] || !G || !G.def) && G.color.toUpperCase() !== G.def.toUpperCase(); }
+  function paintColReset() { var rb = document.getElementById('colReset'); if (rb) rb.disabled = !S.groupOrder.some(colChanged); }
+  document.getElementById('colReset').addEventListener('click', function () {
+    var n = 0; S.groupOrder.forEach(function (g) { if (colChanged(g)) { setColor(g, S.groups[g].def); n++; } });
+    renderColors(); updateHints(); if (n) toast(S.title + '\u2019s colors are back to the original.');
+  });
   // clicking anywhere outside the color list folds the open row
   document.addEventListener('click', function (e) {
     if (openGroup === null || !e.target.isConnected || e.target.closest('.crow')) return; // ignore clicks on rows that were just redrawn
@@ -3857,7 +3874,7 @@ var DECO = (function () {
     if (KONG.state || !DBX || !KONG.boot) return; KONG.state = 'loading';
     var o = {};
     DBX.collection('characters').doc('_kingkong').get().then(function (d) {
-      o = d.exists ? d.data() : {};
+      o = d.exists ? d.data() : {}; if (o.asset) KONG.asset = o.asset;
       if (o.asset) return fetch('/_blob/' + o.asset).then(function (r) { if (!r.ok) throw new Error('missing'); return r.text(); });
       return kongSeed(o);
     }).then(function (txt) {
@@ -3873,6 +3890,13 @@ var DECO = (function () {
     var k = LIB.filter(function (e) { return e.id === 'kingkong'; })[0]; if (!k || !o) return;
     if (typeof o.note === 'string') { k.note = o.note; if (libSel === 'kingkong' && S.objects[0]) S.objects[0].note = o.note; }
     if (typeof o.rest === 'number') { k.rest = o.rest; if (libSel === 'kingkong') { CLICK_REST = o.rest; placeChar(); } }
+    if (o.asset) KONG.asset = o.asset;
+    if (Array.isArray(o.colorable) && o.colorable.join() !== (k.colorable || []).join()) { k.colorable = o.colorable.slice(); if (libSel === 'kingkong') selectChar('kingkong'); }
+  }
+  function kongGroups() {   // King Kong's color groups, in file order
+    var k = LIB.filter(function (e) { return e.id === 'kingkong'; })[0], out = [];
+    (k ? k.parts : []).forEach(function (p) { var g = BX.classify(p.name).group; if (g !== 'support' && out.indexOf(g) < 0) out.push(g); });
+    return out;
   }
   function loadPublished() {
     if (pubLoaded || !DBX || !LIB.length) return; pubLoaded = true;
@@ -4410,7 +4434,7 @@ var DECO = (function () {
         kr.appendChild(chThumb('kingkong', 'King Kong'));
         var ki = el('div', 'chinfo'); ki.appendChild(el('b', '', 'King Kong'));
         var km = el('div', 'chmeta'); km.appendChild(el('span', 'chnum', 'No. 1')); km.appendChild(el('span', '', 'Animals')); ki.appendChild(km);
-        var kc = el('div', 'chchips'); chChip(kc, 'Live', 'live'); chChip(kc, 'Always first'); chChip(kc, '3 colors to change'); ki.appendChild(kc); kr.appendChild(ki);
+        var kc = el('div', 'chchips'); chChip(kc, 'Live', 'live'); chChip(kc, 'Always first'); chChip(kc, (kk.colorable || []).length + ' colors to change'); ki.appendChild(kc); kr.appendChild(ki);
         kr.appendChild(statCell('King Kong'));
         var ka = el('div', 'chacts'); kr.appendChild(ka);
         var kt = el('button', 'galdel', 'Try it'); kt.type = 'button'; ka.appendChild(kt); kt.addEventListener('click', function () { chTry('kingkong'); });
@@ -4420,10 +4444,21 @@ var DECO = (function () {
           var l = el('label', 'field', 'Print note'), i = el('input'); i.type = 'text'; i.id = 'admKKNote'; i.maxLength = 80; i.value = kk.note || ''; l.htmlFor = i.id;
           var sv = el('button', 'go', 'Save'); sv.type = 'button'; sv.style.marginTop = '10px'; var m = el('p', 'note');
           var rl = el('label', 'field', 'Rest height in the preview (mm)'), ri = el('input'); ri.type = 'number'; ri.min = 0; ri.max = 12; ri.step = 0.5; ri.id = 'admKKRest'; ri.value = typeof kk.rest === 'number' ? kk.rest : 5; rl.htmlFor = ri.id;
-          kp.appendChild(l); kp.appendChild(i); kp.appendChild(el('p', 'note', 'Leave it empty for no note card.')); kp.appendChild(rl); kp.appendChild(ri); kp.appendChild(sv); kp.appendChild(m);
+          kp.appendChild(l); kp.appendChild(i); kp.appendChild(el('p', 'note', 'Leave it empty for no note card.')); kp.appendChild(rl); kp.appendChild(ri);
+          kp.appendChild(el('label', 'field', 'Colors members can change'));
+          var kcl = el('div', 'kkcols'), kcb = {};
+          var kgs = kongGroups(), kpre = (kk.colorable || []).filter(function (g) { return kgs.indexOf(g) >= 0; });
+          kpre.concat(kgs.filter(function (g) { return kpre.indexOf(g) < 0; })).forEach(function (g) {
+            var lab = el('label', 'kkcol'), cb = el('input'); cb.type = 'checkbox'; cb.checked = (kk.colorable || []).indexOf(g) >= 0; kcb[g] = cb;
+            lab.appendChild(cb); lab.appendChild(document.createTextNode(' ' + BX.label(g))); kcl.appendChild(lab);
+          });
+          kp.appendChild(kcl); kp.appendChild(sv); kp.appendChild(m);
           sv.addEventListener('click', function () {
             var n = i.value.trim(), rv = Math.max(0, Math.min(12, parseFloat(ri.value))); if (isNaN(rv)) rv = 5; sv.disabled = true;
-            DBX.collection('characters').doc('_kingkong').set({ note: n, rest: rv, updated: Date.now() }).then(function () { builtInSet({ note: n, rest: rv }); m.textContent = 'Saved. The preview and downloads use it now.'; goFlash(sv); })
+            var prev = kk.colorable || [], on = function (g) { return kcb[g] && kcb[g].checked; };
+            var cols = prev.filter(on).concat(kongGroups().filter(function (g) { return on(g) && prev.indexOf(g) < 0; }));   // keep the usual order, new ones at the end
+            var doc = { note: n, rest: rv, colorable: cols, updated: Date.now() }; if (KONG.asset) doc.asset = KONG.asset;   // keep the link to his file
+            DBX.collection('characters').doc('_kingkong').set(doc).then(function () { builtInSet({ note: n, rest: rv, colorable: cols }); m.textContent = 'Saved. The preview and downloads use it now.'; goFlash(sv); })
               .catch(function () { m.textContent = 'That didn\u2019t work. Try again.'; }).then(function () { sv.disabled = false; });
           });
         });
@@ -6719,7 +6754,7 @@ var DECO = (function () {
       parts.forEach(function (p) {
         var c = BX.classify(p.name); if (c.group === 'support') return;
         if (seen[c.group] === undefined) seen[c.group] = BX.defaultColor(c.group, idx++);
-        grp.add(new THREE.Mesh(p.geom, new THREE.MeshPhysicalMaterial({ color: new THREE.Color(p.filColor || seen[c.group]).convertSRGBToLinear(), roughness: 0.48, clearcoat: 0.6, clearcoatRoughness: 0.25, envMapIntensity: 0.28 * L })));
+        grp.add(new THREE.Mesh(p.geom, new THREE.MeshPhysicalMaterial({ color: softWhite(new THREE.Color(p.filColor || seen[c.group]).convertSRGBToLinear()), roughness: 0.48, clearcoat: 0.6, clearcoatRoughness: 0.25, envMapIntensity: 0.28 * L })));
       });
       grp.updateMatrixWorld(true);
       var bb = new THREE.Box3().setFromObject(grp), ctr = new THREE.Vector3(), sz = new THREE.Vector3(); bb.getCenter(ctr); bb.getSize(sz);
@@ -6800,6 +6835,7 @@ var DECO = (function () {
     loadDesign(e.name, raw, 0, objs, DESIGN.switch);
     var colOk = e.colorable && e.colorable.map(safeSlug);   // older saves may hold a plain reserved name like "body"
     if (colOk) S.groupOrder.forEach(function (g) { if (!onBox(g) && !SUB[g] && colOk.indexOf(g) < 0) S.locked[g] = true; });
+    if (colOk) colOk.forEach(function (g) { if (S.locked[g] && S.groups[g]) delete S.locked[g]; });
     if (colOk) {   // list the changeable colors in the character's own order (Fur, Skin, Eyes)
       var rank = function (g) { var k = colOk.indexOf(g); return k < 0 ? 99 : k; }, pos = {};
       S.groupOrder.forEach(function (g, k) { pos[g] = k; });
