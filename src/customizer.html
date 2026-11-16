@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Lilita+One&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
-<style>:root { --bg: #FBF9F0; --surface: #FFFFFF; --ink: #10302D; --muted: #5E6F6C; --line: #E7E4D6; --teal: #01948C; --teal-dark: #00716B; --teal-soft: #E3F4F2; --sun: #F9E11B; --sun-dark: #D8BF00; --sun-soft: #FFF6B8; --accent: #01948C; --accent-ink: #FFFFFF; --stage: #F1EFE4; --peg: #E6E6EA; --warn: #8A5A00; --soft: #F4F2E8; --lift-1: 0 1px 2px rgba(16, 48, 45, .07), 0 1px 1px rgba(16, 48, 45, .04); --lift-2: 0 1px 2px rgba(16, 48, 45, .05), 0 16px 36px -16px rgba(16, 48, 45, .22); color-scheme: light; box-sizing: border-box; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+<style>:root { --bg: #F4F6F7; --surface: #FFFFFF; --ink: #10302D; --muted: #5E6F6C; --line: #D7DEE0; --teal: #01948C; --teal-dark: #00716B; --teal-soft: #E3F4F2; --sun: #F9E11B; --sun-dark: #D8BF00; --sun-soft: #FFF6B8; --accent: #01948C; --accent-ink: #FFFFFF; --stage: #ECEFF0; --peg: #E6E6EA; --warn: #8A5A00; --soft: #EEF1F2; --lift-1: 0 1px 2px rgba(16, 48, 45, .07), 0 1px 1px rgba(16, 48, 45, .04); --lift-2: 0 1px 2px rgba(16, 48, 45, .05), 0 16px 36px -16px rgba(16, 48, 45, .22); color-scheme: light; box-sizing: border-box; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
 *, *::before, *::after { box-sizing: inherit; }
 html { height: 100%; scroll-padding-top: env(safe-area-inset-top, 0px); }
 body { margin: 0; min-height: 100%; color: var(--ink); font: 400 15px/1.5 "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif; }
@@ -224,7 +224,7 @@ details.card[open] > summary span { color: #FFFFFF !important; }
 .go:active:not(:disabled) { transform: translateY(5px); box-shadow: inset 0 3px 0 rgba(255,255,255,.6), 0 1px 0 var(--ink-dark) !important; }
 .dlmini { color: #FFFFFF !important; font-size: 14.5px !important; border: 3px solid var(--ink-dark) !important; box-shadow: inset 0 2px 0 rgba(255,255,255,.45), 0 4px 0 var(--ink-dark) !important; paint-order: stroke fill; }
 .dlmini svg { filter: drop-shadow(0 1.5px 0 var(--ink-dark)); }
-.ghost { background: linear-gradient(180deg, #FFFFFF, #E9E2CC) !important; border: 2px solid var(--ink-dark) !important; box-shadow: 0 3px 0 var(--ink-dark); font-weight: 700 !important; color: var(--ink-dark) !important; }
+.ghost { background: linear-gradient(180deg, #FFFFFF, #D7DEE0) !important; border: 2px solid var(--ink-dark) !important; box-shadow: 0 3px 0 var(--ink-dark); font-weight: 700 !important; color: var(--ink-dark) !important; }
 .switch { border: 2px solid var(--ink-dark) !important; background: #B9C3C0 !important; box-shadow: inset 0 2px 3px rgba(11,59,56,.3); }
 .switch::after { border: 2px solid var(--ink-dark); box-shadow: 0 2px 0 var(--ink-dark) !important; top: 1px !important; }
 input[type="range"] { -webkit-appearance: none; appearance: none; height: 12px; border-radius: 999px; background: var(--cream-dark); border: 2px solid var(--ink-dark); box-shadow: inset 0 2px 0 rgba(11,59,56,.2); }
@@ -253,7 +253,7 @@ input[type="text"]:focus { border-color: var(--teal) !important; }
 @media (prefers-reduced-motion: reduce) {
 .go:hover:not(:disabled), .go:active:not(:disabled) { transform: none; }
 }
-:root { --deep: #01403C; --deep2: #015A55; --royal: #1E6FD9; --royal-d: #0F4FA8; --fire: #FF6A00; --grass: #34C759; --grass-d: #1E8E3E; --parch: #FBEBC4; --parch-d: #E7CF97; --cream: #FBEBC4 !important; --cream-dark: #E7CF97 !important; }
+:root { --deep: #01403C; --deep2: #015A55; --royal: #1E6FD9; --royal-d: #0F4FA8; --fire: #FF6A00; --grass: #34C759; --grass-d: #1E8E3E; --parch: #E3E8E9; --parch-d: #B9C3C6; --cream: #E3E8E9 !important; --cream-dark: #B9C3C6 !important; }
 header p { color: #3B2A00 !important; }
 .note { color: #5B4A2A !important; }
 .field { color: var(--ink-dark) !important; }
@@ -273,10 +273,13 @@ header p { color: #3B2A00 !important; }
 .libtile.add { background: radial-gradient(circle at 50% 30%, #FFFFFF 0%, #5BE07A 60%, var(--grass-d) 100%) !important; color: #0B3B38 !important; }
 .chips2 button { background: #FFFFFF !important; color: var(--ink-dark) !important; }
 .tabs button { background: linear-gradient(180deg, #6E8A86, #445F5B) !important; }
-.seg { background: var(--parch-d) !important; }
-.chead { background: linear-gradient(180deg, #FFFFFF, #FBF1D8) !important; }
-.patgrid button, .emojigrid button { background: linear-gradient(180deg, #FFFFFF, #F6E6BC) !important; }
-.lightpop, .sizecard { background: linear-gradient(180deg, #FFF3D6, var(--parch)) !important; }
+.seg { background: linear-gradient(180deg, #8FA9A6 0%, #7A9692 47%, #5D7975 53%, #4A6460 100%) !important; border: 3px solid var(--ink-dark) !important; box-shadow: inset 0 2px 0 rgba(255,255,255,.3), 0 3px 0 var(--ink-dark) !important; }
+.seg button { color: #FFFFFF !important; text-shadow: 0 1px 0 rgba(0,0,0,.4); }
+.seg button:hover:not([aria-pressed="true"]) { background: rgba(255,255,255,.16) !important; }
+.seg button[aria-pressed="true"] { background: linear-gradient(180deg, #FFF09A 0%, #FFD84A 47%, #F7B500 53%, #E99E00 100%) !important; color: var(--ink-dark) !important; text-shadow: 0 1px 0 rgba(255,255,255,.5) !important; }
+.chead { background: linear-gradient(180deg, #FFFFFF, #E9EDEE) !important; }
+.patgrid button, .emojigrid button { background: linear-gradient(180deg, #FFFFFF, #E3E8E9) !important; }
+.lightpop, .sizecard { background: linear-gradient(180deg, #FFFFFF, #E3E8E9) !important; }
 .tbtn { background: linear-gradient(180deg, #FFFFFF, #CFE6FF) !important; }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .topbar { margin-left: auto; display: flex; flex-wrap: wrap; }
@@ -288,7 +291,7 @@ header p { color: #3B2A00 !important; }
 .modelname { position: absolute; left: 14px; bottom: 14px; z-index: 3; padding: 6px 16px 7px; border-radius: 14px; border: 3px solid var(--ink-dark); box-shadow: inset 0 2px 0 rgba(255,255,255,.6), 0 4px 0 var(--ink-dark); color: #FFFFFF; font: 400 22px "Lilita One", "Fredoka", sans-serif; letter-spacing: .5px; -webkit-text-stroke: 3.5px var(--ink-dark); paint-order: stroke fill; pointer-events: none; }
 .modelname:empty { display: none; }
 .modal { position: fixed; inset: 0; z-index: 50; background: rgba(1, 40, 37, .55); display: grid; place-items: center; padding: 16px; }
-.mpanel { width: min(560px, 100%); max-height: 86vh; overflow: auto; background: linear-gradient(180deg, #FFF3D6, #FBEBC4); border: 4px solid var(--ink-dark); border-radius: 22px; box-shadow: inset 0 0 0 4px #FFFFFF, 0 8px 0 var(--ink-dark); }
+.mpanel { width: min(560px, 100%); max-height: 86vh; overflow: auto; background: linear-gradient(180deg, #F4F6F7, #D7DEE0); border: 4px solid var(--ink-dark); border-radius: 22px; box-shadow: inset 0 0 0 4px #FFFFFF, 0 8px 0 var(--ink-dark); }
 .mhead { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: linear-gradient(180deg, #2FC4B8, var(--teal) 55%, #017A73); border-bottom: 3px solid var(--ink-dark); border-radius: 17px 17px 0 0; }
 .mhead b { color: #FFFFFF; font: 400 22px "Lilita One", sans-serif; -webkit-text-stroke: 3.5px var(--ink-dark); paint-order: stroke fill; }
 #modalClose { width: 34px; height: 34px; border-radius: 10px; border: 3px solid var(--ink-dark); background: linear-gradient(180deg, #FF7A5C, #E53935); color: #FFFFFF; font-weight: 800; cursor: pointer; box-shadow: 0 3px 0 var(--ink-dark); }
@@ -333,7 +336,7 @@ header p { color: #3B2A00 !important; }
 .progress { height: 16px; border: 3px solid var(--ink-dark); border-radius: 999px; background: var(--parch-d); overflow: hidden; }
 .progress i { display: block; height: 100%; background: linear-gradient(180deg, #6BEA7F, #34C759); }
 .badges { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 8px; margin: 12px 0; }
-.badge { border: 3px dashed var(--parch-d); border-radius: 14px; padding: 8px; text-align: center; color: #8A7A55; display: grid; gap: 2px; }
+.badge { border: 3px dashed var(--parch-d); border-radius: 14px; padding: 8px; text-align: center; color: #5E6E6C; display: grid; gap: 2px; }
 .badge b { font-size: 26px; filter: grayscale(1); opacity: .45; }
 .badge span { font: 400 15px "Lilita One", sans-serif; }
 .badge.got { border: 3px solid var(--ink-dark); background: linear-gradient(180deg, #FFF08A, #FFD23A); color: var(--ink-dark); box-shadow: 0 3px 0 var(--ink-dark); }
@@ -807,7 +810,7 @@ body { padding-bottom: 70px; }
 .sitebanner button { flex: none; width: 28px; height: 28px; border: 2px solid var(--ink-dark); border-radius: 8px; background: #FFFFFF; color: var(--ink-dark); font-weight: 800; cursor: pointer; }
 .maint { position: fixed; inset: 0; z-index: 200; display: grid; place-items: center; padding: 20px; background: radial-gradient(circle at 50% 30%, #0E7C7B, #063B3A); }
 .maint[hidden] { display: none; }
-.maint div { max-width: 420px; padding: 26px 24px; text-align: center; border: 3px solid var(--ink-dark); border-radius: 22px; background: #FFF8E1; box-shadow: 0 6px 0 var(--ink-dark); }
+.maint div { max-width: 420px; padding: 26px 24px; text-align: center; border: 3px solid var(--ink-dark); border-radius: 22px; background: #FFFFFF; box-shadow: 0 6px 0 var(--ink-dark); }
 .maint b { display: block; font: 400 32px "Lilita One", sans-serif; color: var(--ink-dark); }
 .maint p { margin: 8px 0 0; font: 600 15px/1.45 "Figtree", sans-serif; color: var(--ink-dark); }
 body.maint-admin::before { content: "Maintenance mode is on: members see a “Back soon” screen"; position: fixed; left: 50%; bottom: 8px; transform: translateX(-50%); z-index: 70; padding: 4px 12px; border: 2px solid var(--ink-dark); border-radius: 10px; background: #E53935; color: #FFFFFF; font: 700 12.5px "Figtree", sans-serif; }
@@ -1033,6 +1036,8 @@ body.maint-admin::before { content: "Maintenance mode is on: members see a “Ba
 .bbtrayoff { margin: 2px 0 4px; }
 .bbtrayoff[hidden] { display: none; }
 .bbtrayoff .bbsame { margin-left: 4px; }
+#nameSec .seg { grid-auto-columns: auto; grid-template-columns: 1.35fr 1fr 1fr; }
+#nameSec .seg button { padding-left: 4px !important; padding-right: 4px !important; white-space: nowrap; }
 </style>
 </head>
 <body>
@@ -1181,7 +1186,7 @@ body.maint-admin::before { content: "Maintenance mode is on: members see a “Ba
         <label class="field">Position on the back</label>
         <div class="seg" role="group" aria-label="Hook position">
           <button type="button" data-hook="left" aria-pressed="false">Left</button>
-          <button type="button" data-hook="center" aria-pressed="true">Centre</button>
+          <button type="button" data-hook="center" aria-pressed="true">Center</button>
           <button type="button" data-hook="right" aria-pressed="false">Right</button>
         </div>
         <p class="note">A loop on the back of the box, near the top, with a 4 mm hole for a key ring. Its underside is angled, so it prints upright with the box without supports.</p>
@@ -2664,7 +2669,7 @@ var DECO = (function () {
     });
   }
 
-  // ---------- animal icons (original designs, drawn on a 240 px canvas: fill = raised, cut = hole) ----------
+  // ---------- symbol icons (and the older animal icons, kept for saved designs; drawn on a 240 px canvas: fill = raised, cut = hole) ----------
   var ICONS = (function () {
     function C(c) {
       return {
@@ -2673,7 +2678,11 @@ var DECO = (function () {
         circ: function (x, y, r) { c.beginPath(); c.arc(x, y, r, 0, Math.PI * 2); c.fill(); return this; },
         ell: function (x, y, rx, ry, rot) { c.beginPath(); c.ellipse(x, y, rx, ry, rot || 0, 0, Math.PI * 2); c.fill(); return this; },
         poly: function (pts) { c.beginPath(); c.moveTo(pts[0][0], pts[0][1]); for (var i = 1; i < pts.length; i++) c.lineTo(pts[i][0], pts[i][1]); c.closePath(); c.fill(); return this; },
-        smile: function (x, y, r, w) { c.beginPath(); c.lineWidth = w; c.lineCap = 'round'; c.arc(x, y, r, Math.PI * 0.2, Math.PI * 0.8); c.stroke(); return this; }
+        smile: function (x, y, r, w) { c.beginPath(); c.lineWidth = w; c.lineCap = 'round'; c.arc(x, y, r, Math.PI * 0.2, Math.PI * 0.8); c.stroke(); return this; },
+        arcl: function (x, y, r, a0, a1, w) { c.beginPath(); c.lineWidth = w; c.lineCap = 'round'; c.arc(x, y, r, a0, a1); c.stroke(); return this; },
+        round: function (x, y, w, h, r) { c.beginPath(); c.moveTo(x + r, y); c.arcTo(x + w, y, x + w, y + h, r); c.arcTo(x + w, y + h, x, y + h, r); c.arcTo(x, y + h, x, y, r); c.arcTo(x, y, x + w, y, r); c.closePath(); c.fill(); return this; },
+        shape: function (f) { c.beginPath(); f(c); c.closePath(); c.fill(); return this; },
+        line: function (f, w) { c.beginPath(); c.lineWidth = w; c.lineCap = 'round'; c.lineJoin = 'round'; f(c); c.stroke(); return this; }
       };
     }
     function mirror(pts) { return pts.map(function (p) { return [240 - p[0], p[1]]; }); }
@@ -2756,13 +2765,65 @@ var DECO = (function () {
         d.cut().circ(62, 110, 14);
       }]
     ];
+    // symbol icons shown in the picker (bold shapes that print cleanly at 8 mm)
+    var symbols = [
+      ['crown', 'Crown', function (d) {
+        d.fill().poly([[30, 196], [26, 96], [78, 140], [120, 60], [162, 140], [214, 96], [210, 196]]).circ(26, 88, 20).circ(120, 50, 22).circ(214, 88, 20).round(26, 170, 188, 46, 14);
+        d.cut().circ(76, 193, 13).circ(120, 193, 13).circ(164, 193, 13);
+      }],
+      ['bolt', 'Lightning', function (d) { d.fill().poly([[150, 10], [42, 136], [110, 136], [86, 230], [200, 96], [130, 96], [158, 10]]); }],
+      ['music', 'Music', function (d) {
+        d.fill().ell(68, 188, 38, 29, -0.35).ell(180, 166, 38, 29, -0.35).round(90, 52, 22, 136, 6).round(202, 30, 22, 136, 6).poly([[90, 52], [224, 26], [224, 70], [90, 96]]);
+      }],
+      ['gamepad', 'Gamepad', function (d) {
+        d.fill().round(18, 72, 204, 100, 50).ell(62, 168, 46, 50).ell(178, 168, 46, 50);
+        d.cut().round(42, 112, 54, 18, 5).round(60, 94, 18, 54, 5).circ(168, 104, 14).circ(194, 132, 14);
+      }],
+      ['rocket', 'Rocket', function (d) {
+        d.fill().shape(function (c) { c.moveTo(120, 8); c.bezierCurveTo(176, 52, 176, 140, 160, 186); c.lineTo(80, 186); c.bezierCurveTo(64, 140, 64, 52, 120, 8); })
+          .poly([[84, 128], [30, 200], [30, 222], [86, 186]]).poly([[156, 128], [210, 200], [210, 222], [154, 186]]).round(92, 184, 56, 24, 8);
+        d.cut().circ(120, 98, 22);
+        d.fill().poly([[100, 214], [140, 214], [120, 236]]);
+      }],
+      ['gem', 'Gem', function (d) {
+        d.fill().poly([[62, 40], [178, 40], [228, 100], [120, 224], [12, 100]]);
+        d.cut().poly([[30, 88], [210, 88], [200, 108], [40, 108]]).poly([[106, 40], [134, 40], [120, 76]]);
+      }],
+      ['flame', 'Flame', function (d) {
+        d.fill().shape(function (c) { c.moveTo(120, 10); c.bezierCurveTo(152, 68, 210, 96, 202, 160); c.bezierCurveTo(196, 208, 160, 230, 120, 230); c.bezierCurveTo(80, 230, 42, 208, 38, 160); c.bezierCurveTo(34, 112, 70, 96, 80, 56); c.bezierCurveTo(96, 88, 104, 102, 112, 106); c.bezierCurveTo(106, 70, 110, 40, 120, 10); });
+        d.cut().shape(function (c) { c.moveTo(120, 112); c.bezierCurveTo(142, 142, 162, 160, 158, 188); c.bezierCurveTo(154, 210, 138, 216, 120, 216); c.bezierCurveTo(102, 216, 86, 210, 82, 188); c.bezierCurveTo(80, 162, 104, 150, 120, 112); });
+      }],
+      ['mushroom', 'Mushroom', function (d) {
+        d.fill().shape(function (c) { c.moveTo(12, 132); c.bezierCurveTo(12, 30, 228, 30, 228, 132); c.lineTo(12, 132); }).round(84, 118, 72, 108, 28);
+        d.cut().circ(76, 92, 18).circ(146, 70, 20).circ(184, 108, 14).round(70, 132, 100, 14, 7);
+      }],
+      ['ghost', 'Ghost', function (d) {
+        d.fill().shape(function (c) { c.moveTo(34, 228); c.lineTo(34, 120); c.arc(120, 120, 86, Math.PI, 0); c.lineTo(206, 228); c.lineTo(178, 200); c.lineTo(149, 228); c.lineTo(120, 200); c.lineTo(91, 228); c.lineTo(62, 200); });
+        d.cut().ell(90, 116, 17, 24).ell(150, 116, 17, 24);
+      }],
+      ['cherries', 'Cherries', function (d) {
+        d.fill().line(function (c) { c.moveTo(68, 150); c.quadraticCurveTo(92, 78, 150, 34); c.moveTo(172, 150); c.quadraticCurveTo(162, 86, 150, 34); }, 17)
+          .circ(66, 178, 48).circ(174, 178, 48).ell(182, 42, 38, 19, -0.45);
+        d.cut().circ(48, 162, 11).circ(156, 162, 11);
+      }],
+      ['sun', 'Sun', function (d) {
+        d.fill().circ(120, 120, 62);
+        for (var i = 0; i < 8; i++) { var a = i * Math.PI / 4, ca = Math.cos(a), sa = Math.sin(a), px = -sa, py = ca;
+          d.poly([[120 + ca * 78 + px * 20, 120 + sa * 78 + py * 20], [120 + ca * 116, 120 + sa * 116], [120 + ca * 78 - px * 20, 120 + sa * 78 - py * 20]]); }
+        d.cut().ell(100, 110, 9, 13).ell(140, 110, 9, 13).arcl(120, 124, 28, Math.PI * 0.2, Math.PI * 0.8, 12);
+      }],
+      ['clover', 'Clover', function (d) {
+        d.fill().circ(84, 84, 42).circ(156, 84, 42).circ(84, 156, 42).circ(156, 156, 42).line(function (c) { c.moveTo(130, 150); c.quadraticCurveTo(170, 190, 168, 228); }, 18);
+        d.cut().circ(120, 120, 12);
+      }]
+    ];
     function draw(ctx, kind, sizePx, color) {
-      var it = list.filter(function (x) { return x[0] === kind; })[0]; if (!it) return;
+      var it = symbols.concat(list).filter(function (x) { return x[0] === kind; })[0]; if (!it) return;   // animals: only for older saved designs
       ctx.save(); ctx.clearRect(0, 0, sizePx, sizePx); ctx.scale(sizePx / 240, sizePx / 240);
       ctx.fillStyle = color || '#000'; ctx.strokeStyle = color || '#000';
       it[2](C(ctx)); ctx.restore(); ctx.globalCompositeOperation = 'source-over';
     }
-    return { list: list, draw: draw };
+    return { list: symbols, draw: draw };
   })();
 
   // ---------- emoji faces (original designs from simple shapes; fill = raised, cut = hole) ----------
@@ -2798,7 +2859,7 @@ var DECO = (function () {
     ];
     function draw(ctx, kind, sizePx, color) {
       var it = list.filter(function (x) { return x[0] === kind; })[0];
-      if (!it) { ICONS.draw(ctx, kind, sizePx, color); return; }   // animal icons share this picker
+      if (!it) { ICONS.draw(ctx, kind, sizePx, color); return; }   // symbol icons share this picker
       ctx.save(); ctx.clearRect(0, 0, sizePx, sizePx); ctx.scale(sizePx / 240, sizePx / 240);
       ctx.fillStyle = color || '#000'; ctx.strokeStyle = color || '#000';
       it[2](C(ctx)); ctx.restore(); ctx.globalCompositeOperation = 'source-over';
