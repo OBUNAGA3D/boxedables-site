@@ -736,6 +736,8 @@ body { padding-bottom: 70px; }
 .gpanel .planest { background: #FFFFFF; border: 3px solid var(--ink-dark); border-left: 9px solid #F7B500; color: var(--ink-dark); box-shadow: 0 3px 0 var(--ink-dark); }
 .gpanel .planwarn { background: #FFFFFF; border: 3px solid var(--ink-dark); border-left: 9px solid #E53935; color: #8A1C14; box-shadow: 0 3px 0 var(--ink-dark); }
 .gpanel .slots li small { color: #4E6663; }
+.go.gook, .go.gook:disabled { opacity: 1 !important; cursor: default; background: linear-gradient(180deg, #9BF0A8 0%, #6BEA7F 47%, #34C759 53%, #239C45 100%) !important; box-shadow: inset 0 3px 0 rgba(255,255,255,.6), inset 0 -4px 0 rgba(0,90,30,.35), 0 6px 0 var(--ink-dark) !important; animation: acpop .3s ease-out; }
+.galdel.gook, .gpanel .galdel.gook { color: #FFFFFF; background: linear-gradient(180deg, #9BF0A8 0%, #6BEA7F 47%, #34C759 53%, #239C45 100%); text-shadow: 0 1px 0 rgba(0,0,0,.3); }
 .acctpic { display: block; width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
 @media (max-width: 760px) { .memrow { grid-template-columns: 34px 1fr auto; } .memrow .memx { display: none; } }
 .fbhead { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
@@ -3911,6 +3913,12 @@ var DECO = (function () {
     });
   });
   // each section title (and what follows it, up to the next title) goes into its own white card
+  // a save button turns green with a tick for a moment after saving
+  function goFlash(b) {
+    if (!b) return; var t = b.dataset.label || b.textContent; b.dataset.label = t;
+    clearTimeout(b._gook); b.classList.add('gook'); b.textContent = 'Saved \u2713';
+    b._gook = setTimeout(function () { b.classList.remove('gook'); b.textContent = t; }, 1800);
+  }
   function cardify(body) {
     var kids = [].slice.call(body.children), card = null;
     kids.forEach(function (k) {
@@ -4292,7 +4300,7 @@ var DECO = (function () {
       if (!nmI.value.trim()) { go(3); nmI.focus(); return Promise.reject(new Error('no-name')); }
       var label = goBtn.textContent; goBtn.disabled = true; goBtn.textContent = opts.mode === 'new' ? 'Publishing\u2026' : 'Saving\u2026'; msg.textContent = ''; report('saving');
       return opts.save(collect()).then(function (m) {
-        published = true; msg.textContent = m; goBtn.textContent = opts.mode === 'new' ? 'Published \u2713' : 'Saved \u2713'; anyway.hidden = true;
+        published = true; msg.textContent = m; goBtn.textContent = opts.mode === 'new' ? 'Published \u2713' : 'Saved \u2713'; goBtn.classList.add('gook'); anyway.hidden = true;
         report('published', { thumb: thumb, name: nmI.value.trim() });
       }).catch(function (e) {
         goBtn.disabled = false; goBtn.textContent = label; report(levelOf() === 'ok' ? 'ready' : levelOf() === 'bad' ? 'problem' : 'attention');
@@ -4397,7 +4405,7 @@ var DECO = (function () {
       done(docs.length ? '' : 'Nothing published yet. Characters you publish here appear next to King Kong.');
       var nowT = Date.now(), nLive = docs.filter(function (d) { var x = d.data(); return x.published && !(x.releaseAt && x.releaseAt > nowT); }).length;
       var nHid = docs.filter(function (d) { return !d.data().published; }).length, nSch = docs.filter(function (d) { var x = d.data(); return x.published && x.releaseAt && x.releaseAt > nowT; }).length;
-      host.appendChild(el('p', 'chsum', (docs.length + 1) + ' characters \u00b7 ' + (nLive + 1) + ' live' + (nSch ? ' \u00b7 ' + nSch + ' scheduled' : '') + (nHid ? ' \u00b7 ' + nHid + ' hidden' : '') + '. Drag a card to change the order.'));
+      host.appendChild(el('p', 'chsum', (docs.length + 1) + (docs.length ? ' characters' : ' character') + ' \u00b7 ' + (nLive + 1) + ' live' + (nSch ? ' \u00b7 ' + nSch + ' scheduled' : '') + (nHid ? ' \u00b7 ' + nHid + ' hidden' : '') + (docs.length > 1 ? '. Drag a card to change the order.' : '.')));
       var dlCells = {}, dragFrom = null;
       function statCell(name) { var st = el('div', 'chstat'), b = el('b', '', '\u2026'); st.appendChild(b); st.appendChild(el('small', '', 'downloads')); dlCells[String(name || '').toLowerCase()] = b; return st; }
       // King Kong (No. 1) is stored in the database like the others, but always comes first and can't be hidden or deleted: only his print note and rest height change here
@@ -4420,7 +4428,7 @@ var DECO = (function () {
           kp.appendChild(l); kp.appendChild(i); kp.appendChild(el('p', 'note', 'Leave it empty for no note card.')); kp.appendChild(rl); kp.appendChild(ri); kp.appendChild(sv); kp.appendChild(m);
           sv.addEventListener('click', function () {
             var n = i.value.trim(), rv = Math.max(0, Math.min(12, parseFloat(ri.value))); if (isNaN(rv)) rv = 5; sv.disabled = true;
-            DBX.collection('characters').doc('_kingkong').set({ note: n, rest: rv, updated: Date.now() }).then(function () { builtInSet({ note: n, rest: rv }); m.textContent = 'Saved. The preview and downloads use it now.'; })
+            DBX.collection('characters').doc('_kingkong').set({ note: n, rest: rv, updated: Date.now() }).then(function () { builtInSet({ note: n, rest: rv }); m.textContent = 'Saved. The preview and downloads use it now.'; goFlash(sv); })
               .catch(function () { m.textContent = 'That didn\u2019t work. Try again.'; }).then(function () { sv.disabled = false; });
           });
         });
@@ -4709,7 +4717,7 @@ var DECO = (function () {
     body.appendChild(el('b', 'admsub', 'Blocked words'));
     var wl = el('label', 'field', 'Words members can\u2019t send (separate with commas). Existing messages show them as ****.'), wi = el('textarea', 'fbtext'); wi.id = 'admWords'; wi.rows = 2; wi.value = ADM.mod.words.join(', '); wl.htmlFor = wi.id;
     var ws = el('button', 'galdel', 'Save words'); ws.type = 'button';
-    ws.addEventListener('click', function () { var mod = { muted: ADM.mod.muted, banned: ADM.mod.banned, words: wi.value.split(',').map(function (x) { return x.trim(); }).filter(Boolean) }; admSave({ mod: mod }).then(function () { toast('Blocked words saved.'); if (CHAT.loaded) chatRender(); }).catch(function () { toast('Couldn\u2019t save.'); }); });
+    ws.addEventListener('click', function () { var mod = { muted: ADM.mod.muted, banned: ADM.mod.banned, words: wi.value.split(',').map(function (x) { return x.trim(); }).filter(Boolean) }; admSave({ mod: mod }).then(function () { toast('Blocked words saved.'); goFlash(ws); if (CHAT.loaded) chatRender(); }).catch(function () { toast('Couldn\u2019t save.'); }); });
     body.appendChild(wl); body.appendChild(wi); body.appendChild(ws);
     body.appendChild(el('b', 'admsub', 'Community gallery'));
     var gl = el('div', 'modgal'); body.appendChild(gl); var gd = loading(gl, 'Loading designs\u2026');
@@ -4754,7 +4762,7 @@ var DECO = (function () {
     sv.addEventListener('click', function () {
       var picked = [].slice.call(sw.querySelectorAll('input:checked')).map(function (c) { return c.value; });
       var ns = { banner: { on: bOn.checked, text: bt.value.trim(), tone: ts.value }, maintenance: mOn.checked, musicDefault: mu.checked ? 'on' : 'off', boxPool: picked };
-      sv.disabled = true; admSave({ settings: ns }).then(function () { applySiteSettings(); msg.textContent = 'Saved. Open pages update right away.'; }).catch(function () { msg.textContent = 'Couldn\u2019t save. Try again.'; }).then(function () { sv.disabled = false; });
+      sv.disabled = true; admSave({ settings: ns }).then(function () { applySiteSettings(); msg.textContent = 'Saved. Open pages update right away.'; goFlash(sv); }).catch(function () { msg.textContent = 'Couldn\u2019t save. Try again.'; }).then(function () { sv.disabled = false; });
     });
   }
 
