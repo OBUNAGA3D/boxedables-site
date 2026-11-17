@@ -1072,6 +1072,26 @@ body.maint-admin::before { content: "Maintenance mode is on: members see a “Ba
 details.card > summary.flash { animation: sumFlash 1.2s ease-out; }
 @keyframes sumFlash { 0%, 40% { box-shadow: 0 0 0 4px #FFD84A, 0 0 18px 4px rgba(255,216,74,.8); } 100% { box-shadow: 0 0 0 0 rgba(255,216,74,0); } }
 @media (prefers-reduced-motion: reduce) { details.card > summary.flash { animation: none; outline: 4px solid #FFD84A; } }
+
+.paneltog { display: none; }
+@media (min-width: 1100px) {
+.wrap.floatui { grid-template-columns: minmax(0, 1fr); max-width: 1680px; }
+.wrap.floatui > .stagecol { grid-column: 1; grid-row: 2; }
+.wrap.floatui > .side { grid-column: 1; grid-row: 2; justify-self: end; align-self: start; position: sticky; top: calc(env(safe-area-inset-top, 0px) + 118px); z-index: 8; width: 390px; max-width: 390px; margin-right: 14px; max-height: calc(100vh - 242px); min-height: 0; overflow-y: auto; overscroll-behavior: contain; border-radius: 24px; scrollbar-width: thin; scrollbar-color: rgba(11,59,56,.55) transparent; transition: transform .32s cubic-bezier(.2,.8,.2,1), opacity .25s, visibility 0s linear 0s; filter: drop-shadow(0 18px 24px rgba(0,0,0,.35)); }
+.wrap.floatui > .side::-webkit-scrollbar { width: 8px; }
+.wrap.floatui > .side::-webkit-scrollbar-thumb { background: rgba(11,59,56,.55); border-radius: 8px; }
+.wrap.floatui.panelhid > .side { transform: translateX(calc(100% + 30px)); opacity: 0; visibility: hidden; pointer-events: none; transition: transform .32s cubic-bezier(.4,0,.6,1), opacity .25s, visibility 0s linear .32s; }
+.wrap.floatui .stage .clicks, .wrap.floatui .stage .sizecard { transition: right .32s cubic-bezier(.2,.8,.2,1); }
+.wrap.floatui:not(.panelhid) .stage .clicks, .wrap.floatui:not(.panelhid) .stage .sizecard { right: 432px; }
+.wrap.floatui .paneltog { display: inline-flex; position: absolute; top: 14px; right: 432px; z-index: 6; align-items: center; gap: 6px; padding: 7px 13px 7px 10px; border: 3px solid var(--ink-dark); border-radius: 14px; background: linear-gradient(180deg, #FFFFFF, #D7DEE0); color: var(--ink-dark); font: 400 15px "Lilita One", "Fredoka", sans-serif; box-shadow: inset 0 2px 0 rgba(255,255,255,.7), 0 4px 0 var(--ink-dark); cursor: pointer; transition: right .32s cubic-bezier(.2,.8,.2,1), transform .08s, box-shadow .08s; }
+.wrap.floatui.panelhid .paneltog { right: 14px; background: linear-gradient(180deg, #FFF09A 0%, #FFD84A 47%, #F7B500 53%, #E99E00 100%); }
+.wrap.floatui .paneltog .pt-a { transform-origin: 10.25px 12px; transition: transform .25s; }
+.wrap.floatui.panelhid .paneltog .pt-a { transform: scaleX(-1); }
+.wrap.floatui .paneltog:hover { filter: brightness(1.04); }
+.wrap.floatui .paneltog:active { transform: translateY(3px); box-shadow: inset 0 2px 0 rgba(255,255,255,.7), 0 1px 0 var(--ink-dark); }
+.wrap.floatui .paneltog:focus-visible { outline: 3px solid #FFD84A; outline-offset: 2px; }
+}
+@media (min-width: 1100px) and (prefers-reduced-motion: reduce) { .wrap.floatui > .side, .wrap.floatui .paneltog, .wrap.floatui .stage .clicks { transition: none !important; } }
 </style>
 </head>
 <body>
@@ -1132,6 +1152,7 @@ details.card > summary.flash { animation: sumFlash 1.2s ease-out; }
       <button type="button" class="tbtn" id="undoBtn" aria-label="Undo (Ctrl+Z)" data-tip="Undo" disabled><svg viewBox="0 0 24 24" width="21" height="21" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg></button>
       <button type="button" class="tbtn" id="redoBtn" aria-label="Redo (Ctrl+Shift+Z)" data-tip="Redo" disabled><svg viewBox="0 0 24 24" width="21" height="21" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m15 14 5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13"/></svg></button>
     </div>
+    <button type="button" class="paneltog" id="panelTog" aria-pressed="false" aria-label="Hide the settings panel"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M14.5 4v16" stroke="currentColor" stroke-width="2.4"/><path class="pt-a" d="M9 9.5 11.5 12 9 14.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Hide panel</span></button>
     <div class="lightpop" id="lightPop" hidden>
       <b>Studio light</b>
       <label class="field" for="lightDir">Direction</label>
@@ -2214,7 +2235,8 @@ var DECO = (function () {
   var size = new THREE.Vector3(60, 60, 60), viewDir = new THREE.Vector3(0.38, 0.2, 0.9).normalize();
   function frame() {
     var t = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)), w = Math.max(size.x, size.z), h = size.y;
-    var d = Math.max(h / (2 * t), w / (2 * t * camera.aspect)) * 1.35 + Math.max(w, h) * 0.6;
+    var asp = camera.aspect * Math.max(0.35, 1 - VIEW.cover / Math.max(1, stage.clientWidth));   // the open part of the preview
+    var d = Math.max(h / (2 * t), w / (2 * t * asp)) * 1.35 + Math.max(w, h) * 0.6;
     // only the first view is set automatically: after that the camera stays where the member left it
     if (!frame.done || !S.parts.length) {
       controls.target.set(0, h / 2, 0);
@@ -2228,7 +2250,9 @@ var DECO = (function () {
     key.shadow.camera.far = r * 5; key.shadow.camera.updateProjectionMatrix();
     rim.position.set(-r, r * 0.6, -r);
   }
-  function resize() { var w = stage.clientWidth, h = stage.clientHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); frame(); }
+  var VIEW = { cover: 0 };   // px of the preview's right side covered by the floating panel
+  function applyCover() { var w = stage.clientWidth, h = stage.clientHeight; if (VIEW.cover > 0.5) camera.setViewOffset(w, h, VIEW.cover / 2, 0, w, h); else camera.clearViewOffset(); camera.updateProjectionMatrix(); }
+  function resize() { var w = stage.clientWidth, h = stage.clientHeight; renderer.setSize(w, h, false); camera.aspect = w / h; if (typeof panelCover === 'function') VIEW.cover = panelCover(); applyCover(); frame(); }
   new ResizeObserver(resize).observe(stage);
   // ---------- measurements ----------
   var measureOn = false, dimGroup = new THREE.Group(), dimLabels = document.getElementById('dimLabels'), sizeCard = document.getElementById('sizeCard');
@@ -5263,6 +5287,31 @@ var DECO = (function () {
     function sync() { col.classList.toggle('chatopen', ch.classList.contains('open')); }
     new MutationObserver(sync).observe(ch, { attributes: true, attributeFilter: ['class'] }); sync();
   })();
+
+
+  // ---------- big screens: full-width preview with the settings panel floating over its right side ----------
+  var FLOAT_MQ = window.matchMedia('(min-width: 1100px)'), wrapEl = document.querySelector('.wrap'), sideEl = document.querySelector('.side'), panelTog = document.getElementById('panelTog');
+  var panelHidden = false; try { panelHidden = localStorage.getItem('bx-panelhid') === '1'; } catch (e) {}
+  function panelCover() { return FLOAT_MQ.matches && !panelHidden && sideEl ? sideEl.offsetWidth + 28 : 0; }
+  var coverAnim = 0;
+  function slideCover() {
+    var from = VIEW.cover, to = panelCover(), t0 = performance.now(); cancelAnimationFrame(coverAnim);
+    (function step(now) {
+      var k = reduce ? 1 : Math.min(1, (now - t0) / 320); k = k * k * (3 - 2 * k);
+      VIEW.cover = from + (to - from) * k; applyCover();
+      if (k < 1) coverAnim = requestAnimationFrame(step);
+    })(t0);
+  }
+  function syncPanel() {
+    wrapEl.classList.toggle('floatui', FLOAT_MQ.matches); wrapEl.classList.toggle('panelhid', FLOAT_MQ.matches && panelHidden);
+    panelTog.setAttribute('aria-pressed', String(panelHidden)); panelTog.setAttribute('aria-label', panelHidden ? 'Show the settings panel' : 'Hide the settings panel');
+    panelTog.querySelector('span').textContent = panelHidden ? 'Show panel' : 'Hide panel';
+    if (sideEl) { if (FLOAT_MQ.matches && panelHidden) sideEl.setAttribute('inert', ''); else sideEl.removeAttribute('inert'); }
+    slideCover();
+  }
+  panelTog.addEventListener('click', function () { panelHidden = !panelHidden; try { localStorage.setItem('bx-panelhid', panelHidden ? '1' : '0'); } catch (e) {} syncPanel(); });
+  (FLOAT_MQ.addEventListener ? FLOAT_MQ.addEventListener.bind(FLOAT_MQ, 'change') : FLOAT_MQ.addListener.bind(FLOAT_MQ))(function () { syncPanel(); resize(); });
+  syncPanel();
 
   // ---------- polish: splash, first-visit tips, sounds, confetti, reset view ----------
   var REDUCE_MOTION = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
