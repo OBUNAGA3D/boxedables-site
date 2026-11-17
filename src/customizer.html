@@ -2311,8 +2311,14 @@ var DECO = (function () {
   // ---------- highlight roll-off: colors stay as they are, only the brightest light is softened so white keeps its shading ----------
   if (THREE.ShaderChunk && THREE.CustomToneMapping) THREE.ShaderChunk.tonemapping_pars_fragment = THREE.ShaderChunk.tonemapping_pars_fragment.replace(
     'vec3 CustomToneMapping( vec3 color ) { return color; }',
-    'vec3 CustomToneMapping( vec3 color ) { color *= toneMappingExposure; vec3 k = vec3( 0.72 ); vec3 o = max( color - k, 0.0 ); return min( color, k ) + 0.28 * ( 1.0 - exp( -o / 0.28 ) ); }');
+    'vec3 CustomToneMapping( vec3 color ) { color *= toneMappingExposure; float L = dot( color, vec3( 0.2126, 0.7152, 0.0722 ) ); float k = 0.7; float Lm = L <= k ? L : k + ( 1.0 - k ) * ( 1.0 - exp( -( L - k ) / ( 1.0 - k ) ) ); vec3 c = color * ( Lm / max( L, 1e-5 ) ); float m = max( max( c.r, c.g ), c.b ); if ( m > 1.0 ) c = mix( c / m, vec3( 1.0 ), clamp( ( m - 1.0 ) * 0.5, 0.0, 0.5 ) ); return c; }');
   var SOFT_TONE = THREE.CustomToneMapping || THREE.NoToneMapping;
+  if (THREE.ShaderChunk) {   // ambient occlusion stored on the shapes (see AO below)
+    THREE.ShaderChunk.color_pars_vertex += '\n#ifdef USE_OCCL\nattribute float occl;\nvarying float vOccl;\n#endif\n';
+    THREE.ShaderChunk.color_vertex += '\n#ifdef USE_OCCL\nvOccl = occl;\n#endif\n';
+    THREE.ShaderChunk.color_pars_fragment += '\n#ifdef USE_OCCL\nvarying float vOccl;\n#endif\n';
+    THREE.ShaderChunk.aomap_fragment += '\n#ifdef USE_OCCL\nfloat occAO = 1.0 - vOccl;\nreflectedLight.indirectDiffuse *= occAO;\nreflectedLight.indirectSpecular *= mix( 1.0, occAO, 0.6 );\nreflectedLight.directDiffuse *= mix( 1.0, occAO, 0.5 );\n#endif\n';
+  }
   // ---------- scene ----------
   var stage = document.getElementById('stage');
   var renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -2328,9 +2334,31 @@ var DECO = (function () {
   var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   controls.autoRotate = !reduce; controls.autoRotateSpeed = 0.8;
   controls.addEventListener('start', function () { controls.autoRotate = false; });
-  if (THREE.RoomEnvironment) {
+  // a photo studio for reflections: soft grey sweep, a big key softbox above the front, a long strip light on the left, a rim light behind, a gentle fill
+  function studioScene() {
+    var sc = new THREE.Scene(), box = new THREE.BoxGeometry(1, 1, 1);
+    var dg = new THREE.SphereGeometry(50, 32, 16), pos = dg.getAttribute('position'), col = [];
+    for (var i = 0; i < pos.count; i++) {   // soft grey sweep: dark floor, mid walls, lighter ceiling
+      var t = pos.getY(i) / 50 * 0.5 + 0.5, v = t < 0.5 ? 0.025 + (0.07 - 0.025) * Math.min(1, Math.max(0, (t - 0.3) / 0.2)) : 0.07 + (0.11 - 0.07) * (t - 0.5) / 0.5;
+      col.push(v, v * 1.04, v * 1.08);
+    }
+    dg.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
+    var dome = new THREE.Mesh(dg, new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.BackSide, depthWrite: false }));
+    sc.add(dome);
+    function light(w, h, d, pos, look, inten, tint) {
+      var m = new THREE.Mesh(box, new THREE.MeshBasicMaterial({ color: new THREE.Color(tint || 0xffffff).multiplyScalar(inten) }));
+      m.scale.set(w, h, d); m.position.set(pos[0], pos[1], pos[2]); m.lookAt(look[0], look[1], look[2]); sc.add(m);
+    }
+    light(16, 10, 0.2, [6, 16, 12], [0, 0, 0], 0.55, 0xfff6ec);     // key softbox, above and to the front right
+    light(2.2, 20, 0.2, [-15, 6, 4], [0, 2, 0], 0.5, 0xf2f7ff);     // tall strip on the left: long clean highlights on the edges
+    light(18, 3, 0.2, [0, 10, -16], [0, 0, 0], 0.4, 0xe6f2ff);       // rim light behind
+    light(10, 6, 0.2, [-8, 2, 15], [0, 2, 0], 0.14, 0xffffff);        // soft fill in front
+    light(14, 0.6, 14, [0, 22, 0], [0, 0, 0], 0.1, 0xffffff);        // a little top light
+    return sc;
+  }
+  if (THREE.PMREMGenerator) {
     var pmrem = new THREE.PMREMGenerator(renderer);
-    scene.environment = pmrem.fromScene(new THREE.RoomEnvironment(), 0.04).texture;
+    scene.environment = pmrem.fromScene(studioScene(), 0.035).texture;
   }
   var hemi = new THREE.HemisphereLight(0xffffff, 0xb9b4d8, 0.35); scene.add(hemi);
   var key = new THREE.DirectionalLight(0xffffff, 1.6); key.castShadow = true; key.shadow.mapSize.set(2048, 2048); key.shadow.bias = -0.0004; key.shadow.radius = 7; scene.add(key);
@@ -2385,7 +2413,7 @@ var DECO = (function () {
     key.shadow.camera.far = r * 5; key.shadow.camera.updateProjectionMatrix();
     rim.position.set(-r, r * 0.6, -r);
   }
-  var SHELF = { open: false, quiet: false };   // the saved-designs shelf (built further down)
+  var SHELF = { open: false, quiet: false }, AO = null;   // the saved-designs shelf (built further down)
   var VIEW = { cover: 0 };   // px of the preview's right side covered by the floating panel
   function applyCover() { var w = stage.clientWidth, h = stage.clientHeight; if (VIEW.cover > 0.5) camera.setViewOffset(w, h, VIEW.cover / 2, 0, w, h); else camera.clearViewOffset(); camera.updateProjectionMatrix(); }
   function resize() { var w = stage.clientWidth, h = stage.clientHeight; renderer.setSize(w, h, false); camera.aspect = w / h; if (typeof panelCover === 'function') VIEW.cover = panelCover(); applyCover(); frame(); }
@@ -2520,6 +2548,7 @@ var DECO = (function () {
   }
   (function loop() {
     if (SHELF.open) { requestAnimationFrame(loop); return; }   // the shelf draws with the same renderer while it's open
+    if (AO) AO.tick();
     applyHide(); fadePlate(); tapAnim(performance.now()); rigTick(performance.now()); placeBubble(); if (placeChar.need !== S.parts) { placeChar.need = S.parts; placeChar(); }
     if (Math.abs(liftTarget - lift) > 0.01) applyLift(reduce ? liftTarget : lift + (liftTarget - lift) * 0.14);
     if (Math.abs(liftTarget - lift) > 0.01 && measureOn) dimsDirty = true;
@@ -3662,6 +3691,108 @@ var DECO = (function () {
     });
   }
 
+
+  // ---------- ambient occlusion: soft shading where parts meet, worked out once per design and kept on the shapes ----------
+  // The design is drawn as depth pictures from about 40 directions; each point of every shape counts how many of those
+  // directions can see it. Directions under the floor count as blocked. It runs a moment after the design stops changing.
+  AO = (function () {
+    var RES = 256, rt = new THREE.WebGLRenderTarget(RES, RES), buf = new Uint8Array(RES * RES * 4), aoScene = new THREE.Scene();
+    aoScene.overrideMaterial = new THREE.MeshDepthMaterial({ depthPacking: THREE.RGBADepthPacking, side: THREE.DoubleSide });
+    var UP = [], DOWN = [], n = 64, ga = Math.PI * (3 - Math.sqrt(5));
+    for (var i = 0; i < n; i++) { var y = 1 - (i + 0.5) / n * 2, r = Math.sqrt(1 - y * y), d = new THREE.Vector3(Math.cos(ga * i) * r, y, Math.sin(ga * i) * r); (y < -0.3 ? DOWN : UP).push(d); }
+    var sig = '', timer = 0, job = null, ok = true, frameN = 0;
+    function meshes() {
+      var out = [];
+      model.traverse(function (m) {
+        if (!m.isMesh || !m.geometry || !m.geometry.getAttribute('position') || m.isInstancedMesh) return;
+        for (var o = m; o && o !== model; o = o.parent) if (o === bbGroup || o === trGroup || o === dbGroup || !o.visible) return;
+        out.push(m);
+      });
+      return out;
+    }
+    function ensure(list) {   // new shapes get an empty shading right away, so nothing ever draws without it
+      list.forEach(function (m) {
+        var g = m.geometry; if (!g.getAttribute('occl')) g.setAttribute('occl', new THREE.BufferAttribute(new Float32Array(g.getAttribute('position').count), 1));
+        (Array.isArray(m.material) ? m.material : [m.material]).forEach(function (mt) {
+          if (!mt || !(mt.isMeshStandardMaterial || mt.isMeshPhongMaterial || mt.isMeshLambertMaterial || mt.isMeshBasicMaterial)) return;
+          if (!mt.defines || !('USE_OCCL' in mt.defines)) { mt.defines = Object.assign({}, mt.defines || {}, { USE_OCCL: '' }); mt.needsUpdate = true; }
+        });
+      });
+    }
+    function start() {
+      var list = meshes(); if (!list.length || !ok) return;
+      ensure(list); model.updateMatrixWorld(true);
+      var box = new THREE.Box3(); list.forEach(function (m) { box.expandByObject(m); }); if (box.isEmpty()) return;
+      var c = box.getCenter(new THREE.Vector3()), R = box.getSize(new THREE.Vector3()).length() / 2 + 1, range = 4 * R;
+      var hid = [bbGroup, trGroup, dbGroup].filter(function (g) { return g && g.visible; }); hid.forEach(function (g) { g.visible = false; });
+      var par = model.parent, prevRT = renderer.getRenderTarget(), prevC = renderer.getClearColor(new THREE.Color()).getHex(), prevA = renderer.getClearAlpha(), prevAuto = renderer.shadowMap.autoUpdate;
+      var maps = [];
+      try {
+        aoScene.add(model); renderer.shadowMap.autoUpdate = false;
+        UP.forEach(function (d) {
+          var cam = new THREE.OrthographicCamera(-R, R, R, -R, 0.1, range);
+          cam.position.copy(c).addScaledVector(d, 2 * R); if (Math.abs(d.y) > 0.95) cam.up.set(1, 0, 0); else cam.up.set(0, 1, 0);
+          cam.lookAt(c); cam.updateMatrixWorld(); cam.updateProjectionMatrix();
+          renderer.setRenderTarget(rt); renderer.setClearColor(0xffffff, 1); renderer.clear(); renderer.render(aoScene, cam);
+          renderer.readRenderTargetPixels(rt, 0, 0, RES, RES, buf);
+          var dm = new Float32Array(RES * RES);
+          for (var k = 0, o = 0; k < dm.length; k++, o += 4) dm[k] = buf[o] / 4294967296 + buf[o + 1] / 16777216 + buf[o + 2] / 65536 + buf[o + 3] / 256;
+          maps.push({ d: d, m: new THREE.Matrix4().multiplyMatrices(cam.projectionMatrix, cam.matrixWorldInverse).elements, dm: dm, bias: 0.7 / range });
+        });
+      } catch (e) { ok = false; }
+      finally {
+        renderer.setRenderTarget(prevRT); renderer.setClearColor(prevC, prevA); renderer.shadowMap.autoUpdate = prevAuto;
+        par.add(model); hid.forEach(function (g) { g.visible = true; });
+      }
+      if (!ok) return;
+      job = { list: list, maps: maps, mi: 0, vi: 0, sig: sig, out: list.map(function (m) { return new Float32Array(m.geometry.getAttribute('position').count); }) };
+    }
+    var nm = new THREE.Matrix3();
+    function step(budget) {
+      var t0 = performance.now(), J = job;
+      while (performance.now() - t0 < budget) {
+        if (J.mi >= J.list.length) { finish(J); return; }
+        var m = J.list[J.mi], g = m.geometry, pos = g.getAttribute('position'), nor = g.getAttribute('normal'), out = J.out[J.mi];
+        if (J.vi === 0) { J.e = m.matrixWorld.elements.slice(); nm.getNormalMatrix(m.matrixWorld); J.ne = nm.elements.slice(); }
+        var e = J.e, ne = J.ne, end = Math.min(pos.count, J.vi + 1500), maps = J.maps;
+        for (var i = J.vi; i < end; i++) {
+          var x = pos.getX(i), y = pos.getY(i), z = pos.getZ(i);
+          var wx = e[0] * x + e[4] * y + e[8] * z + e[12], wy = e[1] * x + e[5] * y + e[9] * z + e[13], wz = e[2] * x + e[6] * y + e[10] * z + e[14];
+          var nx = 0, ny = 1, nz = 0;
+          if (nor) { var a = nor.getX(i), b = nor.getY(i), cc = nor.getZ(i); nx = ne[0] * a + ne[3] * b + ne[6] * cc; ny = ne[1] * a + ne[4] * b + ne[7] * cc; nz = ne[2] * a + ne[5] * b + ne[8] * cc; var L = Math.sqrt(nx * nx + ny * ny + nz * nz) || 1; nx /= L; ny /= L; nz /= L; }
+          var tot = 0, vis = 0;
+          for (var k = 0; k < DOWN.length; k++) { var dd = DOWN[k], w0 = nx * dd.x + ny * dd.y + nz * dd.z; if (w0 > 0) tot += w0; }   // the floor blocks light from below
+          for (k = 0; k < maps.length; k++) {
+            var mp = maps[k], d = mp.d, w = nx * d.x + ny * d.y + nz * d.z; if (w <= 0) continue;
+            tot += w; var M = mp.m;
+            var px = M[0] * wx + M[4] * wy + M[8] * wz + M[12], py = M[1] * wx + M[5] * wy + M[9] * wz + M[13], pz = M[2] * wx + M[6] * wy + M[10] * wz + M[14];
+            var u = (px * 0.5 + 0.5) * RES | 0, v = (py * 0.5 + 0.5) * RES | 0;
+            if (u < 0 || v < 0 || u >= RES || v >= RES || pz * 0.5 + 0.5 <= mp.dm[v * RES + u] + mp.bias) vis += w;
+          }
+          var ao = tot > 0 ? vis / tot : 1;
+          out[i] = Math.min(0.6, Math.pow(1 - ao, 1.15) * 0.95);
+        }
+        J.vi = end; if (end >= pos.count) { J.mi++; J.vi = 0; }
+      }
+    }
+    function finish(J) {
+      job = null; if (J.sig !== sig) return;
+      J.list.forEach(function (m, i) { var a = m.geometry.getAttribute('occl'); if (a && a.count === J.out[i].length) { a.array.set(J.out[i]); a.needsUpdate = true; } });
+    }
+    function signature(list) { return list.map(function (m) { return m.geometry.uuid; }).join(','); }
+    return {
+      tick: function () {
+        var list = meshes(); ensure(list);
+        if (++frameN % 10 === 0) { var s2 = signature(list); if (s2 !== sig) { sig = s2; job = null; clearTimeout(timer); timer = setTimeout(start, 350); } }
+        if (job) step(6);
+      },
+      now: function () {   // the shelf asks for it straight away before copying a design
+        var list = meshes(); sig = signature(list); clearTimeout(timer); job = null; start();
+        while (job) step(1e9);
+      }
+    };
+  })();
+
   // ---------- account, save, share, gallery ----------
   var SHARE_BASE = 'https://claude.ai/artifact/LVrW9SrragqrisMYsUHqer';
   var DBX = null, USR = null, UID = null;
@@ -3942,7 +4073,7 @@ var DECO = (function () {
 
     // ----- items: stand-in, photo, picture (impostor) and real 3D
     function addItem(rec) {
-      var it = { id: rec.id, data: rec.data, key: rec.id + ':' + hashOf(JSON.stringify(rec.data.state || {})) + ':3', node: new THREE.Group(), ph: new THREE.Mesh(phGeo, phMat), pic: null, imp: null, g3: null, failed: false, wait: 0, used: 0 };
+      var it = { id: rec.id, data: rec.data, key: rec.id + ':' + hashOf(JSON.stringify(rec.data.state || {})) + ':5', node: new THREE.Group(), ph: new THREE.Mesh(phGeo, phMat), pic: null, imp: null, g3: null, failed: false, wait: 0, used: 0 };
       it.ph.userData.item = it; it.node.add(it.ph); sc.add(it.node); ITEMS.push(it);
       idbGet(it.key).then(function (v) { if (v && !it.imp && ITEMS.indexOf(it) >= 0) setImp(it, v); });
       return it;
@@ -4030,6 +4161,7 @@ var DECO = (function () {
         try {
           if (!SHELF.open || ITEMS.indexOf(it) < 0) return;
           RIG.spin = 0; RIG.wig = 0; RIG.hop = 0; placeChar(); model.updateMatrixWorld(true);
+          if (AO) try { AO.now(); } catch (e) {}
           var g = cloneModel(); g.visible = false; g.traverse(function (m) { m.userData.item = it; });
           if (it.g3) drop3d(it);
           it.g3 = g; it.node.add(g); it.used = performance.now(); it.tier = '';
@@ -5682,7 +5814,7 @@ var DECO = (function () {
       if (r3) return r3;
       r3 = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
       r3.setSize(SIZE, SIZE); r3.setPixelRatio(1); r3.outputEncoding = THREE.sRGBEncoding; r3.setClearColor(0x000000, 0);
-      if (THREE.RoomEnvironment) { var pm = new THREE.PMREMGenerator(r3); env = pm.fromScene(new THREE.RoomEnvironment(), 0.04).texture; }
+      if (THREE.PMREMGenerator) { var pm = new THREE.PMREMGenerator(r3); env = pm.fromScene(studioScene(), 0.035).texture; }
       return r3;
     }
     var INK = new THREE.MeshBasicMaterial({ color: new THREE.Color(0x0B3B38).convertSRGBToLinear(), side: THREE.BackSide });
