@@ -1304,6 +1304,55 @@ html::-webkit-scrollbar-thumb:hover { background: linear-gradient(90deg, #7CEDE3
 
 /* 2. no gap between the top bar and the preview */
 @media (min-width: 901px) { .wrap { row-gap: 0 !important; } header.brand { margin-bottom: 0 !important; } }
+
+/* ===== claw game ===== */
+.clawui { position: absolute; z-index: 9; left: 50%; bottom: 14px; transform: translateX(-50%); display: flex; align-items: center; gap: 14px; padding: 10px 14px; border: 4px solid var(--ink-dark); border-radius: 24px; background-color: #B9C3C6; background-image: linear-gradient(180deg, #D7DEE0 0%, #B9C3C6 45%, #9CA8AB 100%); box-shadow: inset 0 3px 0 rgba(255,255,255,.5), 0 6px 0 var(--ink-dark), 0 22px 36px -16px rgba(0,0,0,.6); touch-action: none; user-select: none; -webkit-user-select: none; }
+.clawui[hidden] { display: none; }
+.wrap.floatui:not(.panelhid) .stage .clawui { left: calc((100% - 432px) / 2); }
+.clawjoy { position: relative; flex: none; width: 92px; height: 92px; border: 4px solid var(--ink-dark); border-radius: 50%; background: radial-gradient(circle at 50% 40%, #4E5A5C 0%, #2B3436 70%, #1C2426 100%); box-shadow: inset 0 4px 8px rgba(0,0,0,.6), 0 4px 0 var(--ink-dark); cursor: grab; touch-action: none; }
+.clawjoy i { position: absolute; left: 50%; top: 50%; width: 44px; height: 44px; margin: -22px 0 0 -22px; border: 4px solid var(--ink-dark); border-radius: 50%; background: radial-gradient(circle at 35% 30%, #FF9A9A 0%, #E5484D 45%, #B82A2A 100%); box-shadow: inset 0 3px 0 rgba(255,255,255,.45), 0 5px 0 rgba(0,0,0,.45); pointer-events: none; transition: transform .12s; }
+.clawjoy:active i { transition: none; }
+.clawmid { display: grid; gap: 4px; min-width: 150px; max-width: 220px; color: var(--ink-dark); }
+.clawmid b { font: 400 17px/1.15 "Lilita One", "Fredoka", sans-serif; color: #FFFFFF; -webkit-text-stroke: 4px var(--ink-dark); paint-order: stroke fill; }
+.clawmid span { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font: 700 13px "Figtree", sans-serif; }
+.clawmid em { font: 400 18px "Lilita One", sans-serif; font-style: normal; color: #FFD84A; -webkit-text-stroke: 3px var(--ink-dark); paint-order: stroke fill; }
+.clawlb { padding: 3px 10px; border: 2.5px solid var(--ink-dark); border-radius: 999px; background: linear-gradient(180deg, #FFF09A, #F7B500); color: var(--ink-dark); font: 700 12px "Figtree", sans-serif; box-shadow: 0 2px 0 var(--ink-dark); cursor: pointer; }
+.clawgo { flex: none; width: 92px; height: 92px; border: 4px solid var(--ink-dark); border-radius: 50%; background: radial-gradient(circle at 35% 30%, #FF9A9A 0%, #E5484D 45%, #B82A2A 100%); color: #FFFFFF; font: 400 20px "Lilita One", "Fredoka", sans-serif; -webkit-text-stroke: 4px var(--ink-dark); paint-order: stroke fill; box-shadow: inset 0 4px 0 rgba(255,255,255,.4), 0 7px 0 var(--ink-dark); cursor: pointer; transition: transform .07s, box-shadow .07s; }
+.clawgo:active:not(:disabled) { transform: translateY(5px); box-shadow: inset 0 4px 0 rgba(255,255,255,.4), 0 2px 0 var(--ink-dark); }
+.clawgo:disabled { filter: grayscale(.6) brightness(.9); cursor: default; }
+.clawx { position: absolute; right: -12px; top: -12px; width: 30px; height: 30px; border: 3px solid var(--ink-dark); border-radius: 50%; background: #FFFFFF; color: var(--ink-dark); font: 700 13px sans-serif; box-shadow: 0 2px 0 var(--ink-dark); cursor: pointer; }
+.clawwin { position: absolute; z-index: 10; left: 50%; top: 22%; transform: translateX(-50%); display: grid; justify-items: center; gap: 8px; padding: 16px 22px; border: 4px solid var(--ink-dark); border-radius: 22px; background: linear-gradient(180deg, #FFF09A 0%, #FFD84A 47%, #F7B500 53%, #E99E00 100%); box-shadow: inset 0 3px 0 rgba(255,255,255,.55), 0 6px 0 var(--ink-dark), 0 22px 36px -12px rgba(0,0,0,.6); text-align: center; }
+.clawwin[hidden] { display: none; }
+.wrap.floatui:not(.panelhid) .stage .clawwin { left: calc((100% - 432px) / 2); }
+.clawwin b { font: 400 30px "Lilita One", "Fredoka", sans-serif; color: #FFFFFF; -webkit-text-stroke: 6px var(--ink-dark); paint-order: stroke fill; }
+.clawwin span { font: 700 14px "Figtree", sans-serif; color: var(--ink-dark); }
+.clawwin .go { margin: 4px 0 0; padding: 8px 16px; }
+.clawwin.pop { animation: clawPop .5s cubic-bezier(.2,1.6,.4,1); }
+@keyframes clawPop { from { transform: translateX(-50%) scale(.4); opacity: 0; } }
+.stage.clawon .clicks, body.clawon .stagecol > .chat { display: none !important; }
+@media (max-width: 640px) {
+.clawui { left: 8px; right: 8px; bottom: 8px; transform: none; gap: 8px; padding: 8px; }
+.clawjoy, .clawgo { width: 74px; height: 74px; }
+.clawjoy i { width: 36px; height: 36px; margin: -18px 0 0 -18px; }
+.clawmid { min-width: 0; flex: 1; }
+.clawmid b { font-size: 14px; }
+body.clawon .chat { display: none !important; }
+}
+@media (prefers-reduced-motion: reduce) { .clawwin.pop { animation: none; } }
+/* leaderboard */
+.lb { display: grid; gap: 10px; }
+.lbgames { display: grid; grid-template-columns: 1fr 1fr; }
+.lbwhen { justify-content: center; }
+.lblist { display: grid; gap: 6px; max-height: min(460px, 55vh); overflow-y: auto; padding: 2px 4px 6px 2px; }
+.lbrow { display: grid; grid-template-columns: 46px 38px minmax(0, 1fr) auto; align-items: center; gap: 10px; padding: 6px 12px 6px 8px; border: 3px solid var(--ink-dark); border-radius: 14px; background: linear-gradient(180deg, #FFFFFF, #E9EDEE); box-shadow: inset 0 2px 0 #FFFFFF, 0 3px 0 var(--ink-dark); color: var(--ink-dark); }
+.lbrow.me { background: linear-gradient(180deg, #FFF09A 0%, #FFD84A 47%, #F7B500 53%, #E99E00 100%); }
+.lbrank { font: 400 20px "Lilita One", sans-serif; text-align: center; }
+.lbav { display: grid; place-items: center; width: 38px; height: 38px; border: 2.5px solid var(--ink-dark); border-radius: 50%; overflow: hidden; background: #12AFA5; color: #FFFFFF; font: 400 18px "Lilita One", sans-serif; font-style: normal; }
+.lbav img { width: 100%; height: 100%; object-fit: cover; }
+.lbname { font: 700 15px "Figtree", sans-serif; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lbval { font: 400 16px "Lilita One", sans-serif; font-style: normal; white-space: nowrap; }
+.lbgap { text-align: center; font: 700 18px sans-serif; color: var(--ink-dark); }
+.lbempty, .lbnote { margin: 4px 0; text-align: center; font: 700 14px "Figtree", sans-serif; color: var(--ink-dark); }
 </style>
 </head>
 <body>
@@ -1390,11 +1439,19 @@ html::-webkit-scrollbar-thumb:hover { background: linear-gradient(90deg, #7CEDE3
       <button type="button" class="tbtn" id="seeInside" aria-pressed="false" aria-label="See inside the box" data-tip="See inside" hidden><svg viewBox="0 0 24 24" width="21" height="21" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/></svg></button>
       <button type="button" class="tbtn" id="hideChar" aria-pressed="false" aria-label="Hide the character" data-tip="Hide character" hidden><svg viewBox="0 0 24 24" width="21" height="21" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="10" r="5"/><circle cx="7.5" cy="5.5" r="2"/><circle cx="16.5" cy="5.5" r="2"/><path d="M8 19h8"/><path d="M3 3l18 18"/></svg></button>
       <button type="button" class="tbtn" id="hideBox" aria-pressed="false" aria-label="Hide the box" data-tip="Hide box" hidden><svg viewBox="0 0 24 24" width="21" height="21" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8l8-4 8 4v8l-8 4-8-4z"/><path d="M4 8l8 4 8-4M12 12v8"/><path d="M3 3l18 18"/></svg></button>
+      <button type="button" class="tbtn" id="clawBtn" aria-pressed="false" aria-label="Claw game" data-tip="Claw game"><svg viewBox="0 0 24 24" width="21" height="21" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v6"/><rect x="8.5" y="8" width="7" height="3.5" rx="1.2"/><path d="M9.5 11.5 6 15.5l2.5 4M14.5 11.5l3.5 4-2.5 4M12 11.5v8"/></svg></button>
       <button type="button" class="tbtn" id="resetView" aria-label="Reset the view" data-tip="Reset view"><svg viewBox="0 0 24 24" width="21" height="21" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 12a8 8 0 1 0 3-6.2M4 4v4h4"/></svg></button>
       <button type="button" class="tbtn" id="undoBtn" aria-label="Undo (Ctrl+Z)" data-tip="Undo" disabled><svg viewBox="0 0 24 24" width="21" height="21" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg></button>
       <button type="button" class="tbtn" id="redoBtn" aria-label="Redo (Ctrl+Shift+Z)" data-tip="Redo" disabled><svg viewBox="0 0 24 24" width="21" height="21" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m15 14 5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13"/></svg></button>
     </div>
     <button type="button" class="paneltog" id="panelTog" aria-pressed="false" aria-label="Hide the settings panel"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M14.5 4v16" stroke="currentColor" stroke-width="2.4"/><path class="pt-a" d="M9 9.5 11.5 12 9 14.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Hide panel</span></button>
+    <div class="clawui" id="clawUi" hidden>
+      <div class="clawjoy" id="clawJoy" role="application" aria-label="Claw joystick: drag to move the claw (or use the arrow keys)"><i></i></div>
+      <div class="clawmid"><b id="clawMsg">Move the claw, then GRAB!</b><span>Catches <em id="clawScore">0</em> <button type="button" class="clawlb" id="clawLb">🏆 Leaderboard</button></span></div>
+      <button type="button" class="clawgo" id="clawGo" aria-label="Grab (Space)">GRAB</button>
+      <button type="button" class="clawx" id="clawOff" aria-label="Turn the claw off">✕</button>
+    </div>
+    <div class="clawwin" id="clawWin" hidden role="status"><b>🎉 You got it!</b><span id="clawWinTxt"></span><button type="button" class="go" id="clawWinLb">🏆 See the leaderboard</button></div>
     <div class="lightpop" id="lightPop" hidden>
       <b>Studio light</b>
       <label class="field" for="lightDir">Direction</label>
@@ -2520,7 +2577,7 @@ var DECO = (function () {
     key.shadow.camera.far = r * 5; key.shadow.camera.updateProjectionMatrix();
     rim.position.set(-r, r * 0.6, -r);
   }
-  var SHELF = { open: false, quiet: false }, AO = null;   // the saved-designs shelf (built further down)
+  var SHELF = { open: false, quiet: false }, AO = null, CLAW = null;   // the saved-designs shelf (built further down)
   var VIEW = { cover: 0 };   // px of the preview's right side covered by the floating panel
   function applyCover() { var w = stage.clientWidth, h = stage.clientHeight; if (VIEW.cover > 0.5) camera.setViewOffset(w, h, VIEW.cover / 2, 0, w, h); else camera.clearViewOffset(); camera.updateProjectionMatrix(); }
   function resize() { var w = stage.clientWidth, h = stage.clientHeight; renderer.setSize(w, h, false); camera.aspect = w / h; if (typeof panelCover === 'function') VIEW.cover = panelCover(); applyCover(); frame(); }
@@ -2640,7 +2697,7 @@ var DECO = (function () {
     var two = !!(S.objects && S.objects.length > 1 && S.parts.length);
     hideCharB.hidden = !two; hideBoxB.hidden = !two;
     if (!two) { HIDE[0] = HIDE[1] = false; }
-    S.parts.forEach(function (p) { p.mesh.layers.set(HIDE[p.obj] ? 1 : 0); });
+    S.parts.forEach(function (p) { p.mesh.layers.set(HIDE[p.obj] || (p.obj === 0 && CLAW && CLAW.hideReal) ? 1 : 0); });
     if (decoMeshes) Object.keys(decoMeshes).forEach(function (k) { var m = decoMeshes[k]; if (m) m.layers.set(HIDE[m.userData.obj || 1] ? 1 : 0); });
     if (S.nameMesh) S.nameMesh.layers.set(HIDE[1] ? 1 : 0);
   }
@@ -2656,6 +2713,7 @@ var DECO = (function () {
   (function loop() {
     if (SHELF.open) { requestAnimationFrame(loop); return; }   // the shelf draws with the same renderer while it's open
     if (AO) AO.tick();
+    if (CLAW && CLAW.on) CLAW.tick(performance.now());
     applyHide(); fadePlate(); tapAnim(performance.now()); rigTick(performance.now()); placeBubble(); if (placeChar.need !== S.parts) { placeChar.need = S.parts; placeChar(); }
     if (Math.abs(liftTarget - lift) > 0.01) applyLift(reduce ? liftTarget : lift + (liftTarget - lift) * 0.14);
     if (Math.abs(liftTarget - lift) > 0.01 && measureOn) dimsDirty = true;
@@ -3943,6 +4001,351 @@ var DECO = (function () {
     (mq.addEventListener ? mq.addEventListener.bind(mq, 'change') : mq.addListener.bind(mq))(soon);
     setInterval(soon, 1000); soon();
   })();
+
+  // ---------- leaderboard: claw catches (this week, all time) and clicks (today, all time) ----------
+  function openLeaderboard(start) {
+    if (needAccount('Leaderboard')) return;
+    var state = { game: start === 'clicks' ? 'clicks' : 'claw', when: start === 'clicks' ? 'today' : 'week' };
+    openModal('Leaderboard', function (body) {
+      body.closest('.mpanel').classList.add('gpanel');
+      var wrap = el('div', 'lb'); body.appendChild(wrap);
+      var games = el('div', 'seg lbgames'), whens = el('div', 'chips2 lbwhen'), list = el('div', 'lblist'), note = el('p', 'lbnote');
+      wrap.appendChild(games); wrap.appendChild(whens); wrap.appendChild(list); wrap.appendChild(note);
+      var rows = null, ps = {};
+      [['claw', '\u{1F579}️ Claw'], ['clicks', '\u{1F446} Clicks']].forEach(function (g) {
+        var b = el('button', '', g[1]); b.type = 'button'; b.dataset.g = g[0];
+        b.addEventListener('click', function () { state.game = g[0]; state.when = g[0] === 'claw' ? 'week' : 'today'; draw(); });
+        games.appendChild(b);
+      });
+      function draw() {
+        games.querySelectorAll('button').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.g === state.game)); });
+        whens.textContent = '';
+        (state.game === 'claw' ? [['week', 'This week'], ['all', 'All time']] : [['today', 'Today'], ['all', 'All time']]).forEach(function (w) {
+          var b = el('button', '', w[1]); b.type = 'button'; b.setAttribute('aria-pressed', String(state.when === w[0]));
+          b.addEventListener('click', function () { state.when = w[0]; draw(); }); whens.appendChild(b);
+        });
+        list.textContent = '';
+        if (!rows) { list.appendChild(el('p', 'lbempty', 'Loading the leaderboard…')); return; }
+        var wk = weekKey(), dk = dayKey();
+        var scored = rows.map(function (r) {
+          var v = 0;
+          if (state.game === 'claw') v = state.when === 'week' ? (r.claw && r.claw.wk === wk ? +r.claw.wn || 0 : 0) : (r.claw ? +r.claw.total || 0 : 0);
+          else v = state.when === 'today' ? (r.clicks && r.clicks.d === dk ? +r.clicks.n || 0 : 0) : (r.clicks ? +r.clicks.total || 0 : 0);
+          return { id: r.id, v: Math.max(0, Math.min(1e7, v)) };
+        }).filter(function (r) { return r.v > 0; }).sort(function (a, b) { return b.v - a.v; });
+        var meAt = -1; scored.forEach(function (r, i) { if (r.id === UID) meAt = i; });
+        if (!scored.length) { list.appendChild(el('p', 'lbempty', state.game === 'claw' ? 'No catches yet. Turn on the claw in Tools and be the first!' : 'No clicks yet. Press the character!')); }
+        function row(r, i) {
+          var p = ps[r.id] || (r.id === UID && CHAT.names[UID]) || {}, d = el('div', 'lbrow' + (r.id === UID ? ' me' : '') + (i < 3 ? ' top' + (i + 1) : ''));
+          d.appendChild(el('b', 'lbrank', i < 3 ? ['\u{1F947}', '\u{1F948}', '\u{1F949}'][i] : '#' + (i + 1)));
+          var av = el('i', 'lbav'); if (p.avatarUrl) { var im = el('img'); im.src = p.avatarUrl; im.alt = ''; av.appendChild(im); } else av.textContent = ((p.name || 'M').trim().charAt(0) || 'M').toUpperCase();
+          d.appendChild(av); d.appendChild(el('span', 'lbname', (p.name || 'A member') + (r.id === UID ? ' (you)' : '')));
+          d.appendChild(el('em', 'lbval', r.v.toLocaleString('en-US') + (state.game === 'claw' ? (r.v === 1 ? ' catch' : ' catches') : (r.v === 1 ? ' click' : ' clicks'))));
+          list.appendChild(d);
+        }
+        scored.slice(0, 20).forEach(row);
+        if (meAt >= 20) { list.appendChild(el('div', 'lbgap', '⋮')); row(scored[meAt], meAt); }
+        note.textContent = meAt >= 0 ? 'You’re #' + (meAt + 1) + ' of ' + scored.length + '.' : (state.game === 'claw' ? 'Win a catch with the claw to get on the board.' : 'Press the character to get on the board.');
+      }
+      draw();
+      DBX.collection('chat').get().then(function (snap) {
+        var rs = []; snap.docs.forEach(function (d) { if (d.id === '_meta') return; var x = d.data() || {}; if (x.clicks || x.claw) rs.push({ id: d.id, clicks: x.clicks, claw: x.claw }); });
+        if (UID && !rs.some(function (r) { return r.id === UID; })) rs.push({ id: UID });
+        rs.forEach(function (r) { if (r.id === UID) { r.clicks = { d: CLK.day.d, n: todayMine(), total: CLK.mine }; r.claw = { total: CLAWS.total, wk: CLAWS.wk, wn: CLAWS.wk === weekKey() ? CLAWS.wn : 0 }; } });
+        return names(rs.map(function (r) { return r.id; })).then(function (p) { ps = p || {}; rows = rs; draw(); });
+      }).catch(function () { list.textContent = ''; list.appendChild(el('p', 'lbempty', 'Couldn’t load the leaderboard right now.')); });
+    });
+  }
+  setTimeout(function () {   // a Leaderboard button beside Share on the preview (once that bar is built)
+    var act = document.querySelector('.toolrow .actbar'); if (!act || document.getElementById('btnLeader')) return;
+    var b = document.createElement('button'); b.type = 'button'; b.className = 'topbtn'; b.id = 'btnLeader';
+    b.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4.5a2.5 3 0 0 0 3 4M17 6h2.5a2.5 3 0 0 1-3 4M12 14v3M8.5 20h7l-1-3h-5z"/></svg><span>Leaderboard</span>';
+    b.addEventListener('click', function () { openLeaderboard(CLAW && CLAW.on ? 'claw' : 'clicks'); });
+    act.appendChild(b);
+  }, 0);
+
+  // ---------- the claw game: an arcade claw over the plate, a joystick and a GRAB button ----------
+  // Grab the character, carry it to the prize hole and drop it in. Real arcade luck: the grip is sometimes weak.
+  CLAW = (function () {
+    var C = { on: false, hideReal: false };
+    var V3 = THREE.Vector3, ui = document.getElementById('clawUi'), msgEl = document.getElementById('clawMsg'), scoreEl = document.getElementById('clawScore');
+    var winEl = document.getElementById('clawWin'), winTxt = document.getElementById('clawWinTxt'), btn = document.getElementById('clawBtn');
+    function col(h) { return new THREE.Color(h).convertSRGBToLinear(); }
+    var goldM = new THREE.MeshPhysicalMaterial({ color: col('#F2B200'), metalness: 0.55, roughness: 0.28, clearcoat: 0.7 });
+    var chromeM = new THREE.MeshPhysicalMaterial({ color: col('#D9DEE2'), metalness: 0.9, roughness: 0.22 });
+    var redM = new THREE.MeshPhysicalMaterial({ color: col('#E5484D'), roughness: 0.35, clearcoat: 0.8 });
+    var darkM = new THREE.MeshBasicMaterial({ color: col('#0B1416') });
+    // ---- the claw
+    var rig = new THREE.Group(); rig.visible = false; scene.add(rig);
+    var cable = new THREE.Mesh(new THREE.CylinderGeometry(0.7, 0.7, 1, 10), chromeM); rig.add(cable);
+    var hub = new THREE.Mesh(new THREE.CylinderGeometry(7, 8, 7, 28), goldM); hub.position.y = 3.5; rig.add(hub);
+    var cap = new THREE.Mesh(new THREE.CylinderGeometry(3.5, 5, 4, 20), chromeM); cap.position.y = 9; rig.add(cap);
+    var band = new THREE.Mesh(new THREE.TorusGeometry(7.6, 1, 10, 32), redM); band.rotation.x = Math.PI / 2; band.position.y = 3.5; rig.add(band);
+    var prongs = [], armG = new THREE.BoxGeometry(2.4, 15, 2.4), tipG = new THREE.BoxGeometry(2.4, 10, 2.4), ballG = new THREE.SphereGeometry(1.9, 14, 10);
+    armG.translate(0, -7.5, 0); tipG.translate(0, -5, 0);
+    for (var i = 0; i < 3; i++) {
+      var a = i * Math.PI * 2 / 3 + Math.PI / 6, pv = new THREE.Group();
+      pv.position.set(Math.cos(a) * 5.5, 0.5, Math.sin(a) * 5.5); pv.rotation.set(0, -a, 0.5, 'YXZ');
+      var arm = new THREE.Mesh(armG, chromeM); pv.add(arm);
+      var el2 = new THREE.Mesh(ballG, goldM); el2.position.y = -15; pv.add(el2);
+      var tip = new THREE.Group(); tip.position.y = -15; tip.rotation.z = -0.95; tip.add(new THREE.Mesh(tipG, chromeM)); pv.add(tip);
+      rig.add(pv); prongs.push(pv);
+    }
+    rig.traverse(function (m) { if (m.isMesh) m.castShadow = true; });
+    var TIP = 21;   // how far the closed tips reach below the claw
+    var aim = new THREE.Mesh(new THREE.RingGeometry(4.5, 6.5, 32), new THREE.MeshBasicMaterial({ color: 0xFFD84A, transparent: true, opacity: 0.85, depthWrite: false })); aim.rotation.x = -Math.PI / 2; aim.visible = false; scene.add(aim);
+    // ---- the prize hole beside the plate
+    var chute = new THREE.Group(); chute.visible = false; scene.add(chute);
+    var CH = { x: 0, z: 0, r: 15, R: 19, rim: 0, ground: 0 };
+    function stripeTex() {
+      var c = document.createElement('canvas'); c.width = 256; c.height = 64; var x = c.getContext('2d');
+      for (var k = 0; k < 16; k++) { x.fillStyle = k % 2 ? '#FFFFFF' : '#E5484D'; x.beginPath(); x.moveTo(k * 16, 0); x.lineTo(k * 16 + 16, 0); x.lineTo(k * 16 + 4, 64); x.lineTo(k * 16 - 12, 64); x.fill(); }
+      var t = new THREE.CanvasTexture(c); t.encoding = THREE.sRGBEncoding; t.wrapS = THREE.RepeatWrapping; t.repeat.set(3, 1); return t;
+    }
+    function buildChute() {
+      chute.children.slice().forEach(function (m) { chute.remove(m); if (m.geometry) m.geometry.dispose(); });
+      plate.geometry.computeBoundingBox(); var pb = plate.geometry.boundingBox, ph = pb.max.x;
+      CH.ground = ground.position.y; CH.plateTop = pb.max.y; CH.half = ph;
+      var cb0 = charBox(), cs0 = cb0.isEmpty() ? new THREE.Vector3(40, 40, 40) : cb0.getSize(new THREE.Vector3());
+      CH.r = Math.max(18, Math.max(cs0.x, cs0.z) * 0.62 + 5); CH.R = CH.r + 4;   // the hole fits the character with room to spare
+      CH.x = ph + CH.R + 8; CH.z = ph * 0.3; CH.rim = CH.plateTop + 16;
+      var h = CH.rim - CH.ground;
+      var tube = new THREE.Mesh(new THREE.CylinderGeometry(CH.R, CH.R + 2, h, 40, 1, true), new THREE.MeshPhysicalMaterial({ map: stripeTex(), roughness: 0.4, clearcoat: 0.6, side: THREE.DoubleSide }));
+      tube.position.set(CH.x, CH.ground + h / 2, CH.z); chute.add(tube);
+      var inner = new THREE.Mesh(new THREE.CylinderGeometry(CH.r, CH.r, h, 32, 1, true), darkM); inner.material = new THREE.MeshBasicMaterial({ color: col('#0B1416'), side: THREE.BackSide }); inner.position.copy(tube.position); chute.add(inner);
+      var hole = new THREE.Mesh(new THREE.CircleGeometry(CH.r, 32), darkM); hole.rotation.x = -Math.PI / 2; hole.position.set(CH.x, CH.rim - 10, CH.z); chute.add(hole);
+      var rim = new THREE.Mesh(new THREE.TorusGeometry((CH.r + CH.R) / 2, (CH.R - CH.r) / 2 + 0.6, 12, 40), goldM); rim.rotation.x = Math.PI / 2; rim.position.set(CH.x, CH.rim, CH.z); chute.add(rim);
+      var star = new THREE.Mesh(new THREE.RingGeometry(CH.R + 3, CH.R + 5, 40), new THREE.MeshBasicMaterial({ color: 0xFFD84A, transparent: true, opacity: 0.0, depthWrite: false })); star.rotation.x = -Math.PI / 2; star.position.set(CH.x, CH.rim + 0.5, CH.z); chute.add(star); CH.glow = star;
+      chute.traverse(function (m) { if (m.isMesh) { m.castShadow = true; m.receiveShadow = true; } });
+    }
+    // ---- the world the character can bump into
+    var SOLIDS = [];
+    function buildSolids() {
+      SOLIDS = [];
+      SOLIDS.push({ min: new V3(-CH.half, CH.ground - 50, -CH.half), max: new V3(CH.half, CH.plateTop, CH.half) });   // the plate
+      var bb = new THREE.Box3(); S.parts.forEach(function (p) { if (p.obj === 1 && p.mesh.visible) bb.expandByObject(p.mesh); });
+      if (!bb.isEmpty()) {
+        var t = 2.6, a = bb.min, b = bb.max;
+        SOLIDS.push({ min: new V3(a.x, a.y, a.z), max: new V3(a.x + t, b.y, b.z) }, { min: new V3(b.x - t, a.y, a.z), max: new V3(b.x, b.y, b.z) },
+          { min: new V3(a.x, a.y, a.z), max: new V3(b.x, b.y, a.z + t) }, { min: new V3(a.x, a.y, b.z - t), max: new V3(b.x, b.y, b.z) },
+          { min: new V3(a.x, a.y, a.z), max: new V3(b.x, a.y + 2.2, b.z) });
+        C.box = bb;
+      }
+    }
+    function collide(p) {   // deepest push-out for a point: { n, d }
+      var best = null;
+      var rr = Math.hypot(p.x - CH.x, p.z - CH.z), inHole = rr < CH.r;
+      if (!inHole && p.y < CH.ground) best = { n: new V3(0, 1, 0), d: CH.ground - p.y };
+      SOLIDS.forEach(function (S2) {
+        if (p.x <= S2.min.x || p.x >= S2.max.x || p.y <= S2.min.y || p.y >= S2.max.y || p.z <= S2.min.z || p.z >= S2.max.z) return;
+        var c = [[p.x - S2.min.x, -1, 0, 0], [S2.max.x - p.x, 1, 0, 0], [p.y - S2.min.y, 0, -1, 0], [S2.max.y - p.y, 0, 1, 0], [p.z - S2.min.z, 0, 0, -1], [S2.max.z - p.z, 0, 0, 1]];
+        c.sort(function (u, v) { return u[0] - v[0]; }); var m = c[0];
+        if (!best || m[0] > best.d) best = { n: new V3(m[1], m[2], m[3]), d: m[0] };
+      });
+      if (p.y < CH.rim && p.y > CH.ground - 200 && rr >= CH.r && rr <= CH.R + 2) {   // the chute's wall
+        var din = rr - CH.r, dout = CH.R + 2 - rr, nx = (p.x - CH.x) / (rr || 1), nz = (p.z - CH.z) / (rr || 1);
+        var cand = din < dout ? { n: new V3(-nx, 0, -nz), d: din } : { n: new V3(nx, 0, nz), d: dout };
+        if (CH.rim - p.y < cand.d) cand = { n: new V3(0, 1, 0), d: CH.rim - p.y };
+        if (!best || cand.d > best.d) best = cand;
+      }
+      return best;
+    }
+    // ---- the character as a body
+    var body = null, G = 1500;
+    function makeBody() {
+      var parts = S.parts.filter(function (p) { return p.obj === 0 && p.mesh.visible; }); if (!parts.length) return null;
+      var bb = new THREE.Box3(); parts.forEach(function (p) { p.mesh.updateMatrixWorld(true); bb.expandByObject(p.mesh); });
+      var c = bb.getCenter(new V3()), half = bb.getSize(new V3()).multiplyScalar(0.5);
+      var g = new THREE.Group(); g.position.copy(c); g.updateMatrixWorld(true);
+      var inv = new THREE.Matrix4().copy(g.matrixWorld).invert();
+      parts.forEach(function (p) { var m = new THREE.Mesh(p.mesh.geometry, p.mesh.material); m.matrixAutoUpdate = false; m.matrix.multiplyMatrices(inv, p.mesh.matrixWorld); m.castShadow = true; m.receiveShadow = true; g.add(m); });
+      scene.add(g);
+      var pts = [], s3 = [-1, 1];
+      s3.forEach(function (sx) { s3.forEach(function (sy) { s3.forEach(function (sz) { pts.push(new V3(sx * half.x * 0.8, sy * half.y * 0.92, sz * half.z * 0.8)); }); }); });
+      pts.push(new V3(0, -half.y, 0), new V3(0, half.y * 0.95, 0), new V3(half.x * 0.95, 0, 0), new V3(-half.x * 0.95, 0, 0), new V3(0, 0, half.z * 0.95), new V3(0, 0, -half.z * 0.95));
+      C.hideReal = true;
+      return { g: g, x: c.clone(), v: new V3(), q: new THREE.Quaternion(), w: new V3(), half: half, pts: pts, R: (half.x + half.y + half.z) / 3, home: c.clone(), free: false, rest: 0, t0: performance.now(), won: false };
+    }
+    function dropBody() {
+      if (!body) return; scene.remove(body.g); body = null; C.hideReal = false;
+    }
+    var dq = new THREE.Quaternion(), tv = new V3(), rv = new V3(), vp = new V3(), rn = new V3();
+    function physics(dt) {
+      var B = body, invI = 1 / (0.4 * B.R * B.R), e = 0.32, mu = 0.55;
+      B.v.y -= G * dt; B.w.multiplyScalar(Math.pow(0.6, dt));
+      B.x.addScaledVector(B.v, dt);
+      var wl = B.w.length(); if (wl > 1e-6) { dq.setFromAxisAngle(tv.copy(B.w).divideScalar(wl), wl * dt); B.q.premultiply(dq).normalize(); }
+      var push = new V3(), touching = false;
+      B.pts.forEach(function (pt) {
+        var p = tv.copy(pt).applyQuaternion(B.q).add(B.x), hit = collide(p); if (!hit) return;
+        touching = true; if (hit.d > push.dot(hit.n)) push.addScaledVector(hit.n, hit.d - push.dot(hit.n));
+        rv.copy(p).sub(B.x); vp.copy(B.w).cross(rv).add(B.v);
+        var vn = vp.dot(hit.n); if (vn >= 0) return;
+        rn.copy(rv).cross(hit.n); var k = 1 + invI * rn.lengthSq(), j = -(1 + e) * vn / k;
+        B.v.addScaledVector(hit.n, j); B.w.addScaledVector(rn, j * invI);
+        var vt = vp.addScaledVector(hit.n, -vn), lt = vt.length();
+        if (lt > 1e-4) { vt.divideScalar(lt); var rt = new V3().copy(rv).cross(vt), kt = 1 + invI * rt.lengthSq(), jt = Math.min(lt / kt, mu * j); B.v.addScaledVector(vt, -jt); B.w.addScaledVector(rt, -jt * invI); }
+      });
+      B.x.add(push.multiplyScalar(0.9));
+      if (touching) { B.v.multiplyScalar(Math.pow(0.35, dt)); B.w.multiplyScalar(Math.pow(0.2, dt)); }
+    }
+    // ---- state
+    var st = 'off', t0 = 0, pos = new V3(), cy = 0, hoverY = 60, ang = 0.5, angGoal = 0.5, stopY = 0, hitChar = false, grip = null, vel = new V3(), lastT = 0;
+    var joy = { x: 0, y: 0 }, keys = {}, camSave = null, camAnim = null;
+    function msg(t) { msgEl.textContent = t; }
+    function charBox() { var bb = new THREE.Box3(); S.parts.forEach(function (p) { if (p.obj === 0 && p.mesh.visible && p.mesh.layers.test(camera.layers)) bb.expandByObject(p.mesh); }); return bb; }
+    function groundAt(x, z) {   // the height of whatever is under the claw, and whether it's the character
+      var r = new THREE.Raycaster(new V3(x, hoverY + 50, z), new V3(0, -1, 0), 0, 1000), objs = [];
+      if (body) body.g.traverse(function (m) { if (m.isMesh) objs.push(m); });
+      S.parts.forEach(function (p) { if (p.mesh.visible && (p.obj === 1 || !C.hideReal)) objs.push(p.mesh); });
+      objs.push(plate); chute.traverse(function (m) { if (m.isMesh) objs.push(m); });
+      var h = r.intersectObjects(objs, false)[0];
+      if (!h) return { y: CH.ground, char: false };
+      var isChar = false; S.parts.forEach(function (p) { if (p.mesh === h.object && p.obj === 0) isChar = true; }); if (body && body.g.children.indexOf(h.object) >= 0) isChar = true;
+      return { y: h.point.y, char: isChar };
+    }
+    function bounds() { return { x0: -CH.half + 6, x1: CH.x + 4, z0: -CH.half + 6, z1: CH.half - 6 }; }
+    function setOn(on) {
+      if (on === C.on) return;
+      if (on) {
+        if (!S.parts.length) return;
+        ['expand', 'seeInside', 'hideChar', 'hideBox'].forEach(function (id) { var b = document.getElementById(id); if (b && !b.hidden && b.getAttribute('aria-pressed') === 'true') b.click(); });
+        C.on = true; buildChute(); buildSolids(); chute.visible = true; rig.visible = true; aim.visible = true; ui.hidden = false; stageEl().classList.add('clawon'); document.body.classList.add('clawon');
+        var cb = charBox(); hoverY = Math.max(cb.isEmpty() ? 60 : cb.max.y, CH.rim) + 42;
+        pos.set(0, 0, 0); cy = hoverY + 240; st = 'enter'; t0 = performance.now(); ang = angGoal = 0.5;
+        scoreEl.textContent = CLAWS.total; msg('Move the claw, then GRAB!');
+        camSave = { p: camera.position.clone(), t: controls.target.clone() };
+        var tgt = new V3(CH.x * 0.42, 22, CH.z * 0.3), dir = camera.position.clone().sub(controls.target).normalize(); dir.y = Math.max(dir.y, 0.42); dir.normalize();
+        camAnim = { p0: camera.position.clone(), t0: controls.target.clone(), p1: tgt.clone().addScaledVector(dir, (CH.x + CH.half) * 2.15 * Math.max(1, 1.3 / camera.aspect)), t1: tgt, s: performance.now() };
+        btn.setAttribute('aria-pressed', 'true'); hideBubble(); SFX.play('pop');
+      } else {
+        C.on = false; st = 'off'; dropBody(); chute.visible = false; rig.visible = false; aim.visible = false; ui.hidden = true; winEl.hidden = true;
+        stageEl().classList.remove('clawon'); document.body.classList.remove('clawon'); btn.setAttribute('aria-pressed', 'false');
+        if (camSave) camAnim = { p0: camera.position.clone(), t0: controls.target.clone(), p1: camSave.p, t1: camSave.t, s: performance.now() };
+        placeChar();
+      }
+    }
+    function stageEl() { return document.getElementById('stage'); }
+    function grab() {
+      if (st === 'idle' && !(body && body.free)) {
+        var gnd = groundAt(pos.x, pos.z); hitChar = gnd.char; stopY = gnd.y + TIP - (hitChar ? 11 : 1);
+        st = 'drop'; SFX.play('click'); msg('Going down…');
+      } else if (st === 'carry') { release(false); }
+    }
+    function release(slipped) {
+      if (!body) return; body.free = true; body.attached = false; body.v.copy(vel); body.v.y = Math.min(body.v.y, 0);
+      body.w.set((Math.random() - 0.5) * 3, (Math.random() - 0.5) * 2, (Math.random() - 0.5) * 3); body.rest = 0; body.t0 = performance.now();
+      angGoal = 0.5; st = st === 'lift' ? 'lift' : 'idle'; grip = null;   // after a slip on the way up, the empty claw keeps rising
+      msg(slipped ? 'Oh no, it slipped!' : 'Dropped…'); if (slipped) SFX.play('tap');
+    }
+    function win() {
+      body.won = true; var now = Date.now();
+      if (now - (CLAWS.last || 0) > 6000) {   // one prize per round: quick repeats aren't counted
+        CLAWS.last = now; CLAWS.total++; if (CLAWS.wk !== weekKey()) { CLAWS.wk = weekKey(); CLAWS.wn = 0; } CLAWS.wn++;
+        clawStore(); CLK.dirty = true; clkSave();
+      }
+      scoreEl.textContent = CLAWS.total;
+      winTxt.textContent = '+1 catch · ' + CLAWS.total + ' in total · ' + CLAWS.wn + ' this week';
+      winEl.hidden = false; winEl.classList.remove('pop'); void winEl.offsetWidth; winEl.classList.add('pop');
+      confetti(); SFX.play('reward'); if (navigator.vibrate) try { navigator.vibrate([30, 40, 60]); } catch (e) {}
+      msg('You got it! \u{1F389}'); clearTimeout(C.winT); C.winT = setTimeout(function () { winEl.hidden = true; }, 5200);
+    }
+    function startReset() { if (!body || body.resetting) return; body.resetting = { s: performance.now(), x0: body.x.clone(), q0: body.q.clone() }; body.free = false; }
+    // ---- controls: joystick, keys, buttons
+    var joyEl = document.getElementById('clawJoy'), knob = joyEl.querySelector('i'), jd = null;
+    function joyMove(ev) { var r = joyEl.getBoundingClientRect(), mx = r.width / 2 - 14, dx = ev.clientX - (r.left + r.width / 2), dy = ev.clientY - (r.top + r.height / 2), L = Math.hypot(dx, dy); if (L > mx) { dx *= mx / L; dy *= mx / L; } knob.style.transform = 'translate(' + dx + 'px,' + dy + 'px)'; joy.x = dx / mx; joy.y = dy / mx; }
+    joyEl.addEventListener('pointerdown', function (ev) { ev.preventDefault(); jd = ev.pointerId; try { joyEl.setPointerCapture(ev.pointerId); } catch (e) {} joyMove(ev); });
+    joyEl.addEventListener('pointermove', function (ev) { if (jd === ev.pointerId) joyMove(ev); });
+    ['pointerup', 'pointercancel'].forEach(function (t) { joyEl.addEventListener(t, function () { jd = null; joy.x = joy.y = 0; knob.style.transform = ''; }); });
+    document.getElementById('clawGo').addEventListener('click', grab);
+    document.getElementById('clawOff').addEventListener('click', function () { setOn(false); });
+    document.getElementById('clawLb').addEventListener('click', function () { openLeaderboard('claw'); });
+    document.getElementById('clawWinLb').addEventListener('click', function () { winEl.hidden = true; openLeaderboard('claw'); });
+    btn.addEventListener('click', function () { setOn(!C.on); });
+    function typing(t) { return t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)); }
+    document.addEventListener('keydown', function (e) {
+      if (!C.on || typing(e.target) || !modal.hidden || SHELF.open) return;
+      var k = e.key.toLowerCase();
+      if (/^(arrowleft|arrowright|arrowup|arrowdown|a|d|w|s)$/.test(k)) { keys[k] = true; e.preventDefault(); }
+      if (k === ' ' || k === 'enter') { e.preventDefault(); if (!e.repeat) grab(); }
+      if (k === 'escape') setOn(false);
+    });
+    document.addEventListener('keyup', function (e) { keys[e.key.toLowerCase()] = false; });
+    // ---- every frame
+    C.tick = function (now) {
+      var dt = Math.min(0.05, (now - (lastT || now)) / 1000); lastT = now; if (dt <= 0) return;
+      RIG.idle = now; RIG.hops = 3;   // no idle hops while playing
+      if (camAnim) { var k = Math.min(1, (now - camAnim.s) / 800), e2 = k * k * (3 - 2 * k); camera.position.lerpVectors(camAnim.p0, camAnim.p1, e2); controls.target.lerpVectors(camAnim.t0, camAnim.t1, e2); if (k >= 1) camAnim = null; }
+      // move: joystick and keys, relative to the camera
+      var fx = (keys.arrowright || keys.d ? 1 : 0) - (keys.arrowleft || keys.a ? 1 : 0) + joy.x, fz = (keys.arrowdown || keys.s ? 1 : 0) - (keys.arrowup || keys.w ? 1 : 0) + joy.y;
+      var fwd = new V3(); camera.getWorldDirection(fwd); fwd.y = 0; fwd.normalize(); var right = new V3().crossVectors(fwd, new V3(0, 1, 0));
+      var want = new V3().addScaledVector(right, fx).addScaledVector(fwd, -fz); if (want.length() > 1) want.normalize();
+      var canMove = st === 'idle' || st === 'carry';
+      vel.lerp(want.multiplyScalar(canMove ? 62 : 0), Math.min(1, dt * 8));
+      pos.addScaledVector(vel, dt); var b = bounds(); pos.x = Math.max(b.x0, Math.min(b.x1, pos.x)); pos.z = Math.max(b.z0, Math.min(b.z1, pos.z));
+      // up and down
+      if (st === 'enter') { cy += (hoverY - cy) * Math.min(1, dt * 4); if (Math.abs(cy - hoverY) < 0.6) st = 'idle'; }
+      else if (st === 'drop') { cy -= 48 * dt; if (cy <= stopY) { cy = stopY; st = 'grip'; t0 = now; angGoal = 0.08; } }
+      else if (st === 'grip') {
+        if (now - t0 > 520) {
+          var cb = charBox(), cc = cb.isEmpty() ? null : cb.getCenter(new V3()), d = cc ? Math.hypot(cc.x - pos.x, cc.z - pos.z) : 99;
+          if (hitChar && d < 16 && !body) {
+            body = makeBody();
+            if (body) {
+              body.attached = true; body.off = body.x.clone().sub(new V3(pos.x, cy, pos.z));
+              var hold = Math.max(0.25, Math.min(0.82, 0.25 + 0.6 * (1 - d / 16)));   // the better the aim, the better the grip
+              if (C.forceGrip === 'strong' || (C.forceGrip !== 'weak' && Math.random() < hold)) grip = { slipRate: C.forceGrip === 'strong' ? 0 : 0.05 }; else grip = { slipAt: stopY + (hoverY - stopY) * (0.04 + Math.random() * 0.8) };
+              angGoal = 0.24; msg('Got it… hold on!'); SFX.play('pop');
+            }
+          } else { angGoal = 0.08; msg(hitChar ? 'So close! Try again.' : 'Missed! Aim over the character.'); }
+          st = 'lift';
+        }
+      } else if (st === 'lift') {
+        cy += 40 * dt;
+        if (body && body.attached && grip && grip.slipAt !== undefined && cy >= grip.slipAt) release(true);
+        if (cy >= hoverY) { cy = hoverY; if (body && body.attached) { st = 'carry'; msg('Take it to the prize hole, then GRAB to drop!'); } else { st = 'idle'; angGoal = 0.5; } }
+      } else if (st === 'carry') {
+        if (grip && grip.slipRate && Math.random() < grip.slipRate * dt) release(true);   // real arcade luck
+      }
+      ang += (angGoal - ang) * Math.min(1, dt * 9);
+      prongs.forEach(function (pv) { pv.rotation.z = ang; });
+      // the claw sways a little when it moves
+      var sway = Math.max(-0.2, Math.min(0.2, vel.length() / 300));
+      rig.position.set(pos.x, cy, pos.z); rig.rotation.set(-vel.z / 300, 0, vel.x / 300);
+      cable.scale.y = 900; cable.position.y = 10 + 450;
+      // the aim ring shows where it will land
+      var g2 = groundAt(pos.x, pos.z); aim.position.set(pos.x, g2.y + 0.4, pos.z); aim.material.color.set(g2.char ? 0x7CEDE3 : 0xFFD84A);
+      // the character
+      if (body) {
+        if (body.attached) {
+          var tgt2 = new V3(pos.x, cy, pos.z).add(body.off); body.x.lerp(tgt2, Math.min(1, dt * 14));
+          var tilt = new THREE.Quaternion().setFromEuler(new THREE.Euler(vel.z / 260, 0, -vel.x / 260)); body.q.slerp(tilt, Math.min(1, dt * 3));
+        } else if (body.resetting) {
+          var rk = Math.min(1, (now - body.resetting.s) / 850), re = rk * rk * (3 - 2 * rk);
+          body.x.lerpVectors(body.resetting.x0, body.home, re); body.x.y += Math.sin(rk * Math.PI) * 30; body.q.copy(body.resetting.q0).slerp(new THREE.Quaternion(), re);
+          if (rk >= 1) { dropBody(); placeChar(); msg('Move the claw, then GRAB!'); SFX.play('pop'); }
+        } else if (body.free) {
+          for (var n = 0; n < 4; n++) physics(dt / 4);
+          if (!body.won && Math.hypot(body.x.x - CH.x, body.x.z - CH.z) < CH.r && body.x.y < CH.rim - 4) win();
+          var still = body.v.length() < 12 && body.w.length() < 0.6;
+          body.rest = still ? body.rest + dt : 0;
+          if (body.won && body.x.y < CH.rim - 60) { body.x.y = CH.rim - 60; body.v.set(0, 0, 0); }
+          if ((body.won && now - body.t0 > 1400) || body.rest > 1.4 || now - body.t0 > 7000 || body.x.y < CH.ground - 300) { setTimeout(startReset, body.won ? 900 : 300); body.free = false; }
+        }
+        if (body) { body.g.position.copy(body.x); body.g.quaternion.copy(body.q); }
+      }
+      if (CH.glow) CH.glow.material.opacity = 0.35 + 0.35 * Math.sin(now / 260);
+      // the eyes watch the claw
+      var sp = new V3(pos.x, cy, pos.z).project(camera), rr2 = renderer.domElement.getBoundingClientRect();
+      RIG.look = { x: rr2.left + (sp.x + 1) / 2 * rr2.width, y: rr2.top + (1 - sp.y) / 2 * rr2.height }; RIG.lookT = now;
+      document.getElementById('clawGo').disabled = !(st === 'idle' || st === 'carry') || !!(body && !body.attached);
+      document.getElementById('clawGo').textContent = st === 'carry' ? 'DROP' : 'GRAB';
+    };
+    C.setOn = setOn;
+    C.debug = { state: function () { return { st: st, x: pos.x, z: pos.z, cy: cy, hover: hoverY, body: !!body, attached: !!(body && body.attached), free: !!(body && body.free), won: !!(body && body.won), grip: grip, ch: [CH.x, CH.z, CH.rim], score: CLAWS.total }; }, moveTo: function (x, z) { pos.x = x; pos.z = z; }, grab: grab, luck: function (v) { C.forceGrip = v; } };
+    return C;
+  })();
+
   // ---------- account, save, share, gallery ----------
   var SHARE_BASE = 'https://claude.ai/artifact/LVrW9SrragqrisMYsUHqer';
   var DBX = null, USR = null, UID = null;
@@ -6344,7 +6747,7 @@ var DECO = (function () {
   // ---------- slim tool bar: Undo, Redo and Reset view stay out; the other preview tools live in a Tools menu ----------
   (function () {
     var bar = document.querySelector('.stage .tools'); if (!bar) return;
-    var ids = ['lightBtn', 'measure', 'expand', 'seeInside', 'hideChar', 'hideBox'];
+    var ids = ['clawBtn', 'lightBtn', 'measure', 'expand', 'seeInside', 'hideChar', 'hideBox'];
     var menu = document.createElement('div'); menu.className = 'toolsmenu'; menu.id = 'toolsMenu'; menu.hidden = true; menu.setAttribute('role', 'group'); menu.setAttribute('aria-label', 'Preview tools');
     var mt = document.createElement('b'); mt.className = 'tmtitle'; mt.textContent = 'Tools'; menu.appendChild(mt);
     ids.forEach(function (id) {
@@ -6734,7 +7137,7 @@ var DECO = (function () {
       var keep = {}; Object.keys(CHAT.mine.reacts || {}).forEach(function (k) { if (CHAT.byId[k]) keep[k] = CHAT.mine.reacts[k]; });
       CHAT.mine.reacts = keep; CHAT.lastBeat = Date.now();
       CLK.dirty = false;
-      return DBX.collection('chat').doc(UID).set({ msgs: CHAT.mine.msgs, reacts: keep, seen: CHAT.lastBeat, clicks: { d: CLK.day.d === dayKey() ? CLK.day.d : '', n: todayMine(), total: CLK.mine } });
+      return DBX.collection('chat').doc(UID).set({ msgs: CHAT.mine.msgs, reacts: keep, seen: CHAT.lastBeat, clicks: { d: CLK.day.d === dayKey() ? CLK.day.d : '', n: todayMine(), total: CLK.mine }, claw: { total: CLAWS.total, wk: CLAWS.wk === weekKey() ? CLAWS.wk : '', wn: CLAWS.wk === weekKey() ? CLAWS.wn : 0 } });
     });
     return CHAT.writing;
   }
@@ -7801,10 +8204,10 @@ var DECO = (function () {
   });
   // ---------- 13. keyboard: the preview can be focused, and Space or Enter presses the character ----------
   cvs.tabIndex = 0; cvs.setAttribute('aria-label', 'Preview of your Boxedable. Press Space or Enter to click the character.');
-  cvs.addEventListener('keydown', function (e) { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); pressChar(); hideBubble(); } });
+  cvs.addEventListener('keydown', function (e) { if (CLAW && CLAW.on) return; if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); pressChar(); hideBubble(); } });
   cvs.addEventListener('pointerdown', function (ev) { pDown = { x: ev.clientX, y: ev.clientY, t: performance.now() }; });
   cvs.addEventListener('pointerup', function (ev) {
-    if (!pDown) return; var moved = Math.hypot(ev.clientX - pDown.x, ev.clientY - pDown.y), quick = performance.now() - pDown.t < 400; pDown = null;
+    if (!pDown) return; if (CLAW && CLAW.on) { pDown = null; return; } var moved = Math.hypot(ev.clientX - pDown.x, ev.clientY - pDown.y), quick = performance.now() - pDown.t < 400; pDown = null;
     if (moved < 6 && quick && charHit(ev)) { pressChar(); hideBubble(); }
   });
   var pressT0 = -1;
@@ -7819,7 +8222,7 @@ var DECO = (function () {
   var BUBBLES = ['Click me!', 'Boop me!', 'Tap tap?', 'Wanna hear me click?', 'Do you like my box?', 'Pick a color for me?', 'I\u2019m ready to be printed!', 'Is it snack time?', 'Press me, I dare you!', 'Psst\u2026 over here!', 'Can I get a name?', 'Let\u2019s make something cute!'];
   var bubble = document.getElementById('charBubble'), bubbleT = 0, bubbleOn = false, lastB = -1;
   function showBubble() {
-    if (!S.parts.length || lift > 0.05 || (HIDE && HIDE[0]) || document.hidden || !modal.hidden) return;
+    if (!S.parts.length || lift > 0.05 || (HIDE && HIDE[0]) || document.hidden || !modal.hidden || (CLAW && CLAW.on)) return;
     var i; do { i = Math.floor(Math.random() * BUBBLES.length); } while (i === lastB && BUBBLES.length > 1); lastB = i;
     bubble.textContent = BUBBLES[i]; bubble.hidden = false; bubbleOn = true; bubble.classList.remove('pop'); void bubble.offsetWidth; bubble.classList.add('pop');
     clearTimeout(bubbleT); bubbleT = setTimeout(hideBubble, 6000);
@@ -7839,7 +8242,7 @@ var DECO = (function () {
   // ---------- playful touches: drag to spin, eyes that follow, idle hop, click counter, surprise box, little pops ----------
   // spin: drag the character sideways and it turns on the switch, then settles back to the front
   cvs.addEventListener('pointerdown', function (ev) {
-    if ((ev.pointerType === 'mouse' && ev.button !== 0) || !S.parts.length || lift > 0.05 || (HIDE && HIDE[0]) || !charHit(ev)) return;
+    if ((CLAW && CLAW.on) || (ev.pointerType === 'mouse' && ev.button !== 0) || !S.parts.length || lift > 0.05 || (HIDE && HIDE[0]) || !charHit(ev)) return;
     RIG.drag = { id: ev.pointerId, x: ev.clientX, lastX: ev.clientX, lastT: performance.now(), on: false };
     controls.enabled = false;   // the camera stays put while the character is being turned
   }, true);
@@ -7924,8 +8327,12 @@ var DECO = (function () {
   // click counter: your own presses, plus everyone's presses today (shared through each member's chat record)
   var CLK = { mine: 0, day: { d: '', n: 0 }, others: 0, t: 0, key: '', dirty: false };
   // each account keeps its own count (several members can share one browser); the account's chat record keeps it across devices
+  var CLAWS = { total: 0, wk: '', wn: 0, last: 0 };   // claw catches: all time and this week
+  function weekKey() { var d = new Date(), k = (d.getUTCDay() + 6) % 7; return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate() - k)).toISOString().slice(0, 10); }
+  function clawStore() { try { localStorage.setItem('bx-claw' + CLK.key, JSON.stringify(CLAWS)); } catch (e) {} }
   function clkLoad() {
     CLK.key = UID ? ':' + UID : '';
+    try { var cs = JSON.parse(localStorage.getItem('bx-claw' + CLK.key) || 'null'); CLAWS = cs && typeof cs.total === 'number' ? cs : { total: 0, wk: '', wn: 0, last: 0 }; } catch (e) {}
     try { CLK.mine = +localStorage.getItem('bx-clicks' + CLK.key) || 0; CLK.day = JSON.parse(localStorage.getItem('bx-clicks-day' + CLK.key) || 'null') || { d: '', n: 0 }; } catch (e) {}
     if (typeof myClicks !== 'undefined' && myClicks) paintClicks(false);   // the counter may not be on the page yet
   }
@@ -7944,6 +8351,9 @@ var DECO = (function () {
     if (bump && !reduce) { clickPill.classList.remove('bump'); void clickPill.offsetWidth; clickPill.classList.add('bump'); }
   }
   function clickAdd() {
+    var nowT = Date.now(); CLK.bt = (CLK.bt || []).filter(function (t) { return nowT - t < 1000; });
+    if (CLK.bt.length >= 20) return;   // more than 20 a second isn't a person clicking
+    CLK.bt.push(nowT);
     CLK.mine++; if (CLK.day.d !== dayKey()) CLK.day = { d: dayKey(), n: 0 }; CLK.day.n++;
     clkStore(); CLK.dirty = true;
     paintClicks(true);
@@ -7954,6 +8364,7 @@ var DECO = (function () {
     docs.forEach(function (doc) {
       var c = doc.data && doc.data() && doc.data().clicks; if (!c) return;
       if (doc.id === UID) {   // this account, maybe from another device
+        var cw = doc.data().claw; if (cw && +cw.total > CLAWS.total) { CLAWS.total = +cw.total; if (cw.wk === weekKey()) { CLAWS.wk = cw.wk; CLAWS.wn = Math.max(CLAWS.wn, +cw.wn || 0); } clawStore(); }
         if (+c.total > CLK.mine) { CLK.mine = +c.total; clkStore(); }
         if (c.d === d && c.n > todayMine()) { CLK.day = { d: d, n: c.n }; clkStore(); }
         return;
