@@ -6724,7 +6724,7 @@ var DECO = (function () {
       if (!RIG.eyeQ) { RIG.eyeQ = new THREE.Quaternion(); RIG.eyeQT = new THREE.Quaternion(); }
       if (RIG.look && now - RIG.lookT < 5000) {
         var r = cvs.getBoundingClientRect(), m0 = RIG.eyes[0].mesh, mid = new THREE.Vector3(), fwd = new THREE.Vector3();
-        eyeNdc.set(Math.max(-1.8, Math.min(1.8, ((RIG.look.x - r.left) / r.width) * 2 - 1)), Math.max(-1.8, Math.min(1.8, -((RIG.look.y - r.top) / r.height) * 2 + 1)));
+        eyeNdc.set(Math.max(-2.6, Math.min(2.6, ((RIG.look.x - r.left) / r.width) * 2 - 1)), Math.max(-2.6, Math.min(2.6, -((RIG.look.y - r.top) / r.height) * 2 + 1)));
         eyeRay.setFromCamera(eyeNdc, camera);
         // the face's frame without the eyes' own turn: parent * (base position + spin)
         eyeQ.setFromAxisAngle(ZAX, RIG.spin + RIG.wig); eyeP.copy(RIG.pivot).applyQuaternion(eyeQ).negate().add(RIG.pivot).add(m0.userData.base);
@@ -6733,7 +6733,7 @@ var DECO = (function () {
         var dist = camera.position.distanceTo(mid.clone().applyMatrix4(eyeM));
         eyeT.copy(eyeRay.ray.direction).multiplyScalar(dist * 0.62).add(eyeRay.ray.origin).applyMatrix4(eyeM.invert());
         RIG.eyeQT.setFromUnitVectors(fwd, eyeT.sub(mid).normalize());
-        var ang = 2 * Math.acos(Math.min(1, Math.abs(RIG.eyeQT.w))); if (ang > 0.3) RIG.eyeQT.copy(ID_Q).slerp(RIG.eyeQT, 0.3 / ang);
+        var ang = 2 * Math.acos(Math.min(1, Math.abs(RIG.eyeQT.w))); if (ang > 0.45) RIG.eyeQT.copy(ID_Q).slerp(RIG.eyeQT, 0.45 / ang);   // up to about 26 degrees
       } else RIG.eyeQT.copy(ID_Q);
       if (RIG.eyeQ.angleTo(RIG.eyeQT) > 0.0008) {
         RIG.eyeQ.slerp(RIG.eyeQT, reduce ? 1 : 1 - Math.pow(0.84, f));
