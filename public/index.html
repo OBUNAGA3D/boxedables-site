@@ -1142,6 +1142,15 @@ body.shelfon { overflow: hidden; }
 .shadd span { font: 400 30px/1 "Lilita One", sans-serif; }
 .shadd:hover { background: rgba(255,255,255,.6); }
 .shadd[hidden] { display: none; }
+.shrail { position: absolute; z-index: 4; right: 10px; top: 16px; bottom: 16px; width: 34px; display: grid; grid-template-rows: auto minmax(0, 1fr); justify-items: center; gap: 6px; }
+.shrail[hidden] { display: none; }
+.shrl { writing-mode: vertical-rl; transform: rotate(180deg); font: 400 13px "Lilita One", "Fredoka", sans-serif; color: #FFFFFF; -webkit-text-stroke: 3px var(--ink-dark); paint-order: stroke fill; letter-spacing: .5px; }
+.shtrack { position: relative; width: 22px; height: 100%; border: 3px solid var(--ink-dark); border-radius: 999px; background: rgba(255,255,255,.35); box-shadow: inset 0 2px 4px rgba(0,0,0,.25); cursor: pointer; touch-action: none; }
+.shtrack i { position: absolute; left: -3px; top: 0; width: 22px; border: 3px solid var(--ink-dark); border-radius: 999px; background: linear-gradient(90deg, #FFF09A 0%, #FFD84A 47%, #F7B500 53%, #E99E00 100%); box-shadow: inset 0 2px 0 rgba(255,255,255,.6), 0 3px 0 var(--ink-dark); display: grid; place-items: center; transition: transform .08s linear; }
+.shtrack.drag i, .shtrack:hover i { filter: brightness(1.06); }
+.shtrack b { writing-mode: vertical-rl; font: 700 10px "Figtree", sans-serif; color: var(--ink-dark); }
+.shelf.railon .shcard { right: 56px; }
+@media (pointer: coarse) { .shrail { width: 44px; } .shtrack, .shtrack i { width: 30px; } }
 .shfade { position: absolute; inset: 0; z-index: 1; pointer-events: none; background: linear-gradient(180deg, rgba(6,14,24,0) 30%, rgba(6,14,24,.32) 70%, rgba(6,14,24,.62) 100%); }   /* lower shelves get gradually darker */
 .shspin { position: absolute; left: 0; top: 0; z-index: 2; display: flex; gap: 5px; padding: 8px 11px; margin: -16px 0 0 -30px; border: 2.5px solid var(--ink-dark); border-radius: 999px; background: #FFFFFF; box-shadow: 0 3px 0 var(--ink-dark); will-change: transform; }
 .shspin[hidden] { display: none; }
@@ -1215,9 +1224,10 @@ body.shelfon { overflow: hidden; }
 .wrap.floatui > .side { position: relative !important; top: auto !important; margin-top: 14px; max-height: calc(100vh - 178px) !important; min-height: 0; }
 /* 2. community chat sits on the preview, bottom left */
 .wrap.floatui .stagecol > .chat { position: absolute !important; left: 14px !important; bottom: 14px !important; width: min(330px, 34%) !important; z-index: 7; }
-.wrap.floatui .stagecol > .chat .chatpanel { width: min(440px, calc(100vw - 40px)); }
+.wrap.floatui .stagecol > .chat .chatpanel { width: max(380px, min(640px, calc(100vw - 600px))); }
+.wrap.floatui.panelhid .stagecol > .chat .chatpanel { width: max(380px, min(760px, calc(100vw - 160px))); }
 .wrap.floatui > .stagecol.chatopen { z-index: auto !important; }
-.wrap.floatui .stagecol > .chat.open .chatpanel { height: min(620px, calc(100vh - 260px)); }
+.wrap.floatui .stagecol > .chat.open .chatpanel { height: max(360px, calc(100vh - 150px - 150px)); }   /* opens big: nearly the full height of the preview */
 /* the character's name moves to the bottom middle of the open part of the preview */
 .wrap.floatui .stage .modelname { left: 50%; bottom: 16px; transform: translateX(-50%); transition: left .32s cubic-bezier(.2,.8,.2,1); }
 .wrap.floatui:not(.panelhid) .stage .modelname { left: calc((100% - 432px) / 2); }
@@ -1248,6 +1258,24 @@ html::-webkit-scrollbar { width: 16px; }
 html::-webkit-scrollbar-track { background: #0B3B38; }
 html::-webkit-scrollbar-thumb { background: linear-gradient(90deg, #5EE0D4, #12AFA5 50%, #01A096); border: 3px solid #0B3B38; border-radius: 10px; }
 html::-webkit-scrollbar-thumb:hover { background: linear-gradient(90deg, #7CEDE3, #3FD3C7 50%, #12AFA5); }
+}
+
+.prail { position: fixed; right: 4px; top: 12px; bottom: 12px; z-index: 55; width: 30px; border: 3px solid var(--ink-dark); border-radius: 999px; background: rgba(11,59,56,.55); box-shadow: inset 0 2px 4px rgba(0,0,0,.3); touch-action: none; box-sizing: border-box; }
+.prail[hidden] { display: none; }
+.prail i { position: absolute; left: -3px; top: -3px; width: 30px; box-sizing: border-box; border: 3px solid var(--ink-dark); border-radius: 999px; background: linear-gradient(90deg, #7CEDE3 0%, #3FD3C7 47%, #12AFA5 53%, #0C8F87 100%); box-shadow: inset 0 2px 0 rgba(255,255,255,.55), 0 3px 0 var(--ink-dark); }
+.prail.drag i { filter: brightness(1.1); }
+@media (pointer: coarse) and (min-width: 700px) { .wrap { padding-right: 40px; } }
+
+@media (min-width: 1100px) {
+/* Hide panel: a vertical tab against the panel's left edge, halfway down */
+.wrap.floatui .paneltog { top: 50%; right: 410px; transform: translateY(-50%); writing-mode: vertical-rl; padding: 14px 7px; gap: 8px; border-radius: 14px; }
+.wrap.floatui .paneltog svg { transform: rotate(90deg); }
+.wrap.floatui .paneltog:active { transform: translateY(calc(-50% + 3px)); }
+.wrap.floatui.panelhid .paneltog { right: 14px; }
+/* the character's name: top right, beside the panel */
+.wrap.floatui .stage .modelname, .wrap.floatui:not(.panelhid) .stage .modelname { left: auto; right: 432px; top: 14px; bottom: auto; transform: none; transition: right .32s cubic-bezier(.2,.8,.2,1); }
+.wrap.floatui.panelhid .stage .modelname { right: 14px; }
+.wrap.floatui:not(.panelhid) .stage .toolrow { max-width: calc(100% - 640px); }
 }
 </style>
 </head>
@@ -1285,6 +1313,7 @@ html::-webkit-scrollbar-thumb:hover { background: linear-gradient(90deg, #7CEDE3
     <div class="shview" id="shView">
       <div class="shhit" id="shHit" tabindex="0" aria-label="Your shelf of saved designs. Scroll to move along it."></div>
       <div class="shlabs" id="shLabs"></div>
+      <div class="shrail" id="shRail" hidden><span class="shrl">Shelves</span><div class="shtrack"><i id="shThumb"><b id="shRow"></b></i></div></div>
       <div class="shfade" aria-hidden="true"></div>
       <p class="shmsg" id="shMsg" role="status"></p>
       <div class="shlist" id="shList"><div class="shlhead"><b>Your designs <span id="shListN"></span></b></div><input type="search" id="shQ" placeholder="Search by name or character" aria-label="Search your designs"><div class="shrows" id="shRows" role="listbox" aria-label="Your designs"></div></div>
@@ -2425,7 +2454,7 @@ var DECO = (function () {
   var plateMat = new THREE.MeshStandardMaterial({ map: plateTex, roughness: 0.85, metalness: 0.05 });
   function buildPlate() {
     if (plate) { scene.remove(plate); plate.geometry.dispose(); }
-    var s = Math.max(70, Math.max(size.x, size.z) * 2.4), h = s / 2, r = s * 0.05, sh = new THREE.Shape();
+    var s = Math.max(95, Math.max(size.x, size.z) * 3.2), h = s / 2, r = s * 0.05, sh = new THREE.Shape();   // a roomier build plate
     sh.moveTo(-h + r, -h); sh.lineTo(h - r, -h); sh.quadraticCurveTo(h, -h, h, -h + r); sh.lineTo(h, h - r);
     sh.quadraticCurveTo(h, h, h - r, h); sh.lineTo(-h + r, h); sh.quadraticCurveTo(-h, h, -h, h - r);
     sh.lineTo(-h, -h + r); sh.quadraticCurveTo(-h, -h, -h + r, -h);
@@ -3841,6 +3870,36 @@ var DECO = (function () {
     };
   })();
 
+  // ---------- a page scroll handle for iPad and other touch tablets (their browsers hide the normal scrollbar) ----------
+  (function () {
+    var mq = window.matchMedia('(pointer: coarse) and (min-width: 700px)');
+    var rail = document.createElement('div'); rail.className = 'prail'; rail.hidden = true; rail.setAttribute('aria-hidden', 'true');
+    var thumb = document.createElement('i'); rail.appendChild(thumb); document.body.appendChild(rail);
+    var drag = null, raf = 0;
+    function sync() {
+      raf = 0; var de = document.documentElement, H = de.scrollHeight, vh = window.innerHeight;
+      var on = mq.matches && H > vh + 8 && !document.body.classList.contains('shelfon') && (typeof modal === 'undefined' || modal.hidden);
+      rail.hidden = !on; if (!on) return;
+      var rh = rail.clientHeight, th = Math.max(60, rh * vh / H), f = Math.max(0, Math.min(1, window.scrollY / Math.max(1, H - vh)));
+      thumb.style.height = th + 'px'; thumb.style.transform = 'translateY(' + Math.round((rh - th) * f) + 'px)';
+    }
+    function soon() { if (!raf) raf = requestAnimationFrame(sync); }
+    function to(ev) {
+      var r = rail.getBoundingClientRect(), th = thumb.offsetHeight, f = (ev.clientY - r.top - drag.grab) / Math.max(1, r.height - th);
+      var de = document.documentElement; window.scrollTo(0, Math.max(0, Math.min(1, f)) * (de.scrollHeight - window.innerHeight));
+    }
+    rail.addEventListener('pointerdown', function (ev) {
+      ev.preventDefault(); var tr = thumb.getBoundingClientRect();
+      drag = { grab: ev.target === thumb ? ev.clientY - tr.top : thumb.offsetHeight / 2 }; to(ev); rail.classList.add('drag');
+      try { rail.setPointerCapture(ev.pointerId); } catch (e) {}
+    });
+    rail.addEventListener('pointermove', function (ev) { if (drag) to(ev); });
+    ['pointerup', 'pointercancel'].forEach(function (t) { rail.addEventListener(t, function () { drag = null; rail.classList.remove('drag'); }); });
+    window.addEventListener('scroll', soon, { passive: true }); window.addEventListener('resize', soon);
+    if (window.ResizeObserver) new ResizeObserver(soon).observe(document.body);
+    (mq.addEventListener ? mq.addEventListener.bind(mq, 'change') : mq.addListener.bind(mq))(soon);
+    setInterval(soon, 1000); soon();
+  })();
   // ---------- account, save, share, gallery ----------
   var SHARE_BASE = location.origin + location.pathname;
   var DBX = null, USR = null, UID = null;
@@ -4054,6 +4113,15 @@ var DECO = (function () {
     var beamGeo = new THREE.CylinderGeometry(5, 30, H - 10, 32, 1, true);
     var beamMat = new THREE.MeshBasicMaterial({ map: glowTex(false), transparent: true, opacity: 0.32, depthWrite: false, side: THREE.DoubleSide, toneMapped: false });
     var lampGeo = new THREE.CylinderGeometry(6, 6, 2.2, 24);
+    function shadeTex(kind) {
+      var c = document.createElement('canvas'); c.width = c.height = 128; var x = c.getContext('2d'), g;
+      if (kind === 'blob') { g = x.createRadialGradient(64, 64, 0, 64, 64, 64); g.addColorStop(0, 'rgba(0,0,0,.62)'); g.addColorStop(0.55, 'rgba(0,0,0,.3)'); g.addColorStop(1, 'rgba(0,0,0,0)'); }
+      else { g = x.createLinearGradient(0, 0, 0, 128); g.addColorStop(0, 'rgba(0,0,0,.55)'); g.addColorStop(1, 'rgba(0,0,0,0)'); }
+      x.fillStyle = g; x.fillRect(0, 0, 128, 128); var t = new THREE.CanvasTexture(c); return t;
+    }
+    var blobGeo = new THREE.PlaneGeometry(56, 44); blobGeo.rotateX(-Math.PI / 2);
+    var blobMat = new THREE.MeshBasicMaterial({ map: shadeTex('blob'), transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -3 });
+    var edgeTex = shadeTex('edge'), edgeMat = new THREE.MeshBasicMaterial({ map: edgeTex, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2 });
     var lampMat = new THREE.MeshBasicMaterial({ color: new THREE.Color('#FFF4D6'), toneMapped: false });
     var phGeo = new THREE.BoxGeometry(40, 44, 38, 1, 1, 1); phGeo.translate(0, 22, 0);
     var phMat = new THREE.MeshStandardMaterial({ color: lin('#DCE4E6'), roughness: 0.85, transparent: true, opacity: 0.6 });
@@ -4087,18 +4155,26 @@ var DECO = (function () {
         var st = new THREE.Mesh(sg, stripMat); st.position.set(0, y - 9.6, 23); unitGrp.add(st);
       }
 
+      var cornerG = new THREE.PlaneGeometry(w, 14), wallUpG = new THREE.PlaneGeometry(w, 22), wallDnG = new THREE.PlaneGeometry(w, 26);
+      for (var rr = r0; rr < r1; rr++) {
+        var yy = -rr * H;
+        var cf = new THREE.Mesh(cornerG, edgeMat); cf.rotation.x = -Math.PI / 2; cf.rotation.z = Math.PI; cf.position.set(0, yy + 0.2, -19); unitGrp.add(cf);       // on the shelf, along the wall
+        var wu = new THREE.Mesh(wallUpG, edgeMat); wu.rotation.z = Math.PI; wu.position.set(0, yy + 11, -24.8); unitGrp.add(wu);                               // on the wall, just above the shelf
+        var wd = new THREE.Mesh(wallDnG, edgeMat); wd.position.set(0, yy - 6 - 13, -24.8); unitGrp.add(wd);                                                   // the shelf's shadow on the wall below it
+      }
       wallTex.repeat.set(w / 160, tall / 160);
       var back = new THREE.Mesh(new THREE.PlaneGeometry(w, tall), backMat); back.position.set(0, midY, -25); unitGrp.add(back);
     }
     var SPOTS = null, m4 = new THREE.Matrix4();
     function placeSpots() {   // a spotlight over each spot that has a Boxedable; empty spots stay dark
-      if (!SPOTS) { var cap = 512; SPOTS = [new THREE.InstancedMesh(poolGeo, poolMat, cap), new THREE.InstancedMesh(beamGeo, beamMat, cap), new THREE.InstancedMesh(lampGeo, lampMat, cap)]; SPOTS.forEach(function (im) { im.frustumCulled = false; sc.add(im); }); }
+      if (!SPOTS) { var cap = 512; SPOTS = [new THREE.InstancedMesh(poolGeo, poolMat, cap), new THREE.InstancedMesh(beamGeo, beamMat, cap), new THREE.InstancedMesh(lampGeo, lampMat, cap), new THREE.InstancedMesh(blobGeo, blobMat, cap)]; SPOTS.forEach(function (im) { im.frustumCulled = false; sc.add(im); }); }
       var n = Math.min(512, ITEMS.length);
       for (var k = 0; k < n; k++) {
         var it = ITEMS[k];
         m4.makeTranslation(it.tx, it.ty + 0.4, 2); SPOTS[0].setMatrixAt(k, m4);
         m4.makeTranslation(it.tx, it.ty + (H - 10) / 2, 4); SPOTS[1].setMatrixAt(k, m4);
         m4.makeTranslation(it.tx, it.ty + H - 7.4, 6); SPOTS[2].setMatrixAt(k, m4);
+        m4.makeTranslation(it.tx, it.ty + 0.6, 0); SPOTS[3].setMatrixAt(k, m4);
       }
       SPOTS.forEach(function (im) { im.count = n; im.instanceMatrix.needsUpdate = true; });
     }
@@ -4335,7 +4411,7 @@ var DECO = (function () {
         }
         if (arranging) it.node.rotation.z = Math.sin(t * 9 + it.i) * 0.02; else it.node.rotation.z = 0;
       });
-      tiers(); cam.updateMatrixWorld(); placeLabels(); placeAdd();
+      tiers(); cam.updateMatrixWorld(); placeLabels(); placeAdd(); railSync();
       renderer.render(sc, cam);
     }
 
@@ -4395,6 +4471,26 @@ var DECO = (function () {
     function setZoom(z) { zoom = Math.max(0.8, Math.min(1.4, z)); clampY(); }
     document.getElementById('shIn').addEventListener('click', function () { setZoom(zoom / 1.15); });
     document.getElementById('shOut').addEventListener('click', function () { if (focus) closeCard(); setZoom(zoom * 1.15); });
+
+    // ----- a scroll handle on the right: drag it to move up and down the shelves (computers and tablets)
+    var railEl = document.getElementById('shRail'), trackEl = railEl.querySelector('.shtrack'), thumbEl = document.getElementById('shThumb'), rowEl = document.getElementById('shRow'), railDrag = null;
+    function railSync() {
+      var on = !phone() && rows > 1 && SHELF.loaded; railEl.hidden = !on; root.classList.toggle('railon', on); if (!on) return;
+      var th = trackEl.clientHeight, tk = Math.max(46, th / rows * 1.6), max = Math.max(1, rows - 1), f = Math.max(0, Math.min(1, viewY / max));
+      thumbEl.style.height = tk + 'px'; thumbEl.style.transform = 'translateY(' + Math.round((th - tk) * f) + 'px)';
+      rowEl.textContent = (Math.round(viewY) + 1) + '/' + rows;
+    }
+    function railTo(ev, grab) {
+      var r = trackEl.getBoundingClientRect(), tk = thumbEl.offsetHeight, f = (ev.clientY - r.top - grab) / Math.max(1, r.height - tk);
+      goalY = Math.max(0, Math.min(1, f)) * Math.max(1, rows - 1); clampY(); if (focus) closeCard();
+    }
+    trackEl.addEventListener('pointerdown', function (ev) {
+      ev.preventDefault(); var tr = thumbEl.getBoundingClientRect();
+      railDrag = { grab: ev.target === thumbEl || thumbEl.contains(ev.target) ? ev.clientY - tr.top : thumbEl.offsetHeight / 2 };
+      railTo(ev, railDrag.grab); trackEl.classList.add('drag'); try { trackEl.setPointerCapture(ev.pointerId); } catch (e) {}
+    });
+    trackEl.addEventListener('pointermove', function (ev) { if (railDrag) railTo(ev, railDrag.grab); });
+    ['pointerup', 'pointercancel'].forEach(function (t) { trackEl.addEventListener(t, function () { railDrag = null; trackEl.classList.remove('drag'); }); });
 
     // ----- the card for one design
     function openCard(it) {
