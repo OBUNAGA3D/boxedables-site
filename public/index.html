@@ -8217,7 +8217,7 @@ var DECO = (function () {
 
   // ---------- storage box: an open tray with square slots that keep characters out of their boxes, like keycaps ----------
   var ST_TPL0 = { classic: 1, rounded: 1, keycap: 1, crate: 1 }, ST_PATS = ['none', 'ribs', 'dots', 'stripes', 'planks', 'zigzag', 'waves', 'diamonds', 'hearts', 'stars', 'bricks', 'checks'];
-  var ST = { rolled: false, on: false, count: 4, tpl: 'rounded', tex: 'none', gap: 4, wall: 2.4, depth: 12, stem: true, color: '#6EC6FF', acc: '#FFD45C', slots: ['cur'] };
+  var ST = { rolled: false, on: false, count: 4, tpl: 'rounded', tex: 'none', gap: 4, wall: 2.4, depth: 20, stem: true, color: '#6EC6FF', acc: '#FFD45C', slots: ['cur'] };
   try { var sts = JSON.parse(localStorage.getItem('bx-storage') || 'null'); if (sts) Object.keys(ST).forEach(function (k) { if (sts[k] !== undefined) ST[k] = sts[k]; }); } catch (e) {}
   if (!ST_TPL0[ST.tpl]) ST.tpl = 'rounded'; if (ST_PATS.indexOf(ST.tex) < 0) ST.tex = 'none';
   if (!Array.isArray(ST.slots)) ST.slots = ['cur'];
@@ -8250,6 +8250,55 @@ var DECO = (function () {
     var base = new THREE.CylinderGeometry(2.9, 3.1, 1.4, 24); base.rotateX(Math.PI / 2); base.translate(x, y, z0 + 0.69);
     return concat([base, stBox(x, y, z0 + 1.38 + 1.9, 4.05, 1.25, 3.8), stBox(x, y, z0 + 1.38 + 1.9, 1.25, 4.05, 3.8)]);
   }
+  // ---- side patterns: drawn on a flat strip (t along the outside, z up), then wrapped around the tray, round corners included
+  function stPattern(L, T, acc) {
+    var r = Math.max(0, Math.min(T.ro, L.W / 2 - 0.01, L.D / 2 - 0.01)), sx = L.W - 2 * r, sy = L.D - 2 * r, q = Math.PI / 2 * r;
+    var segs = [[sx / 2, 'L', 0, -L.D / 2, 1, 0], [q, 'A', L.W / 2 - r, -L.D / 2 + r, -Math.PI / 2], [sy, 'L', L.W / 2, -L.D / 2 + r, 0, 1], [q, 'A', L.W / 2 - r, L.D / 2 - r, 0],
+      [sx, 'L', L.W / 2 - r, L.D / 2, -1, 0], [q, 'A', -L.W / 2 + r, L.D / 2 - r, Math.PI / 2], [sy, 'L', -L.W / 2, L.D / 2 - r, 0, -1], [q, 'A', -L.W / 2 + r, -L.D / 2 + r, Math.PI], [sx / 2, 'L', -L.W / 2 + r, -L.D / 2, 1, 0]];
+    var P = 0; segs.forEach(function (g) { P += g[0]; });
+    function at(t) {   // point and outward normal at distance t, starting at the middle of the front and going right
+      t = ((t % P) + P) % P;
+      for (var i = 0; i < segs.length; i++) {
+        var g = segs[i];
+        if (t <= g[0] || i === segs.length - 1) {
+          if (g[1] === 'L') return { x: g[2] + g[4] * t, y: g[3] + g[5] * t, nx: g[5], ny: -g[4] };
+          var an = g[4] + (r > 0 ? t / r : 0); return { x: g[2] + Math.cos(an) * r, y: g[3] + Math.sin(an) * r, nx: Math.cos(an), ny: Math.sin(an) };
+        }
+        t -= g[0];
+      }
+    }
+    var out = 0.85, H = L.H, zc = H / 2;
+    function dense(pts) { var o = []; for (var i = 0; i < pts.length; i++) { var p0 = pts[i], p1 = pts[(i + 1) % pts.length], n = Math.max(1, Math.ceil(Math.abs(p1[0] - p0[0]) / 0.8)); for (var k = 0; k < n; k++) o.push([p0[0] + (p1[0] - p0[0]) * k / n, p0[1] + (p1[1] - p0[1]) * k / n]); } return o; }
+    function wrap(g) { var a = g.getAttribute('position'); for (var i = 0; i < a.count; i++) { var w = at(a.getX(i)), d = a.getZ(i) - 0.05; a.setXYZ(i, w.x + w.nx * d, w.y + w.ny * d, a.getY(i)); } acc.push(g); }
+    function poly(pts) { var sh = new THREE.Shape(); dense(pts).forEach(function (v, i) { sh[i ? 'lineTo' : 'moveTo'](v[0], v[1]); }); wrap(new THREE.ExtrudeGeometry(sh, { depth: out + 0.05, bevelEnabled: false })); }
+    function shape(sh) { poly(sh.getPoints(10).map(function (v) { return [v.x, v.y]; })); }
+    function rect(t0, z0, w, h) { poly([[t0, z0], [t0 + w, z0], [t0 + w, z0 + h], [t0, z0 + h]]); }
+    function band(f, th) {   // a strip of thickness th following z = f(t) all the way round
+      var n = Math.ceil(P / 0.8), pts = [], i;
+      for (i = 0; i <= n; i++) pts.push([i * P / n, f(i * P / n) - th / 2]);
+      for (i = n; i >= 0; i--) pts.push([i * P / n, f(i * P / n) + th / 2]);
+      var sh = new THREE.Shape(); pts.forEach(function (v, k) { sh[k ? 'lineTo' : 'moveTo'](v[0], v[1]); }); wrap(new THREE.ExtrudeGeometry(sh, { depth: out + 0.05, bevelEnabled: false }));
+    }
+    function count(pitch) { return Math.max(4, Math.round(P / pitch)); }
+    var tex = ST.tex, n, i, step;
+    if (tex === 'ribs') { n = count(5); step = P / n; for (i = 0; i < n; i++) rect(i * step - 0.65, 1.5, 1.3, H - 3); }
+    else if (tex === 'stripes') { band(function () { return H * 0.36; }, 1.6); band(function () { return H * 0.7; }, 1.6); }
+    else if (tex === 'planks') { var np = H >= 11 ? 3 : 2, ph = (H - 2) / np; for (i = 0; i < np; i++) (function (zz) { band(function () { return zz; }, ph - 1.1); })(1 + ph * i + ph / 2); }
+    else if (tex === 'zigzag') { n = count(6); var per = P / n, amp = Math.min(4, (H - 5) / 2); band(function (t) { var u = (t / per) % 1; return zc + amp * (u < 0.5 ? -1 + 4 * u : 3 - 4 * u); }, 1.5); }
+    else if (tex === 'waves') { n = count(18); var wl = P / n, wa = Math.min(3.2, (H - 6) / 2); band(function (t) { return zc + wa * Math.sin(t / wl * Math.PI * 2); }, 2.4); }
+    else if (tex === 'dots') { n = count(6); step = P / n; for (var z = 3, row = 0; z <= H - 2.5; z += 4.5, row++) for (i = 0; i < n; i++) { var c = new THREE.Shape(); c.absarc(i * step + (row % 2 ? step / 2 : 0), z, 1.15, 0, Math.PI * 2, false); shape(c); } }
+    else if (tex === 'bricks') { var bh = 2.4, rows = Math.max(1, Math.floor((H - 2 + 0.8) / (bh + 0.8))); n = count(7.3); step = P / n; for (var rb = 0; rb < rows; rb++) for (i = 0; i < n; i++) rect(i * step + (rb % 2 ? step / 2 : 0), 1 + rb * (bh + 0.8), step - 0.8, bh); }
+    else if (tex === 'checks') { var cq = 2.6, rc = Math.floor((H - 2) / cq), z0 = (H - rc * cq) / 2; n = count(cq); if (n % 2) n++; step = P / n; for (var rr = 0; rr < rc; rr++) for (i = 0; i < n; i++) if ((rr + i) % 2 === 0) rect(i * step, z0 + rr * cq, step, cq); }
+    else {
+      var sz = Math.min(H - 3, 7), r2 = sz / 2; n = count(sz * 1.45); step = P / n;
+      for (i = 0; i < n; i++) {
+        var tc = i * step;
+        if (tex === 'diamonds') poly([[tc, zc - r2], [tc + r2 * 0.72, zc], [tc, zc + r2], [tc - r2 * 0.72, zc]]);
+        else if (tex === 'stars') { var sp = []; for (var v = 0; v < 10; v++) { var ang = Math.PI / 2 + v * Math.PI / 5, rv = v % 2 ? r2 * 0.45 : r2; sp.push([tc + Math.cos(ang) * rv, zc + Math.sin(ang) * rv]); } poly(sp); }
+        else if (tex === 'hearts') { var hs = new THREE.Shape(); hs.moveTo(tc, zc - r2); hs.bezierCurveTo(tc - r2 * 1.3, zc - r2 * 0.1, tc - r2, zc + r2 * 1.05, tc, zc + r2 * 0.45); hs.bezierCurveTo(tc + r2, zc + r2 * 1.05, tc + r2 * 1.3, zc - r2 * 0.1, tc, zc - r2); shape(hs); }
+      }
+    }
+  }
   var stCache = {};
   function stGeo() {
     var key = JSON.stringify([ST.count, ST.tpl, ST.tex, ST.gap, ST.wall, ST.depth, ST.stem]); if (stCache[key]) return stCache[key];
@@ -8266,54 +8315,7 @@ var DECO = (function () {
     if (ST.tpl === 'crate') [[-1, -1], [1, -1], [1, 1], [-1, 1]].forEach(function (k) {   // corner posts standing a little proud
       var p = Math.max(6, L.w + 3.5); acc.push(stBox(k[0] * (L.W / 2 - p / 2 + 1), k[1] * (L.D / 2 - p / 2 + 1), (L.H + 1.6) / 2, p, p, L.H + 1.6));
     });
-    if (ST.tex !== 'none') {
-      var m = T.ro + 2.5, out = 0.8, sides = [   // the four flat sides: middle point, direction along, outward normal, length
-        { x: 0, y: -L.D / 2, ax: 1, ay: 0, nx: 0, ny: -1, len: L.W - 2 * m }, { x: 0, y: L.D / 2, ax: 1, ay: 0, nx: 0, ny: 1, len: L.W - 2 * m },
-        { x: -L.W / 2, y: 0, ax: 0, ay: 1, nx: -1, ny: 0, len: L.D - 2 * m }, { x: L.W / 2, y: 0, ax: 0, ay: 1, nx: 1, ny: 0, len: L.D - 2 * m }];
-      sides.forEach(function (sd) {
-        if (sd.len < 6) return;
-        var px = sd.x + sd.nx * (out / 2 - 0.05), py = sd.y + sd.ny * (out / 2 - 0.05);
-        function bar(t, z, along, tall) { var sx = sd.ax ? along : out, sy = sd.ay ? along : out; acc.push(stBox(px + sd.ax * t, py + sd.ay * t, z, sx, sy, tall)); }
-        if (ST.tex === 'ribs') { var nr = Math.floor(sd.len / 5); for (var i = 0; i <= nr; i++) bar(-sd.len / 2 + i * sd.len / Math.max(1, nr), L.H / 2, 1.3, L.H - 3); }
-        else if (ST.tex === 'stripes') { bar(0, L.H * 0.36, sd.len, 1.6); bar(0, L.H * 0.7, sd.len, 1.6); }
-        else if (ST.tex === 'planks') { var np = L.H >= 11 ? 3 : 2, ph = (L.H - 2) / np; for (var j = 0; j < np; j++) bar(0, 1 + ph * j + ph / 2, sd.len, ph - 1.1); }
-        else if (/^(zigzag|waves|diamonds|hearts|stars|bricks|checks)$/.test(ST.tex)) {
-          // flat shapes drawn on the side (t along it, z up), pushed out from the wall
-          var a = new THREE.Vector3(sd.nx ? 0 : (sd.ny < 0 ? 1 : -1), sd.nx ? (sd.nx > 0 ? 1 : -1) : 0, 0), up = new THREE.Vector3(0, 0, 1), nv = new THREE.Vector3(sd.nx, sd.ny, 0);
-          var M4 = new THREE.Matrix4().makeBasis(a, up, nv).setPosition(sd.x - sd.nx * 0.05, sd.y - sd.ny * 0.05, 0), half = sd.len / 2, Hh = L.H, zc = Hh / 2;
-          function put(pts) { var sh = new THREE.Shape(); pts.forEach(function (q, i) { sh[i ? 'lineTo' : 'moveTo'](q[0], q[1]); }); put2(sh); }
-          function put2(sh) { var g2 = new THREE.ExtrudeGeometry(sh, { depth: out + 0.05, bevelEnabled: false, curveSegments: 8 }); g2.applyMatrix4(M4); acc.push(g2); }
-          function band(f, step) {   // a thick line following z = f(t)
-            for (var t0 = -half; t0 < half - 0.01; t0 += step) { var t1 = Math.min(half, t0 + step), z0 = f(t0), z1 = f(t1), th = 0.75; put([[t0, z0 - th], [t1, z1 - th], [t1, z1 + th], [t0, z0 + th]]); }
-          }
-          var amp = Math.max(1, (Hh - 5) / 2);
-          if (ST.tex === 'zigzag') { var per = 6; band(function (t) { var u = ((t + half) / per) % 1; return zc + amp * (u < 0.5 ? -1 + 4 * u : 3 - 4 * u); }, per / 2); }
-          else if (ST.tex === 'waves') band(function (t) { return zc + amp * Math.sin((t + half) / 7 * Math.PI * 2); }, 1);
-          else {
-            var sz = Math.min(Hh - 3, 7), gapT = ST.tex === 'checks' ? 0 : sz * 0.45, n0 = Math.max(1, Math.floor((sd.len + gapT) / (sz + gapT))), span = n0 * sz + (n0 - 1) * gapT;
-            if (ST.tex === 'bricks') {
-              var bh = 2.4, bl = 6.5, rowsB = Math.max(1, Math.floor((Hh - 2 + 0.8) / (bh + 0.8)));
-              for (var rb = 0; rb < rowsB; rb++) { var zb = 1 + rb * (bh + 0.8); for (var tb = -half + (rb % 2 ? bl / 2 + 0.4 : 0); tb + bl <= half; tb += bl + 0.8) put([[tb, zb], [tb + bl, zb], [tb + bl, zb + bh], [tb, zb + bh]]); }
-            } else if (ST.tex === 'checks') {
-              var cq = 2.6, rowsC = Math.floor((Hh - 2) / cq), colsC = Math.floor(sd.len / cq), t00 = -colsC * cq / 2, z00 = (Hh - rowsC * cq) / 2;
-              for (var rc = 0; rc < rowsC; rc++) for (var cc = 0; cc < colsC; cc++) if ((rc + cc) % 2 === 0) put([[t00 + cc * cq, z00 + rc * cq], [t00 + (cc + 1) * cq, z00 + rc * cq], [t00 + (cc + 1) * cq, z00 + (rc + 1) * cq], [t00 + cc * cq, z00 + (rc + 1) * cq]]);
-            } else for (var k2 = 0; k2 < n0; k2++) {
-              var tc = -span / 2 + sz / 2 + k2 * (sz + gapT), r2 = sz / 2;
-              if (ST.tex === 'diamonds') put([[tc, zc - r2], [tc + r2 * 0.72, zc], [tc, zc + r2], [tc - r2 * 0.72, zc]]);
-              else if (ST.tex === 'stars') { var sp = []; for (var v = 0; v < 10; v++) { var ang = Math.PI / 2 + v * Math.PI / 5, rr = v % 2 ? r2 * 0.45 : r2; sp.push([tc + Math.cos(ang) * rr, zc + Math.sin(ang) * rr]); } put(sp); }
-              else { var hs = new THREE.Shape(), q2 = r2; hs.moveTo(tc, zc - q2); hs.bezierCurveTo(tc - q2 * 1.3, zc - q2 * 0.1, tc - q2 * 1.0, zc + q2 * 1.05, tc, zc + q2 * 0.45); hs.bezierCurveTo(tc + q2 * 1.0, zc + q2 * 1.05, tc + q2 * 1.3, zc - q2 * 0.1, tc, zc - q2); put2(hs); }
-            }
-          }
-        }
-        else if (ST.tex === 'dots') {
-          var nd = Math.floor(sd.len / 6), zs = []; for (var z = 3; z <= L.H - 2.5; z += 4.5) zs.push(z);
-          zs.forEach(function (z, zi) { for (var q = 0; q <= nd; q++) {
-            var t = -sd.len / 2 + q * sd.len / Math.max(1, nd) + (zi % 2 ? sd.len / Math.max(1, nd) / 2 : 0); if (t > sd.len / 2) continue;
-            var cy = new THREE.CylinderGeometry(1.15, 1.15, out, 14); if (sd.nx) cy.rotateZ(Math.PI / 2); cy.translate(px + sd.ax * t, py + sd.ay * t, z); acc.push(cy);
-          } });
-        }
-      });
-    }
+    if (ST.tex !== 'none') stPattern(L, T, acc);
     return (stCache[key] = { tray: concat(tray), acc: acc.length ? concat(acc) : null, L: L });
   }
   function stPiece() {
@@ -8347,7 +8349,7 @@ var DECO = (function () {
       });
     } else {
       var e = (typeof LIB !== 'undefined' ? LIB : []).filter(function (x) { return x.id === id; })[0]; if (!e || !e.parts) return null;
-      var seen = {}, idx = 0, A = fitChar(e.parts).assemble;
+      var seen = {}, idx = 0, A = fitChar(e.parts).assemble.slice(); A[2] += typeof e.rest === 'number' ? e.rest : 5;   // floating above the switch, like in the box
       e.parts.forEach(function (p) {
         if (isSwitchPart(p)) return;
         var c = BX.classify(p.name); if (c.group === 'support' || c.optional || c.pick) return;
@@ -8379,7 +8381,8 @@ var DECO = (function () {
     } else {   // one bigger plate under the design and the tray
       var x0 = -ph, x1 = ph + 14 + L.W + 12, zr = Math.max(ph, L.D / 2 + 12), half = Math.max(x1 - x0, 2 * zr) / 2;
       plate.scale.set(half / ph, 1, half / ph); plate.position.set((x0 + x1) / 2, py, 0); stPlate = true;
-      stGroup.position.set(ph + 14 + L.W / 2, py + gb.max.y + 0.02, 0);
+      plate.updateMatrixWorld(true); var wtop = new THREE.Box3().setFromObject(plate).max.y;
+      stGroup.position.set(ph + 14 + L.W / 2, wtop + 0.02, 0);
     }
     // stretch the shadow so the tray casts one too
     var r = Math.max(lightR || 0, stGroup.position.x + L.W / 2 + 20, L.D + 40);
