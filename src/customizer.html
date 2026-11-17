@@ -1122,7 +1122,7 @@ body.shelfon { overflow: hidden; }
 .shrow b { font: 700 14px "Figtree", sans-serif; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .shrow small { font: 600 12px "Figtree", sans-serif; color: #4A5B58; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .shnone { margin: 6px; font: 600 14px "Figtree", sans-serif; color: #4A5B58; }
-.shview { position: relative; flex: 1; min-height: 0; overflow: hidden; background: radial-gradient(120% 90% at 50% 8%, #BFEAFF 0%, #5CC3FF 38%, #1E8FE0 72%, #0F5EA8 100%); }
+.shview { position: relative; flex: 1; min-height: 0; overflow: hidden; background: radial-gradient(80% 70% at 50% 45%, #6CC6FF 0%, #3FA6EE 70%); }
 .shview canvas.inshelf { position: absolute; inset: 0; width: 100%; height: 100%; display: block; pointer-events: none; }
 .shhit { position: absolute; inset: 0; z-index: 1; cursor: grab; touch-action: none; outline: none; }
 .shhit.over { cursor: pointer; }
@@ -1137,7 +1137,7 @@ body.shelfon { overflow: hidden; }
 .shadd span { font: 400 30px/1 "Lilita One", sans-serif; }
 .shadd:hover { background: rgba(255,255,255,.6); }
 .shadd[hidden] { display: none; }
-.shfade { position: absolute; inset: 0; z-index: 2; pointer-events: none; background: linear-gradient(180deg, rgba(14,74,70,.55) 0%, rgba(14,74,70,0) 14%, rgba(14,74,70,0) 86%, rgba(14,74,70,.55) 100%); }
+.shfade { display: none; }
 .shmsg { position: absolute; left: 50%; top: 42%; z-index: 3; transform: translate(-50%, -50%); margin: 0; padding: 12px 18px; border: 3px solid var(--ink-dark); border-radius: 16px; background: #FFFFFF; box-shadow: 0 4px 0 var(--ink-dark); color: var(--ink-dark); font: 700 15px "Figtree", sans-serif; text-align: center; max-width: 80%; }
 .shmsg:empty { display: none; }
 .shtip { position: absolute; left: 50%; bottom: 18px; z-index: 3; transform: translateX(-50%); margin: 0; padding: 8px 14px; border: 3px solid var(--ink-dark); border-radius: 14px; background: #FFF6C2; box-shadow: 0 3px 0 var(--ink-dark); color: var(--ink-dark); font: 600 14px "Figtree", sans-serif; white-space: nowrap; }
@@ -3789,7 +3789,7 @@ var DECO = (function () {
   var openShelf = (function () {
     var root = document.getElementById('shelf'), view = document.getElementById('shView'), hit = document.getElementById('shHit'), labs = document.getElementById('shLabs');
     var msgEl = document.getElementById('shMsg'), countEl = document.getElementById('shCount'), card = document.getElementById('shCard'), tipEl = document.getElementById('shTip');
-    var W = 74, H = 108, TURN = -0.3, cols = 6, rows = 1, K = 9;
+    var W = 76, H = 122, TURN = 0, cols = 6, rows = 1, K = 9;
     var sc = new THREE.Scene(), cam = new THREE.PerspectiveCamera(26, 1, 5, 8000), look = new THREE.Vector3(), camGoal = new THREE.Vector3(), lookGoal = new THREE.Vector3();
     function lights(s) {
       s.add(new THREE.HemisphereLight(0xffffff, 0x9fb4c8, 0.55));
@@ -3798,13 +3798,48 @@ var DECO = (function () {
       var c = new THREE.DirectionalLight(0xdff6ff, 0.3); c.position.set(0, 120, -300); s.add(c);
     }
     lights(sc);
+    var HAZE = '#3FA6EE'; sc.fog = new THREE.Fog(new THREE.Color(HAZE), 400, 900);
     var impScene = new THREE.Scene(); lights(impScene);
     var unitGrp = new THREE.Group(); sc.add(unitGrp);
     function lin(hex) { return new THREE.Color(hex).convertSRGBToLinear(); }
-    var boardMat = new THREE.MeshPhysicalMaterial({ color: lin('#E3E8E9'), roughness: 0.45, clearcoat: 0.5 });
-    var lipMat = new THREE.MeshPhysicalMaterial({ color: lin('#0C8F87'), roughness: 0.4, clearcoat: 0.7 });
-    var backMat = new THREE.MeshStandardMaterial({ color: lin('#1C6FC4'), roughness: 0.95 });
-    var postMat = new THREE.MeshPhysicalMaterial({ color: lin('#0A6E68'), roughness: 0.45, clearcoat: 0.5 });
+    // wood grain drawn on a canvas: light oak for shelves and dividers, darker walnut planks for the back wall
+    function woodTex(base, dark, planks, seed) {
+      var c = document.createElement('canvas'); c.width = 512; c.height = 512; var x = c.getContext('2d');
+      var rnd = (function (a) { return function () { a = (a * 9301 + 49297) % 233280; return a / 233280; }; })(seed);
+      x.fillStyle = base; x.fillRect(0, 0, 512, 512);
+      for (var i = 0; i < 140; i++) {   // long grain lines with a gentle wave
+        var y0 = rnd() * 512, amp = 2 + rnd() * 7, f = 0.004 + rnd() * 0.01, ph = rnd() * 6.3;
+        x.strokeStyle = dark; x.globalAlpha = 0.05 + rnd() * 0.16; x.lineWidth = 0.6 + rnd() * 2.2; x.beginPath();
+        for (var px = 0; px <= 512; px += 8) { var yy = y0 + Math.sin(px * f + ph) * amp; if (px) x.lineTo(px, yy); else x.moveTo(px, yy); }
+        x.stroke();
+      }
+      for (var k = 0; k < 6; k++) {   // a few knots
+        var kx = rnd() * 512, ky = rnd() * 512; x.globalAlpha = 0.2;
+        for (var rr = 3; rr < 16; rr += 3) { x.strokeStyle = dark; x.lineWidth = 1; x.beginPath(); x.ellipse(kx, ky, rr * 2.2, rr, 0, 0, 6.3); x.stroke(); }
+      }
+      x.globalAlpha = 1;
+      if (planks) { x.fillStyle = 'rgba(0,0,0,.35)'; for (var p = 0; p < 512; p += 128) x.fillRect(0, p, 512, 3); }
+      var t = new THREE.CanvasTexture(c); t.encoding = THREE.sRGBEncoding; t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = 8; return t;
+    }
+    var oakTex = woodTex('#A9713F', '#5A3216', false, 7), wallTex = woodTex('#6A3E22', '#2A1407', true, 21);
+    oakTex.repeat.set(6, 1);
+    var boardMat = new THREE.MeshPhysicalMaterial({ map: oakTex, roughness: 0.55, clearcoat: 0.35, clearcoatRoughness: 0.4 });
+    var lipMat = new THREE.MeshPhysicalMaterial({ color: lin('#8A5530'), map: oakTex, roughness: 0.45, clearcoat: 0.5 });
+    var backMat = new THREE.MeshStandardMaterial({ map: wallTex, roughness: 0.8 });
+    var postMat = new THREE.MeshPhysicalMaterial({ map: oakTex, color: lin('#E8D2B8'), roughness: 0.55, clearcoat: 0.3 });
+    var stripMat = new THREE.MeshBasicMaterial({ color: new THREE.Color('#FFE6A8'), toneMapped: false, fog: true });
+    function glowTex(radial) {
+      var c = document.createElement('canvas'); c.width = c.height = 128; var x = c.getContext('2d'), g;
+      if (radial) { g = x.createRadialGradient(64, 64, 0, 64, 64, 64); g.addColorStop(0, 'rgba(255,236,190,.95)'); g.addColorStop(0.45, 'rgba(255,224,160,.45)'); g.addColorStop(1, 'rgba(255,214,140,0)'); }
+      else { g = x.createLinearGradient(0, 128, 0, 0); g.addColorStop(0, 'rgba(255,240,205,.0)'); g.addColorStop(0.35, 'rgba(255,240,205,.35)'); g.addColorStop(1, 'rgba(255,246,220,.75)'); }
+      x.fillStyle = g; x.fillRect(0, 0, 128, 128); var t = new THREE.CanvasTexture(c); t.encoding = THREE.sRGBEncoding; return t;
+    }
+    var poolGeo = new THREE.PlaneGeometry(70, 46); poolGeo.rotateX(-Math.PI / 2);
+    var poolMat = new THREE.MeshBasicMaterial({ map: glowTex(true), transparent: true, depthWrite: false, toneMapped: false, polygonOffset: true, polygonOffsetFactor: -2 });
+    var beamGeo = new THREE.CylinderGeometry(5, 30, H - 10, 32, 1, true);
+    var beamMat = new THREE.MeshBasicMaterial({ map: glowTex(false), transparent: true, opacity: 0.32, depthWrite: false, side: THREE.DoubleSide, toneMapped: false });
+    var lampGeo = new THREE.CylinderGeometry(6, 6, 2.2, 24);
+    var lampMat = new THREE.MeshBasicMaterial({ color: new THREE.Color('#FFF4D6'), toneMapped: false });
     var phGeo = new THREE.BoxGeometry(40, 44, 38, 1, 1, 1); phGeo.translate(0, 22, 0);
     var phMat = new THREE.MeshStandardMaterial({ color: lin('#DCE4E6'), roughness: 0.85, transparent: true, opacity: 0.6 });
     var frameMat = new THREE.MeshBasicMaterial({ color: 0xffffff, toneMapped: false });
@@ -3825,36 +3860,48 @@ var DECO = (function () {
     function phone() { return view.clientWidth < 700; }
 
     // ----- the shelf unit
-    function slotPos(i) { var c = i % cols, r = Math.floor(i / cols); return { x: (c - (cols - 1) / 2) * W, y: -r * H }; }
+    function slotPos(i) { var c = i % cols, r = Math.floor(i / cols); return { x: (c - (cols - 1) / 2) * W, y: -r * H, z: 0, r: r }; }
     function buildUnit() {
       unitGrp.children.slice().forEach(function (m) { unitGrp.remove(m); if (m.geometry) m.geometry.dispose(); });
-      var w = cols * W + 14, tall = rows * H;
-      for (var r = 0; r < rows; r++) {
-        var b = new THREE.Mesh(new THREE.BoxGeometry(w, 5, 56), boardMat); b.position.set(0, -r * H - 2.5, 4); unitGrp.add(b);
-        var l = new THREE.Mesh(new THREE.BoxGeometry(w, 8, 3), lipMat); l.position.set(0, -r * H - 4, 33.5); unitGrp.add(l);
+      var extra = 9, w = (cols + extra * 2) * W, r0 = -4, r1 = rows + 7, tall = (r1 - r0) * H, midY = -((r0 + r1) / 2) * H + H / 2;
+      var bg = new THREE.BoxGeometry(w, 6, 52), lg = new THREE.BoxGeometry(w, 9, 3), sg = new THREE.BoxGeometry(w, 1.4, 1.6), dg = new THREE.BoxGeometry(4, tall, 50);
+      for (var r = r0; r < r1; r++) {   // spare shelves above and below fade into the haze
+        var y = -r * H;
+        var b = new THREE.Mesh(bg, boardMat); b.position.set(0, y - 3, 0); unitGrp.add(b);
+        var l = new THREE.Mesh(lg, lipMat); l.position.set(0, y - 4.5, 27.5); unitGrp.add(l);
+        var st = new THREE.Mesh(sg, stripMat); st.position.set(0, y - 9.6, 23); unitGrp.add(st);
       }
-      var top = new THREE.Mesh(new THREE.BoxGeometry(w + 20, 7, 60), postMat); top.position.set(0, H - 6, 4); unitGrp.add(top);
-      [-1, 1].forEach(function (sx) { var p = new THREE.Mesh(new THREE.BoxGeometry(10, tall + H + 6, 60), postMat); p.position.set(sx * (w / 2 + 5), H - 6 - (tall + H) / 2, 4); unitGrp.add(p); });
-      var back = new THREE.Mesh(new THREE.PlaneGeometry(w + 20, tall + H), backMat); back.position.set(0, H - 6 - (tall + H) / 2, -24); unitGrp.add(back);
+      var n = (r1 - r0) * (cols + extra * 2), m4 = new THREE.Matrix4(), k = 0;
+      var pools = new THREE.InstancedMesh(poolGeo, poolMat, n), beams = new THREE.InstancedMesh(beamGeo, beamMat, n), lamps = new THREE.InstancedMesh(lampGeo, lampMat, n);
+      for (var rr = r0; rr < r1; rr++) for (var cc = -extra; cc < cols + extra; cc++) {
+        var sx = (cc - (cols - 1) / 2) * W, sy = -rr * H;
+        m4.makeTranslation(sx, sy + 0.4, 2); pools.setMatrixAt(k, m4);
+        m4.makeTranslation(sx, sy + (H - 10) / 2, 4); beams.setMatrixAt(k, m4);
+        m4.makeTranslation(sx, sy + H - 7.4, 6); lamps.setMatrixAt(k, m4); k++;
+      }
+      [pools, beams, lamps].forEach(function (im) { im.instanceMatrix.needsUpdate = true; unitGrp.add(im); });
+      wallTex.repeat.set(w / 160, tall / 160);
+      var back = new THREE.Mesh(new THREE.PlaneGeometry(w, tall), backMat); back.position.set(0, midY, -25); unitGrp.add(back);
     }
     function layout() {
-      var nc = phone() ? 3 : Math.max(4, Math.min(7, Math.floor(view.clientWidth / 175)));
+      var nc = phone() ? 2 : Math.max(3, Math.min(5, Math.floor(view.clientWidth / 280)));
       K = phone() ? 4 : 9;
       var nr = Math.max(1, Math.ceil((ITEMS.length + 1) / nc));
       if (nc !== cols || nr !== rows || !built) { cols = nc; rows = nr; buildUnit(); built = true; }
-      ITEMS.forEach(function (it, i) { it.i = i; var p = slotPos(i); it.tx = p.x; it.ty = p.y; if (!it.placed) { it.node.position.set(p.x, p.y, 0); it.placed = true; } });
+      ITEMS.forEach(function (it, i) { it.i = i; var p = slotPos(i); it.tx = p.x; it.ty = p.y; it.tz = p.z; it.row = p.r; if (!it.placed) { it.node.position.set(p.x, p.y, p.z); it.placed = true; } });
       clampY();
     }
-    function dist() { var t = Math.tan(THREE.MathUtils.degToRad(cam.fov / 2)); return ((cols * W) / 2 + 34) / (t * cam.aspect) * zoom; }
+    // the camera looks down 30 degrees and stands off to the side, so each box shows its front, one side and its top
+    var TILT = THREE.MathUtils.degToRad(30), YAW = THREE.MathUtils.degToRad(24);
+    function viewDir(tilt) { return new THREE.Vector3(Math.sin(YAW) * Math.cos(tilt), Math.sin(tilt), Math.cos(YAW) * Math.cos(tilt)); }
+    var DIR = viewDir(TILT), DIRF = viewDir(THREE.MathUtils.degToRad(18)), RIGHT = new THREE.Vector3(Math.cos(YAW), 0, -Math.sin(YAW));
+    function dist() { var t = Math.tan(THREE.MathUtils.degToRad(cam.fov / 2)); return ((cols * W * Math.cos(YAW)) / 2 + W * 0.85) / (t * cam.aspect) * zoom; }
     function halfH() { return dist() * Math.tan(THREE.MathUtils.degToRad(cam.fov / 2)); }
-    function clampY() {   // goalY is where the camera looks; the top of the unit stays near the top edge, the last row near the bottom
-      var hh = halfH(), top = H + 4 - hh * 0.92, bot = -(rows - 1) * H - 26 + hh * 0.92;
-      goalY = top < bot ? (top + bot) / 2 : Math.max(bot, Math.min(top, goalY));
-    }
+    function clampY() { goalY = Math.max(0, Math.min(Math.max(0, rows - 1), goalY)); }   // goalY: which shelf the camera looks at (0 = the top one)
 
     // ----- items: stand-in, photo, picture (impostor) and real 3D
     function addItem(rec) {
-      var it = { id: rec.id, data: rec.data, key: rec.id + ':' + hashOf(JSON.stringify(rec.data.state || {})) + ':1', node: new THREE.Group(), ph: new THREE.Mesh(phGeo, phMat), pic: null, imp: null, g3: null, failed: false, wait: 0, used: 0 };
+      var it = { id: rec.id, data: rec.data, key: rec.id + ':' + hashOf(JSON.stringify(rec.data.state || {})) + ':3', node: new THREE.Group(), ph: new THREE.Mesh(phGeo, phMat), pic: null, imp: null, g3: null, failed: false, wait: 0, used: 0 };
       it.ph.userData.item = it; it.node.add(it.ph); sc.add(it.node); ITEMS.push(it);
       idbGet(it.key).then(function (v) { if (v && !it.imp && ITEMS.indexOf(it) >= 0) setImp(it, v); });
       return it;
@@ -3864,7 +3911,7 @@ var DECO = (function () {
       texOf(v.url, function (t) {
         if (ITEMS.indexOf(it) < 0) { t.dispose(); return; }
         var m = new THREE.Mesh(new THREE.PlaneGeometry(v.w, v.h), new THREE.MeshBasicMaterial({ map: t, transparent: true, alphaTest: 0.35, toneMapped: false }));
-        m.position.set(v.cx, v.cy, v.cz || 0); m.visible = false; m.userData.item = it;
+        m.position.set(v.cx, v.cy, v.cz || 0); if (v.q) m.quaternion.fromArray(v.q); m.visible = false; m.userData.item = it;
         if (it.imp) { it.node.remove(it.imp); it.imp.geometry.dispose(); it.imp.material.map.dispose(); it.imp.material.dispose(); }
         it.imp = m; it.node.add(m);
       });
@@ -3876,7 +3923,7 @@ var DECO = (function () {
         var w = 46, h = w * (t.image.height / t.image.width), g = new THREE.Group();
         var f = new THREE.Mesh(new THREE.PlaneGeometry(w + 4, h + 4), frameMat); f.position.z = -0.3; g.add(f);
         var p = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ map: t, toneMapped: false })); g.add(p);
-        g.position.set(0, h / 2 + 4, 6); g.rotation.x = -0.12; g.visible = false; f.userData.item = p.userData.item = it;
+        g.position.set(0, h / 2 + 4, 6); g.rotation.set(-TILT * 0.8, YAW, 0, 'YXZ'); g.visible = false; f.userData.item = p.userData.item = it;
         it.pic = g; it.node.add(g);
       });
     }
@@ -3913,13 +3960,19 @@ var DECO = (function () {
       if (!impR) { impR = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true }); impR.setPixelRatio(1); impR.outputEncoding = THREE.sRGBEncoding; impR.toneMapping = SOFT_TONE; impR.toneMappingExposure = renderer.toneMappingExposure; impR.setClearColor(0x000000, 0); }
       impScene.environment = scene.environment;
       var par = g.parent, vis = g.visible; impScene.add(g); g.visible = true; g.updateMatrixWorld(true);
-      var bb = new THREE.Box3().setFromObject(g), sz = bb.getSize(new THREE.Vector3()), c = bb.getCenter(new THREE.Vector3());
-      var w = sz.x * 1.08 + 3, h = sz.y * 1.08 + 3, px = 240, ph = Math.max(60, Math.min(480, Math.round(px * h / w)));
+      var bb = new THREE.Box3().setFromObject(g), c = bb.getCenter(new THREE.Vector3()), back = DIR.clone();
+      var oc = new THREE.OrthographicCamera(-1, 1, 1, -1, 1, 4000); oc.position.copy(c).addScaledVector(back, 800); oc.up.set(0, 1, 0); oc.lookAt(c); oc.updateMatrixWorld(true);
+      var right = new THREE.Vector3().setFromMatrixColumn(oc.matrixWorld, 0), up = new THREE.Vector3().setFromMatrixColumn(oc.matrixWorld, 1);
+      var mr = 0, mu = 0, md = 0;
+      [bb.min.x, bb.max.x].forEach(function (x) { [bb.min.y, bb.max.y].forEach(function (y) { [bb.min.z, bb.max.z].forEach(function (z) {
+        var q = new THREE.Vector3(x, y, z).sub(c); mr = Math.max(mr, Math.abs(q.dot(right))); mu = Math.max(mu, Math.abs(q.dot(up))); md = Math.max(md, q.dot(back));
+      }); }); });
+      var w = mr * 2.08 + 3, h = mu * 2.08 + 3, px = 240, ph = Math.max(60, Math.min(480, Math.round(px * h / w)));
       impR.setSize(px, ph);
-      var oc = new THREE.OrthographicCamera(-w / 2, w / 2, h / 2, -h / 2, 1, 4000);
-      oc.position.set(c.x, c.y + 18, c.z + 800); oc.lookAt(c.x, c.y, c.z);
+      oc.left = -w / 2; oc.right = w / 2; oc.top = h / 2; oc.bottom = -h / 2; oc.updateProjectionMatrix();
       impR.render(impScene, oc);
-      var v = { url: impR.domElement.toDataURL('image/png'), w: w, h: h, cx: c.x, cy: c.y, cz: c.z };
+      var f = c.clone().addScaledVector(back, md + 1);   // the picture stands just in front of where the model would be
+      var v = { url: impR.domElement.toDataURL('image/png'), w: w, h: h, cx: f.x, cy: f.y, cz: f.z, q: oc.quaternion.toArray() };
       par.add(g); g.visible = vis;
       setImp(it, v); idbPut(it.key, v);
     }
@@ -3964,7 +4017,7 @@ var DECO = (function () {
     function tiers() {
       var now = performance.now(), cand = [], asp = cam.aspect, threeD = zoom <= 1.35 && !arranging;
       ITEMS.forEach(function (it) {
-        tmp.set(it.node.position.x, it.node.position.y + 30, 0).project(cam);
+        tmp.set(it.node.position.x, it.node.position.y + 30, it.node.position.z).project(cam);
         it.sx = tmp.x; it.sy = tmp.y; it.on = Math.abs(tmp.x) < 1.15 && Math.abs(tmp.y) < 1.3 && tmp.z < 1; it.near = false;
         if (it.on) cand.push(it);
       });
@@ -3998,9 +4051,11 @@ var DECO = (function () {
           var sm = document.createElement('small'); sm.textContent = new Date(it.data.created || Date.now()).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' }); el.appendChild(sm);
           labs.appendChild(el);
         }
-        tmp.set(it.node.position.x, it.node.position.y - 4, 36).project(cam);
-        el.hidden = false; el.style.width = Math.round(pxW * 0.94) + 'px'; el.classList.toggle('mini', pxW < 92);
-        el.style.transform = 'translate(' + Math.round((tmp.x + 1) / 2 * vw - pxW * 0.47) + 'px,' + Math.round((1 - tmp.y) / 2 * vh) + 'px)';
+        tmp.set(it.node.position.x, it.node.position.y - 3, it.node.position.z + 30).project(cam);
+        var fo = Math.max(0, Math.min(1, (cam.position.distanceTo(it.node.position) - sc.fog.near) / (sc.fog.far - sc.fog.near)));
+        if (fo > 0.85) { el.hidden = true; return; }
+        el.hidden = false; el.style.opacity = String(1 - fo); el.style.width = Math.round(pxW * 0.72) + 'px'; el.classList.toggle('mini', pxW < 120);
+        el.style.transform = 'translate(' + Math.round((tmp.x + 1) / 2 * vw - pxW * 0.36) + 'px,' + Math.round((1 - tmp.y) / 2 * vh) + 'px)';
       });
     }
     // the empty spot after the last design: save the current design here
@@ -4011,12 +4066,12 @@ var DECO = (function () {
       ADD.btn = b; labs.appendChild(b);
     })();
     function placeAdd() {
-      var p = slotPos(ITEMS.length); ADD.node.position.set(p.x, p.y, 0);
-      tmp.set(p.x, p.y + 30, 0).project(cam); ADD.on = Math.abs(tmp.x) < 1.15 && Math.abs(tmp.y) < 1.3;
+      var p = slotPos(ITEMS.length); ADD.node.position.set(p.x, p.y, p.z);
+      tmp.set(p.x, p.y + 30, p.z).project(cam); ADD.on = Math.abs(tmp.x) < 1.15 && Math.abs(tmp.y) < 1.3;
       var vw = view.clientWidth, vh = view.clientHeight, pxW = W * vh / (2 * cam.position.distanceTo(look) * Math.tan(THREE.MathUtils.degToRad(cam.fov / 2)));
       ADD.btn.hidden = !ADD.on || arranging || !!focus || pxW < 46 || !SHELF.loaded;
       if (ADD.btn.hidden) return;
-      var top = tmp.set(p.x, p.y + 62, 0).project(cam).clone(), bot = tmp.set(p.x, p.y + 1, 0).project(cam);
+      var top = tmp.set(p.x, p.y + 70, p.z).project(cam).clone(), bot = tmp.set(p.x, p.y + 1, p.z + 18).project(cam);
       ADD.btn.style.width = Math.round(pxW * 0.8) + 'px'; ADD.btn.style.height = Math.round((top.y - bot.y) / 2 * vh) + 'px';
       ADD.btn.style.transform = 'translate(' + Math.round((top.x + 1) / 2 * vw - pxW * 0.4) + 'px,' + Math.round((1 - top.y) / 2 * vh) + 'px)';
     }
@@ -4026,9 +4081,10 @@ var DECO = (function () {
       viewY += (goalY - viewY) * (reduce ? 1 : 0.16);
       var d = dist(), ph = phone();
       if (focus) {
-        var fx = focus.node.position.x + (ph ? 0 : 26), fy = focus.node.position.y + (ph ? 8 : 30);
-        lookGoal.set(fx, fy, 0); camGoal.set(fx, fy + 16, ph ? 250 : 190);
-      } else { lookGoal.set(0, viewY, 0); camGoal.set(0, viewY + 22, d); }
+        var fdist = ph ? 250 : 190, fp = focus.node.position;
+        lookGoal.set(fp.x, fp.y + (ph ? 6 : 26), fp.z).addScaledVector(RIGHT, ph ? 0 : 28); camGoal.copy(lookGoal).addScaledVector(DIRF, fdist);   // a gentler angle up close
+      } else { lookGoal.set(0, -viewY * H + 26, 0); camGoal.copy(lookGoal).addScaledVector(DIR, d); }
+      var fn = focus ? 420 : d + 60, ff = focus ? 900 : d + 420; sc.fog.near += (fn - sc.fog.near) * 0.14; sc.fog.far += (ff - sc.fog.far) * 0.14;   // the steps fade out about three rows ahead
       var k = reduce ? 1 : 0.14;
       cam.position.lerp(camGoal, k); look.lerp(lookGoal, k); cam.lookAt(look);
     }
@@ -4045,7 +4101,7 @@ var DECO = (function () {
       ITEMS.forEach(function (it) {
         if (it === drag) return;
         var lift = it === hover && !focus ? 3 : 0;
-        it.node.position.x += (it.tx - it.node.position.x) * 0.2; it.node.position.y += (it.ty + lift - it.node.position.y) * 0.25;
+        it.node.position.x += (it.tx - it.node.position.x) * 0.2; it.node.position.y += (it.ty + lift - it.node.position.y) * 0.25; it.node.position.z += (it.tz - it.node.position.z) * 0.2;
         if (it.g3) {
           if (it === focus) it.g3.rotation.y += reduce ? 0 : 0.012;   // a slow turn while you look at it
           else { var a = it.g3.rotation.y - TURN; a = Math.atan2(Math.sin(a), Math.cos(a)); it.g3.rotation.y = TURN + a * 0.88; }   // the short way back
@@ -4072,22 +4128,22 @@ var DECO = (function () {
     hit.addEventListener('pointerdown', function (ev) {
       hit.focus({ preventScroll: true });
       pd = { x: ev.clientX, y: ev.clientY, y0: goalY, moved: false, it: arranging ? pick(ev) : null };
-      if (pd.it) { drag = pd.it; drag.node.position.z = 24; hit.classList.add('grab'); }
+      if (pd.it) { drag = pd.it; hit.classList.add('grab'); }
       try { hit.setPointerCapture(ev.pointerId); } catch (e) {}
     });
     hit.addEventListener('pointermove', function (ev) {
       if (!pd) { var h = SHELF.loaded ? pick(ev) : null; hover = h; hit.classList.toggle('over', !!h); return; }
       if (Math.hypot(ev.clientX - pd.x, ev.clientY - pd.y) > 6) pd.moved = true;
-      if (drag) { var p = planePoint(ev); drag.node.position.set(p.x, p.y - 26, 24); return; }
+      if (drag) { var p = planePoint(ev); drag.node.position.set(p.x, p.y - 26, 14); return; }
       if (focus || !pd.moved) return;
       var perPx = 2 * cam.position.distanceTo(look) * Math.tan(THREE.MathUtils.degToRad(cam.fov / 2)) / view.clientHeight;
-      goalY = pd.y0 + (ev.clientY - pd.y) * perPx; clampY(); viewY = goalY;
+      goalY = pd.y0 - (ev.clientY - pd.y) * perPx / (H * 0.72); clampY(); viewY = goalY;
     });
     function up(ev) {
       if (!pd) return; var p0 = pd; pd = null; hit.classList.remove('grab');
       if (drag) {
-        var it = drag; drag = null; it.node.position.z = 0;
-        var p = planePoint(ev), c = Math.round(p.x / W + (cols - 1) / 2), r = Math.round(-(p.y - 20) / H);
+        var it = drag; drag = null;
+        var p = planePoint(ev), c = Math.round(p.x / W + (cols - 1) / 2), r = Math.round(-(p.y - 30) / H);
         c = Math.max(0, Math.min(cols - 1, c)); r = Math.max(0, r);
         var to = Math.max(0, Math.min(ITEMS.length - 1, r * cols + c)), from = ITEMS.indexOf(it);
         if (to !== from) { ITEMS.splice(from, 1); ITEMS.splice(to, 0, it); orderDirty = true; SFX.play('pop'); }
@@ -4095,20 +4151,20 @@ var DECO = (function () {
       }
       if (!p0.moved) { var h = pick(ev); if (h && !arranging) openCard(h); else if (focus && !h) closeCard(); }
     }
-    hit.addEventListener('pointerup', up); hit.addEventListener('pointercancel', function () { pd = null; if (drag) { drag.node.position.z = 0; drag = null; layout(); } });
+    hit.addEventListener('pointerup', up); hit.addEventListener('pointercancel', function () { pd = null; if (drag) { drag = null; layout(); } });
     hit.addEventListener('wheel', function (ev) {
       ev.preventDefault();
       if (ev.ctrlKey) { setZoom(zoom * (ev.deltaY > 0 ? 1.08 : 1 / 1.08)); return; }
       if (focus) closeCard();
-      goalY -= ev.deltaY * 0.18 * zoom; clampY();
+      goalY += ev.deltaY * 0.0042 * zoom; clampY();
     }, { passive: false });
     hit.addEventListener('keydown', function (ev) {
-      if (ev.key === 'ArrowDown' || ev.key === 'PageDown') { goalY -= H * (ev.key === 'PageDown' ? 2 : 1); clampY(); ev.preventDefault(); }
-      if (ev.key === 'ArrowUp' || ev.key === 'PageUp') { goalY += H * (ev.key === 'PageUp' ? 2 : 1); clampY(); ev.preventDefault(); }
+      if (ev.key === 'ArrowDown' || ev.key === 'PageDown') { goalY += ev.key === 'PageDown' ? 2 : 1; clampY(); ev.preventDefault(); }
+      if (ev.key === 'ArrowUp' || ev.key === 'PageUp') { goalY -= ev.key === 'PageUp' ? 2 : 1; clampY(); ev.preventDefault(); }
     });
-    function setZoom(z) { zoom = Math.max(0.75, Math.min(2.8, z)); clampY(); }
-    document.getElementById('shIn').addEventListener('click', function () { setZoom(zoom / 1.3); });
-    document.getElementById('shOut').addEventListener('click', function () { if (focus) closeCard(); setZoom(zoom * 1.3); });
+    function setZoom(z) { zoom = Math.max(0.8, Math.min(1.4, z)); clampY(); }
+    document.getElementById('shIn').addEventListener('click', function () { setZoom(zoom / 1.15); });
+    document.getElementById('shOut').addEventListener('click', function () { if (focus) closeCard(); setZoom(zoom * 1.15); });
 
     // ----- the card for one design
     function openCard(it) {
@@ -4163,7 +4219,7 @@ var DECO = (function () {
     }
     function goTo(it) {
       if (arranging) arrBtn.click();
-      goalY = it.ty + H * 0.4; clampY();   // bring its row into view, then glide in
+      goalY = it.row; clampY();   // bring its shelf into view, then glide in
       openCard(it);
     }
     findBtn.addEventListener('click', function (e) { e.stopPropagation(); listOpen(listEl.hidden); });
@@ -4194,7 +4250,7 @@ var DECO = (function () {
         var list = []; snap.docs.forEach(function (d) { var x = d.data(); if (x && x.state) list.push({ id: d.id, data: x }); });
         // their own order first (Arrange); newer saves join at the end
         list.sort(function (a, b) { var pa = typeof a.data.pos === 'number' ? a.data.pos : 1e9, pb = typeof b.data.pos === 'number' ? b.data.pos : 1e9; return pa - pb || (a.data.created || 0) - (b.data.created || 0); });
-        list.forEach(addItem); layout(); goalY = 1e6; clampY(); viewY = goalY; SHELF.loaded = true;
+        list.forEach(addItem); layout(); goalY = viewY = 0; SHELF.loaded = true;
         countEl.textContent = list.length ? '(' + list.length + ')' : '';
         msgEl.textContent = list.length ? '' : 'Your shelf is empty. Save a design and it will stand here.';
       }).catch(function () { msgEl.textContent = 'Couldn’t load your shelf right now.'; });
@@ -4212,8 +4268,8 @@ var DECO = (function () {
       home = { parent: renderer.domElement.parentNode, next: renderer.domElement.nextSibling };
       view.insertBefore(renderer.domElement, hit); renderer.domElement.classList.add('inshelf');
       SHELF.open = true; focus = null; card.hidden = true; listEl.hidden = true; qEl.value = ''; findBtn.setAttribute('aria-expanded', 'false'); arranging = false; arrBtn.setAttribute('aria-pressed', 'false'); arrBtn.textContent = 'Arrange'; tipEl.hidden = true;
-      zoom = 1; goalY = 1e6; built = false;
-      sizeView(); viewY = goalY; cam.position.set(0, viewY + 22, dist()); look.set(0, viewY, 0);
+      zoom = 1; goalY = viewY = 0; built = false;
+      sizeView(); look.set(0, 26, 0); cam.position.copy(look).addScaledVector(DIR, dist());
       load(); frame(); hit.focus({ preventScroll: true });
     }
     function closeShelf(loadState, then) {
