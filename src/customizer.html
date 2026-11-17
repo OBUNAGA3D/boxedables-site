@@ -2863,6 +2863,7 @@ var DECO = (function () {
     ['left', 'right', 'top', 'bottom'].forEach(function (s, i) { key.shadow.camera[s] = [-r, r, r, -r][i]; });
     key.shadow.camera.far = r * 5; key.shadow.camera.updateProjectionMatrix();
     rim.position.set(-r, r * 0.6, -r);
+    if (CLAW && CLAW.on && CLAW.fitShadow) CLAW.fitShadow();
   }
   var SHELF = { open: false, quiet: false }, AO = null, CLAW = null;   // the saved-designs shelf (built further down)
   var VIEW = { cover: 0 };   // px of the preview's right side covered by the floating panel
@@ -4469,7 +4470,26 @@ var DECO = (function () {
       plate.scale.set(half / ph, 1, half / ph); plate.position.set(cx, plateSave.p.y, cz);
       CH.ext = { x0: cx - half, x1: cx + half, z0: cz - half, z1: cz + half };
     }
-    function shrinkPlate() { if (plate && plateSave) { plate.scale.copy(plateSave.s); plate.position.copy(plateSave.p); } plateSave = null; CH.ext = null; }
+    function shrinkPlate() { if (plate && plateSave) { plate.scale.copy(plateSave.s); plate.position.copy(plateSave.p); } plateSave = null; CH.ext = null; unfitShadow(); }
+    // ---- shadows: the play area (bigger plate, hole, tall claw) reaches past the normal light box, so widen it while playing
+    var shadowSave = null;
+    function fitShadow() {
+      if (!C.on) return;
+      var sc = key.shadow.camera;
+      if (!shadowSave) shadowSave = { lr: lightR, l: sc.left, r: sc.right, t: sc.top, b: sc.bottom, f: sc.far };
+      var e = CH.ext || { x0: -CH.half, x1: CH.half, z0: -CH.half, z1: CH.half };
+      var reach = Math.max(Math.abs(e.x0), Math.abs(e.x1), Math.abs(e.z0), Math.abs(e.z1)) * 1.42 + 10;
+      var r = Math.max(shadowSave.lr, Math.hypot(reach, hoverY + 60 * SCL));
+      lightR = r; placeLight(); key.target.position.set(0, 0, 0);
+      sc.left = -r; sc.right = r; sc.top = r; sc.bottom = -r; sc.far = r * 5; sc.updateProjectionMatrix();
+    }
+    function unfitShadow() {
+      if (!shadowSave) return;
+      var sv = shadowSave, sc = key.shadow.camera; shadowSave = null;
+      lightR = sv.lr; placeLight();
+      sc.left = sv.l; sc.right = sv.r; sc.top = sv.t; sc.bottom = sv.b; sc.far = sv.f; sc.updateProjectionMatrix();
+    }
+    C.fitShadow = fitShadow;
     // ---- the world the character can bump into
     var SOLIDS = [];
     function buildSolids() { SOLIDS = [{ min: new V3(-CH.half, CH.ground - 50, -CH.half), max: new V3(CH.half, CH.plateTop, CH.half) }]; }   // the plate
@@ -4571,6 +4591,7 @@ var DECO = (function () {
     }
     function bounds() { return { x0: Math.min(-CH.half + 6, CH.x - 4), x1: Math.max(CH.half - 6, CH.x + 4), z0: Math.min(-CH.half + 6, CH.z - 4), z1: Math.max(CH.half - 6, CH.z + 4) }; }
     function frameCam() {   // fit the plate, the hole and the claw on screen, above the controls
+      fitShadow();
       var dir = camera.position.clone().sub(controls.target); dir.y = 0; if (dir.lengthSq() < 1e-6) dir.set(0, 0, 1); dir.normalize();
       var behind = -dir.dot(new V3(CH.x, 0, CH.z).normalize()); dir.y = behind > 0.5 ? 1.1 : 0.62; dir.normalize();
       var P = [], h = CH.half, k;
