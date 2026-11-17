@@ -1158,7 +1158,15 @@ body.shelfon { overflow: hidden; }
 .shspin i:nth-child(2) { animation-delay: .15s; background: #FFD84A; }
 .shspin i:nth-child(3) { animation-delay: .3s; background: #FF6FAE; }
 @keyframes shBob { 0%, 100% { transform: translateY(0); } 40% { transform: translateY(-7px); } }
-.shlist { position: absolute; z-index: 4; left: 12px; top: 12px; bottom: 12px; width: 260px; display: grid; grid-template-rows: auto auto minmax(0, 1fr); gap: 8px; padding: 10px; box-sizing: border-box; border: 4px solid var(--ink-dark); border-radius: 18px; background: linear-gradient(180deg, #FFFFFF, #E3E8E9); box-shadow: 0 6px 0 var(--ink-dark), 0 22px 36px -16px rgba(0,0,0,.6); }
+.shlist { position: absolute; z-index: 4; left: 12px; top: 12px; bottom: 12px; width: 270px; display: grid; grid-template-rows: auto auto minmax(0, 1fr); gap: 9px; padding: 12px; box-sizing: border-box; border: 4px solid var(--ink-dark); border-radius: 20px; background-color: #B9C3C6; background-image: linear-gradient(180deg, #D7DEE0 0%, #B9C3C6 45%, #9CA8AB 100%), radial-gradient(circle, rgba(255,255,255,.22) 2px, transparent 2.5px); background-size: 100% 100%, 22px 22px; background-blend-mode: normal; box-shadow: inset 0 3px 0 rgba(255,255,255,.5), 0 6px 0 var(--ink-dark), 0 22px 36px -16px rgba(0,0,0,.6); }
+.shlhead { display: flex; align-items: center; justify-content: space-between; }
+.shlhead b { color: #FFFFFF !important; -webkit-text-stroke: 5px var(--ink-dark); paint-order: stroke fill; font-size: 21px !important; letter-spacing: .3px; }
+.shlhead span { display: inline-block; margin-left: 4px; padding: 0 8px; border: 2.5px solid var(--ink-dark); border-radius: 999px; background: linear-gradient(180deg, #FFF09A, #F7B500); color: var(--ink-dark); -webkit-text-stroke: 0; font: 700 13px/20px "Figtree", sans-serif !important; vertical-align: middle; }
+.shlist input { padding-left: 34px !important; background: #FFFFFF url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='18' height='18'%3E%3Ccircle cx='10.5' cy='10.5' r='6.5' fill='none' stroke='%230B3B38' stroke-width='3'/%3E%3Cpath d='M15.5 15.5l5 5' stroke='%230B3B38' stroke-width='3.4' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat 10px 50% !important; box-shadow: inset 0 2px 0 rgba(11,59,56,.12); }
+.shrows { padding: 2px 4px 6px 2px !important; scrollbar-width: thin; scrollbar-color: rgba(11,59,56,.55) transparent; }
+.shrow { gap: 10px; padding: 6px 8px; border: 3px solid var(--ink-dark) !important; border-radius: 14px !important; background: linear-gradient(180deg, #FFFFFF, #E9EDEE) !important; box-shadow: inset 0 2px 0 #FFFFFF, 0 3px 0 var(--ink-dark) !important; transition: transform .08s; }
+.shrow:hover { transform: translateY(-1px); }
+.shrow img, .shrow i { width: 56px !important; height: 46px !important; border-radius: 10px !important; border: 2.5px solid var(--ink-dark) !important; }
 .shlist[hidden] { display: none; }
 .shlhead b { font: 400 19px "Lilita One", "Fredoka", sans-serif; color: var(--ink-dark); }
 .shlhead span { font-size: 15px; }
@@ -1166,12 +1174,20 @@ body.shelfon { overflow: hidden; }
 .shnav .shbtn { padding: 6px 10px; font-size: 14px; }
 .shnav .shbtn:disabled { opacity: .4; cursor: default; }
 .shnav small { font: 700 12px "Figtree", sans-serif; color: #4A5B58; }
-.shrow.on { background: #FFF09A; box-shadow: 0 2px 0 var(--ink-dark), inset 0 0 0 2px #E99E00; }
+.shrow.on { background: linear-gradient(180deg, #FFF09A 0%, #FFD84A 47%, #F7B500 53%, #E99E00 100%) !important; }
 .shrow img.cut { object-fit: contain; background: linear-gradient(180deg, #6A3E22, #8A5530); }
 .shmsg { position: absolute; left: 50%; top: 42%; z-index: 3; transform: translate(-50%, -50%); margin: 0; padding: 12px 18px; border: 3px solid var(--ink-dark); border-radius: 16px; background: #FFFFFF; box-shadow: 0 4px 0 var(--ink-dark); color: var(--ink-dark); font: 700 15px "Figtree", sans-serif; text-align: center; max-width: 80%; }
 .shmsg:empty { display: none; }
 .shtip { position: absolute; left: 50%; bottom: 18px; z-index: 3; transform: translateX(-50%); margin: 0; padding: 8px 14px; border: 3px solid var(--ink-dark); border-radius: 14px; background: #FFF6C2; box-shadow: 0 3px 0 var(--ink-dark); color: var(--ink-dark); font: 600 14px "Figtree", sans-serif; white-space: nowrap; }
-.shcard { position: absolute; z-index: 4; right: 22px; top: 50%; transform: translateY(-50%); width: min(320px, calc(100% - 44px)); display: grid; gap: 6px; padding: 18px 18px 16px; box-sizing: border-box; border: 4px solid var(--ink-dark); border-radius: 22px; background: linear-gradient(180deg, #FFFFFF, #E3E8E9); box-shadow: 0 6px 0 var(--ink-dark), 0 22px 36px -16px rgba(0,0,0,.6); color: var(--ink-dark); animation: shIn .22s ease-out; }
+.shcard { position: absolute; z-index: 4; right: 22px; top: 50%; transform: translateY(-50%); width: min(320px, calc(100% - 44px)); display: grid; gap: 6px; padding: 18px 18px 16px; box-sizing: border-box; border: 4px solid var(--ink-dark); border-radius: 22px; background: linear-gradient(180deg, #2F86F0 0%, #1E6FD9 45%, #1552B0 100%); box-shadow: inset 0 0 0 4px rgba(255,255,255,.18), 0 6px 0 var(--ink-dark), 0 22px 36px -16px rgba(0,0,0,.6); color: #FFFFFF; animation: shIn .22s ease-out; }
+.shcard .shct { color: #FFFFFF; -webkit-text-stroke: 5px var(--ink-dark); paint-order: stroke fill; letter-spacing: .3px; }
+.shcard .shcc { color: #FFF09A; text-shadow: 0 1px 0 rgba(0,0,0,.35); }
+.shcard .shcd { color: #DCEBFF; }
+.shcard .shca .ghost { background: linear-gradient(180deg, #FF8A8A 0%, #F25C5C 47%, #D63B3B 53%, #B82A2A 100%) !important; color: #FFFFFF !important; border: 3px solid var(--ink-dark) !important; box-shadow: inset 0 2px 0 rgba(255,255,255,.4), 0 3px 0 var(--ink-dark) !important; text-shadow: 0 1px 0 rgba(0,0,0,.35); }
+.shcard .shnav small { color: #FFFFFF; }
+.shturn { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 6px; padding: 6px; border-radius: 14px; background: rgba(0,0,0,.18); }
+.shturn span { font: 400 16px "Lilita One", "Fredoka", sans-serif; color: #FFFFFF; -webkit-text-stroke: 3px var(--ink-dark); paint-order: stroke fill; }
+.shturn .shbtn.sq { font-size: 20px; }
 .shcard[hidden] { display: none; }
 @keyframes shIn { from { opacity: 0; transform: translate(16px, -50%); } }
 .shct { font: 400 24px/1.1 "Lilita One", "Fredoka", sans-serif; padding-right: 28px; word-break: break-word; }
@@ -1277,6 +1293,9 @@ html::-webkit-scrollbar-thumb:hover { background: linear-gradient(90deg, #7CEDE3
 .wrap.floatui.panelhid .stage .modelname { right: 14px; }
 .wrap.floatui:not(.panelhid) .stage .toolrow { max-width: calc(100% - 640px); }
 }
+
+/* 2. no gap between the top bar and the preview */
+@media (min-width: 901px) { .wrap { row-gap: 0 !important; } header.brand { margin-bottom: 0 !important; } }
 </style>
 </head>
 <body>
@@ -1324,6 +1343,7 @@ html::-webkit-scrollbar-thumb:hover { background: linear-gradient(90deg, #7CEDE3
         <span class="shcc" id="shCc"></span>
         <small class="shcd" id="shCd"></small>
         <div class="shca"><button type="button" class="go" id="shOpen">Open design</button><button type="button" class="ghost" id="shDel">Delete</button></div>
+        <div class="shturn"><button type="button" class="shbtn sq" id="shTurnL" aria-label="Turn left">⟲</button><span>Turn</span><button type="button" class="shbtn sq" id="shTurnR" aria-label="Turn right">⟳</button></div>
         <div class="shnav"><button type="button" class="shbtn" id="shPrev" aria-label="Previous design">◀ Previous</button><small id="shPos"></small><button type="button" class="shbtn" id="shNext" aria-label="Next design">Next ▶</button></div>
       </div>
     </div>
@@ -2927,7 +2947,7 @@ var DECO = (function () {
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && openGroup !== null) { openGroup = null; renderColors(); } });
   function nameDefault() { return S.groups.box && S.groups.box.color.toUpperCase() === '#F4F4F2' ? '#01948C' : '#F4F4F2'; }
   // white and very light colors: real white plastic doesn't reflect all the light, so keep its shading instead of glowing (bright colors like yellow are untouched)
-  function softWhite(c) { var mn = Math.min(c.r, c.g, c.b), mx = Math.max(c.r, c.g, c.b); if (mn > 0.55 && mx > 0.62) c.multiplyScalar(0.62 / mx); return c; }
+  function softWhite(c) { var mn = Math.min(c.r, c.g, c.b), mx = Math.max(c.r, c.g, c.b); if (mn > 0.55 && mx > 0.8) c.multiplyScalar(0.8 / mx); return c; }
   function setColor(g, hex) {
     if (typeof sumLater === 'function') sumLater();
     if (decoColors[g]) decoColors[g] = hex.toUpperCase(); S.groups[g].color = hex.toUpperCase(); softWhite(S.groups[g].mat.color.set(hex).convertSRGBToLinear());
@@ -4160,10 +4180,10 @@ var DECO = (function () {
     function buildUnit() {
       unitGrp.children.slice().forEach(function (m) { unitGrp.remove(m); if (m.geometry) m.geometry.dispose(); });
       var extra = 9, w = (cols + extra * 2) * W, r0 = -4, r1 = rows + 7, tall = (r1 - r0) * H, midY = -((r0 + r1) / 2) * H + H / 2;
-      var bg = new THREE.BoxGeometry(w, 6, 52), lg = new THREE.BoxGeometry(w, 9, 3), sg = new THREE.BoxGeometry(w, 1.4, 1.6), dg = new THREE.BoxGeometry(4, tall, 50);
+      var bg = new THREE.BoxGeometry(w, 6, 74), lg = new THREE.BoxGeometry(w, 9, 3), sg = new THREE.BoxGeometry(w, 1.4, 1.6), dg = new THREE.BoxGeometry(4, tall, 50);
       for (var r = r0; r < r1; r++) {   // spare shelves above and below fade into the haze
         var y = -r * H;
-        var b = new THREE.Mesh(bg, boardMat); b.position.set(0, y - 3, 0); unitGrp.add(b);
+        var b = new THREE.Mesh(bg, boardMat); b.position.set(0, y - 3, -11); unitGrp.add(b);
         var l = new THREE.Mesh(lg, lipMat); l.position.set(0, y - 4.5, 27.5); unitGrp.add(l);
         var st = new THREE.Mesh(sg, stripMat); st.position.set(0, y - 9.6, 23); unitGrp.add(st);
       }
@@ -4171,12 +4191,12 @@ var DECO = (function () {
       var cornerG = new THREE.PlaneGeometry(w, 14), wallUpG = new THREE.PlaneGeometry(w, 22), wallDnG = new THREE.PlaneGeometry(w, 26);
       for (var rr = r0; rr < r1; rr++) {
         var yy = -rr * H;
-        var cf = new THREE.Mesh(cornerG, edgeMat); cf.rotation.x = -Math.PI / 2; cf.rotation.z = Math.PI; cf.position.set(0, yy + 0.2, -19); unitGrp.add(cf);       // on the shelf, along the wall
-        var wu = new THREE.Mesh(wallUpG, edgeMat); wu.rotation.z = Math.PI; wu.position.set(0, yy + 11, -24.8); unitGrp.add(wu);                               // on the wall, just above the shelf
-        var wd = new THREE.Mesh(wallDnG, edgeMat); wd.position.set(0, yy - 6 - 13, -24.8); unitGrp.add(wd);                                                   // the shelf's shadow on the wall below it
+        var cf = new THREE.Mesh(cornerG, edgeMat); cf.rotation.x = -Math.PI / 2; cf.rotation.z = Math.PI; cf.position.set(0, yy + 0.2, -41); unitGrp.add(cf);       // on the shelf, along the wall
+        var wu = new THREE.Mesh(wallUpG, edgeMat); wu.rotation.z = Math.PI; wu.position.set(0, yy + 11, -47.8); unitGrp.add(wu);                               // on the wall, just above the shelf
+        var wd = new THREE.Mesh(wallDnG, edgeMat); wd.position.set(0, yy - 6 - 13, -47.8); unitGrp.add(wd);                                                   // the shelf's shadow on the wall below it
       }
       wallTex.repeat.set(w / 160, tall / 160);
-      var back = new THREE.Mesh(new THREE.PlaneGeometry(w, tall), backMat); back.position.set(0, midY, -25); unitGrp.add(back);
+      var back = new THREE.Mesh(new THREE.PlaneGeometry(w, tall), backMat); back.position.set(0, midY, -48); unitGrp.add(back);
     }
     var SPOTS = null, m4 = new THREE.Matrix4();
     function placeSpots() {   // a spotlight over each spot that has a Boxedable; empty spots stay dark
@@ -4210,7 +4230,7 @@ var DECO = (function () {
 
     // ----- items: stand-in, photo, picture (impostor) and real 3D
     function addItem(rec) {
-      var it = { id: rec.id, data: rec.data, key: rec.id + ':' + hashOf(JSON.stringify(rec.data.state || {})) + ':6', node: new THREE.Group(), ph: new THREE.Mesh(phGeo, phMat), pic: null, imp: null, g3: null, failed: false, wait: 0, used: 0 };
+      var it = { id: rec.id, data: rec.data, key: rec.id + ':' + hashOf(JSON.stringify(rec.data.state || {})) + ':7', node: new THREE.Group(), ph: new THREE.Mesh(phGeo, phMat), pic: null, imp: null, g3: null, failed: false, wait: 0, used: 0 };
       it.ph.userData.item = it; it.node.add(it.ph); sc.add(it.node); ITEMS.push(it);
       idbGet(it.key).then(function (v) { if (v && !it.imp && ITEMS.indexOf(it) >= 0) setImp(it, v); });
       return it;
@@ -4297,7 +4317,9 @@ var DECO = (function () {
       frames(4, function () {
         try {
           if (!SHELF.open || ITEMS.indexOf(it) < 0) return;
-          RIG.spin = 0; RIG.wig = 0; RIG.hop = 0; placeChar(); model.updateMatrixWorld(true);
+          RIG.spin = 0; RIG.wig = 0; RIG.hop = 0; RIG.look = null;
+          if (RIG.eyeQ) { RIG.eyeQ.identity(); if (RIG.eyeQT) RIG.eyeQT.identity(); RIG.eyes.forEach(function (e) { e.q.identity(); }); }   // eyes straight ahead, not wherever the pointer last was
+          placeChar(); rigApply(); model.updateMatrixWorld(true);
           if (AO) try { AO.now(); } catch (e) {}
           var g = cloneModel(); g.visible = false; g.traverse(function (m) { m.userData.item = it; });
           if (it.g3) drop3d(it);
@@ -4419,8 +4441,8 @@ var DECO = (function () {
         var lift = it === hover && !focus ? 3 : 0;
         it.node.position.x += (it.tx - it.node.position.x) * 0.2; it.node.position.y += (it.ty + lift - it.node.position.y) * 0.25; it.node.position.z += (it.tz - it.node.position.z) * 0.2;
         if (it.g3) {
-          if (it === focus) it.g3.rotation.y += reduce ? 0 : 0.012;   // a slow turn while you look at it
-          else { var a = it.g3.rotation.y - TURN; a = Math.atan2(Math.sin(a), Math.cos(a)); it.g3.rotation.y = TURN + a * 0.88; }   // the short way back
+          if (it === focus) { if (!(pd && pd.rot)) it.g3.rotation.y += ((it.turn || 0) + TURN - it.g3.rotation.y) * (reduce ? 1 : 0.18); }   // turns only when you turn it
+          else { it.turn = 0; var a = it.g3.rotation.y - TURN; a = Math.atan2(Math.sin(a), Math.cos(a)); it.g3.rotation.y = TURN + a * 0.88; }   // the short way back
         }
         if (arranging) it.node.rotation.z = Math.sin(t * 9 + it.i) * 0.02; else it.node.rotation.z = 0;
       });
@@ -4444,6 +4466,7 @@ var DECO = (function () {
     hit.addEventListener('pointerdown', function (ev) {
       hit.focus({ preventScroll: true });
       pd = { x: ev.clientX, y: ev.clientY, y0: goalY, moved: false, it: arranging ? pick(ev) : null };
+      if (focus && !arranging && focus.g3 && pick(ev) === focus) { pd.rot = true; pd.r0 = focus.turn || 0; hit.classList.add('grab'); }   // drag the open Boxedable to turn it
       if (pd.it) { drag = pd.it; hit.classList.add('grab'); }
       try { hit.setPointerCapture(ev.pointerId); } catch (e) {}
     });
@@ -4451,6 +4474,7 @@ var DECO = (function () {
       if (!pd) { var h = SHELF.loaded ? pick(ev) : null; hover = h; hit.classList.toggle('over', !!h); return; }
       if (Math.hypot(ev.clientX - pd.x, ev.clientY - pd.y) > 6) pd.moved = true;
       if (drag) { var p = planePoint(ev); drag.node.position.set(p.x, p.y - 26, 14); return; }
+      if (pd.rot && focus && focus.g3) { focus.turn = pd.r0 + (ev.clientX - pd.x) * 0.012; focus.g3.rotation.y = focus.turn + TURN; return; }
       if (focus || !pd.moved) return;
       var perPx = 2 * cam.position.distanceTo(look) * Math.tan(THREE.MathUtils.degToRad(cam.fov / 2)) / view.clientHeight;
       goalY = pd.y0 - (ev.clientY - pd.y) * perPx / (H * 0.72); clampY(); viewY = goalY;
@@ -4466,6 +4490,7 @@ var DECO = (function () {
         layout(); return;
       }
       var dx = ev.clientX - p0.x, dy = ev.clientY - p0.y;
+      if (p0.rot) return;   // that was a turn, not a swipe or a tap
       if (focus && p0.moved && Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) { step(dx < 0 ? 1 : -1); return; }   // swipe to the next or previous design
       if (!p0.moved) { var h = pick(ev); if (h && !arranging) openCard(h); else if (focus && !h) closeCard(); }
     }
@@ -4478,6 +4503,7 @@ var DECO = (function () {
     }, { passive: false });
     hit.addEventListener('keydown', function (ev) {
       if (focus && (ev.key === 'ArrowRight' || ev.key === 'ArrowLeft')) { step(ev.key === 'ArrowRight' ? 1 : -1); ev.preventDefault(); return; }
+      if (focus && (ev.key === ',' || ev.key === '.')) { focus.turn = (focus.turn || 0) + (ev.key === '.' ? 1 : -1) * Math.PI / 4; ev.preventDefault(); return; }
       if (ev.key === 'ArrowDown' || ev.key === 'PageDown') { goalY += ev.key === 'PageDown' ? 2 : 1; clampY(); ev.preventDefault(); }
       if (ev.key === 'ArrowUp' || ev.key === 'PageUp') { goalY -= ev.key === 'PageUp' ? 2 : 1; clampY(); ev.preventDefault(); }
     });
@@ -4521,6 +4547,8 @@ var DECO = (function () {
     function closeCard() { focus = null; card.hidden = true; rowsEl.querySelectorAll('.shrow.on').forEach(function (x) { x.classList.remove('on'); }); }
     function step(d) { if (!focus) return; var i = ITEMS.indexOf(focus) + d; if (i >= 0 && i < ITEMS.length) goTo(ITEMS[i]); }
     document.getElementById('shPrev').addEventListener('click', function () { step(-1); });
+    document.getElementById('shTurnL').addEventListener('click', function () { if (focus) focus.turn = (focus.turn || 0) - Math.PI / 4; });
+    document.getElementById('shTurnR').addEventListener('click', function () { if (focus) focus.turn = (focus.turn || 0) + Math.PI / 4; });
     document.getElementById('shNext').addEventListener('click', function () { step(1); });
     document.getElementById('shCardX').addEventListener('click', closeCard);
     document.getElementById('shOpen').addEventListener('click', function () {
