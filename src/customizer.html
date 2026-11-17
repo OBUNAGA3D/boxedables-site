@@ -4202,7 +4202,7 @@ var DECO = (function () {
       if (touching) { B.v.multiplyScalar(Math.pow(0.35, dt)); B.w.multiplyScalar(Math.pow(0.2, dt)); }
     }
     // ---- state
-    var st = 'off', t0 = 0, pos = new V3(), cy = 0, hoverY = 60, ang = 0.5, angGoal = 0.5, stopY = 0, hitChar = false, grip = null, vel = new V3(), lastT = 0;
+    var st = 'off', t0 = 0, pos = new V3(), cy = 0, hoverY = 60, ang = 0.85, angGoal = 0.85, OPEN = 0.85, plan = null, stopY = 0, hitChar = false, grip = null, vel = new V3(), lastT = 0;
     var joy = { x: 0, y: 0 }, keys = {}, camSave = null, camAnim = null;
     function msg(t) { msgEl.textContent = t; }
     function charBox() { return modelBox(); }
@@ -4222,10 +4222,11 @@ var DECO = (function () {
       if (on) {
         if (!S.parts.length) return;
         ['expand', 'seeInside', 'hideChar', 'hideBox'].forEach(function (id) { var b = document.getElementById(id); if (b && !b.hidden && b.getAttribute('aria-pressed') === 'true') b.click(); });
-        C.on = true; buildChute(); buildSolids(); chute.visible = true; rig.visible = true; aim.visible = true; ui.hidden = false; stageEl().classList.add('clawon'); document.body.classList.add('clawon');
+        C.on = true; buildChute(); buildSolids(); chute.visible = true; rig.visible = true; aim.visible = true; ui.hidden = false; stageEl().classList.add('clawon'); renderer.domElement.classList.remove('overchar', 'spinning'); document.body.classList.add('clawon');
         var cb = charBox(), tall = cb.isEmpty() ? 60 : cb.max.y - cb.min.y, wide = cb.isEmpty() ? 42 : Math.max(cb.max.x - cb.min.x, cb.max.z - cb.min.z);
-        SCL = Math.max(1.5, Math.min(3.2, wide * 1.1 / 26)); rig.scale.setScalar(SCL); TIP = TIP0 * SCL; /* a claw big enough to hug the whole box */ hoverY = Math.max(cb.isEmpty() ? 60 : cb.max.y + 42, CH.rim + tall + TIP + 12);
-        pos.set(0, 0, 0); cy = hoverY + 240; st = 'enter'; t0 = performance.now(); ang = angGoal = 0.5;
+        var bx = boxBox(), gripH = bx.isEmpty() ? (cb.isEmpty() ? 0 : cb.min.y + tall * 0.25) : bx.min.y + (bx.max.y - bx.min.y) * 0.42, top = cb.isEmpty() ? 50 : cb.max.y;
+        SCL = Math.max(1.5, Math.min(4.5, Math.max((wide * 0.5 + 5) / reachAt(OPEN), (top + 4 - gripH) / TIP0))); rig.scale.setScalar(SCL); TIP = TIP0 * SCL; /* a claw big enough to hug the whole box */ hoverY = Math.max(cb.isEmpty() ? 60 : cb.max.y + 42, CH.rim + tall + TIP + 12);
+        pos.set(0, 0, 0); cy = hoverY + 240; st = 'enter'; t0 = performance.now(); ang = angGoal = OPEN;
         scoreEl.textContent = CLAWS.total; msg('Move the claw, then GRAB!');
         camSave = { p: camera.position.clone(), t: controls.target.clone() };
         var tgt = new V3(CH.x * 0.42, 22, CH.z * 0.3), dir = camera.position.clone().sub(controls.target).normalize(); dir.y = Math.max(dir.y, 0.42); dir.normalize();
@@ -4233,22 +4234,33 @@ var DECO = (function () {
         btn.setAttribute('aria-pressed', 'true'); hideBubble(); SFX.play('pop');
       } else {
         C.on = false; st = 'off'; dropBody(); chute.visible = false; rig.visible = false; aim.visible = false; ui.hidden = true; winEl.hidden = true;
-        stageEl().classList.remove('clawon'); document.body.classList.remove('clawon'); btn.setAttribute('aria-pressed', 'false');
+        stageEl().classList.remove('clawon'); document.body.classList.remove('clawon'); renderer.domElement.classList.remove('overchar', 'spinning'); renderer.domElement.style.cursor = ''; btn.setAttribute('aria-pressed', 'false');
         if (camSave) camAnim = { p0: camera.position.clone(), t0: controls.target.clone(), p1: camSave.p, t1: camSave.t, s: performance.now() };
         placeChar();
       }
     }
+    function reachAt(phi) { return 5.5 + 15 * Math.sin(phi) + 10 * Math.sin(phi - 0.95); }   // how far a prong tip is from the middle (before scaling)
+    function boxBox() { var bb = new THREE.Box3(); S.parts.forEach(function (p) { if (p.obj === 1 && p.mesh.visible && p.mesh.layers.test(camera.layers)) bb.expandByObject(p.mesh); }); return bb; }
+    function contactAngle(halfW) { var a = OPEN; while (a > 0.05 && reachAt(a) * SCL > halfW + 0.8) a -= 0.01; return a; }   // where the prongs touch the box sides
     function stageEl() { return document.getElementById('stage'); }
     function grab() {
       if (st === 'idle' && !(body && body.free)) {
-        var gnd = groundAt(pos.x, pos.z); hitChar = gnd.char; stopY = gnd.y + TIP - (hitChar ? 11 : 1);
+        var gnd = groundAt(pos.x, pos.z), bx = boxBox(), mb = charBox(); hitChar = gnd.char; plan = null;
+        if (hitChar && !bx.isEmpty()) {
+          var c0 = bx.getCenter(new V3()), hw = Math.max(bx.max.x - bx.min.x, bx.max.z - bx.min.z) * 0.5, d0 = Math.hypot(c0.x - pos.x, c0.z - pos.z), r0 = reachAt(OPEN) * SCL;
+          var gripY = bx.min.y + (bx.max.y - bx.min.y) * 0.42;
+          if (d0 + hw * 0.92 < r0) plan = { kind: 'around', y: gripY, d: d0, hw: hw };             // all prongs pass outside the box: they go down its sides
+          else if (d0 < hw + r0) plan = { kind: 'rim', y: bx.max.y + 1, d: d0, hw: hw };           // a prong lands on the rim
+          stopY = Math.max((plan ? plan.y : gnd.y) + TIP - 2, mb.max.y + 3);                         // the hub never sinks into the character's head
+          if (!plan) stopY = gnd.y + TIP - 1;
+        } else stopY = gnd.y + TIP - 1;
         st = 'drop'; SFX.play('click'); msg('Going down…');
       } else if (st === 'carry') { release(false); }
     }
     function release(slipped) {
       if (!body) return; body.free = true; body.attached = false; body.v.copy(vel); body.v.y = Math.min(body.v.y, 0);
       body.w.set((Math.random() - 0.5) * 3, (Math.random() - 0.5) * 2, (Math.random() - 0.5) * 3); body.rest = 0; body.t0 = performance.now();
-      angGoal = 0.5; st = st === 'lift' ? 'lift' : 'idle'; grip = null;   // after a slip on the way up, the empty claw keeps rising
+      angGoal = OPEN; st = st === 'lift' ? 'lift' : 'idle'; grip = null;   // after a slip on the way up, the empty claw keeps rising
       msg(slipped ? 'Oh no, it slipped!' : 'Dropped…'); if (slipped) SFX.play('tap');
     }
     function win() {
@@ -4298,26 +4310,25 @@ var DECO = (function () {
       pos.addScaledVector(vel, dt); var b = bounds(); pos.x = Math.max(b.x0, Math.min(b.x1, pos.x)); pos.z = Math.max(b.z0, Math.min(b.z1, pos.z));
       // up and down
       if (st === 'enter') { cy += (hoverY - cy) * Math.min(1, dt * 4); if (Math.abs(cy - hoverY) < 0.6) st = 'idle'; }
-      else if (st === 'drop') { cy -= 48 * dt; if (cy <= stopY) { cy = stopY; st = 'grip'; t0 = now; angGoal = 0.08; } }
+      else if (st === 'drop') { cy -= 48 * dt; if (cy <= stopY) { cy = stopY; st = 'grip'; t0 = now; angGoal = plan && plan.kind === 'around' ? contactAngle(plan.hw) : 0.08; } }
       else if (st === 'grip') {
         if (now - t0 > 520) {
-          var cb = charBox(), cc = cb.isEmpty() ? null : cb.getCenter(new V3()), d = cc ? Math.hypot(cc.x - pos.x, cc.z - pos.z) : 99;
-          var reach = cb.isEmpty() ? 16 : Math.max(cb.max.x - cb.min.x, cb.max.z - cb.min.z) * 0.5;
-          if (hitChar && d < reach && !body) {
+          var d = plan ? plan.d : 99, reach = plan ? plan.hw : 16;
+          if (plan && !body) {
             body = makeBody();
             if (body) {
               body.attached = true; var tipW = new V3(pos.x, cy - TIP + 5, pos.z); body.grip = tipW.clone().sub(body.x);   // where the prongs hold it
-              var hold = Math.max(0.15, Math.min(0.85, 0.2 + 0.68 * (1 - d / reach)));   // off-centre grabs swing more and slip more
+              var hold = plan.kind === 'around' ? Math.max(0.3, Math.min(0.88, 0.35 + 0.55 * (1 - d / reach))) : 0.12;   // round the sides holds well; on the rim it usually slips
               if (C.forceGrip === 'strong' || (C.forceGrip !== 'weak' && Math.random() < hold)) grip = { slipRate: C.forceGrip === 'strong' ? 0 : 0.05 }; else grip = { slipAt: stopY + (hoverY - stopY) * (0.04 + Math.random() * 0.8) };
-              angGoal = 0.24; msg('Got it… hold on!'); SFX.play('pop');
+              angGoal = plan.kind === 'around' ? contactAngle(reach) : 0.3; msg(plan.kind === 'around' ? 'Got it\u2026 hold on!' : 'Only one prong on the rim\u2026'); SFX.play('pop');
             }
-          } else { angGoal = 0.08; msg(hitChar ? 'So close! Try again.' : 'Missed! Aim over the character.'); }
+          } else { angGoal = 0.08; msg('Missed! Aim over the box.'); }
           st = 'lift';
         }
       } else if (st === 'lift') {
         cy += 40 * dt;
         if (body && body.attached && grip && grip.slipAt !== undefined && cy >= grip.slipAt) release(true);
-        if (cy >= hoverY) { cy = hoverY; if (body && body.attached) { st = 'carry'; msg('Take it to the prize hole, then GRAB to drop!'); } else { st = 'idle'; angGoal = 0.5; } }
+        if (cy >= hoverY) { cy = hoverY; if (body && body.attached) { st = 'carry'; msg('Take it to the prize hole, then GRAB to drop!'); } else { st = 'idle'; angGoal = OPEN; } }
       } else if (st === 'carry') {
         if (grip && grip.slipRate && Math.random() < grip.slipRate * dt) release(true);   // real arcade luck
       }
@@ -8213,7 +8224,7 @@ var DECO = (function () {
   var hoverEv = null;
   cvs.addEventListener('pointermove', function (ev) {
     if (ev.buttons) return;
-    if (!hoverEv) requestAnimationFrame(function () { var e = hoverEv; hoverEv = null; var h = charHit(e); if (h !== hoverChar) { hoverChar = h; cvs.classList.toggle('overchar', h); } });
+    if (!hoverEv) requestAnimationFrame(function () { var e = hoverEv; hoverEv = null; var h = !(CLAW && CLAW.on) && charHit(e); if (h !== cvs.classList.contains('overchar')) { hoverChar = h; cvs.classList.toggle('overchar', h); } });
     hoverEv = ev;   // at most one check per frame
   });
   // ---------- 13. keyboard: the preview can be focused, and Space or Enter presses the character ----------
