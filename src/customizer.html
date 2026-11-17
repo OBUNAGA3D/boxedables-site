@@ -1028,17 +1028,26 @@ body.maint-admin::before { content: "Maintenance mode is on: members see a “Ba
 .bbseg button:focus-visible, .bbsame:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
 .bbchips { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
 
+/* ---------- print plan 3D icons ---------- */
+.ppi { display: inline-block; width: 28px; height: 28px; vertical-align: -8px; object-fit: contain; }
+.pp-stat i .ppi { width: 46px; height: 46px; vertical-align: 0; display: block; margin: -6px auto -3px; }
+.pp-pills em .ppi { width: 24px; height: 24px; vertical-align: -7px; margin: -4px 2px -3px -6px; }
+.pp-warn i .ppi, .pp-note i .ppi, .pp-est i .ppi { width: 32px; height: 32px; vertical-align: 0; display: block; margin: -5px -3px -5px -4px; }
+.pp-printer .ppi { width: 34px; height: 34px; vertical-align: -10px; margin: -6px 2px -6px -4px; }
+.ppl { display: inline-block; width: 30px; height: 30px; vertical-align: -10px; margin: -4px 0 -4px -4px; }
+.ppl .ppi { width: 30px; height: 30px; vertical-align: 0; }
+
 /* ---------- glossy game header ---------- */
 .hstats { display: none; }
 @media (min-width: 901px) {
-  header.brand { position: relative; overflow: visible; isolation: isolate; background-color: #FFC233 !important;
-    background-image: radial-gradient(circle at 12% 120%, rgba(255,130,40,.55), rgba(255,130,40,0) 45%), radial-gradient(circle, rgba(255,255,255,.35) 1.6px, transparent 2.1px), linear-gradient(180deg, #FFEB8A 0%, #FFD23A 42%, #FFB21E 78%, #FF9A1A 100%) !important;
-    background-size: 100% 100%, 18px 18px, 100% 100% !important; }
+  header.brand { position: relative; overflow: visible; isolation: isolate; background-color: #F9E11B !important;
+    background-image: radial-gradient(circle, rgba(255,255,255,.35) 1.6px, transparent 2.1px), linear-gradient(180deg, #FCEF6E 0%, #F9E11B 40%, #F9D41B 72%, #F7BC1E 100%) !important;
+    background-size: 18px 18px, 100% 100% !important; }
   header.brand::before { content: ""; position: absolute; left: 10px; right: 10px; top: 6px; height: 42%; border-radius: 18px 18px 40px 40px / 18px 18px 22px 22px; background: linear-gradient(180deg, rgba(255,255,255,.75), rgba(255,255,255,.08)); pointer-events: none; z-index: -1; }
-  header.brand::after { content: ""; position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 -6px 0 rgba(160,70,0,.28), inset 0 3px 0 rgba(255,255,255,.7); pointer-events: none; }
+  header.brand::after { content: ""; position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 -6px 0 rgba(170,100,0,.25), inset 0 3px 0 rgba(255,255,255,.7); pointer-events: none; }
   header.brand .logo { position: relative; transform: rotate(-2.5deg); transition: transform .25s cubic-bezier(.2,1.6,.4,1); }
   header.brand .logo:hover { transform: rotate(1deg) scale(1.04); }
-  header.brand .brandlogo { height: 50px !important; filter: url(#bxOutline) drop-shadow(0 4px 0 #0B3B38) drop-shadow(0 10px 10px rgba(120,60,0,.35)) !important; }
+  header.brand .brandlogo { height: 50px !important; filter: url(#bxOutline) drop-shadow(0 4px 0 #0B3B38) drop-shadow(0 10px 10px rgba(110,95,0,.3)) !important; }
   header.brand .topbar { margin-left: 14px !important; gap: 9px !important; align-items: center; }
   header.brand .topbar .topbtn:not(.acct) { width: 52px; height: 52px; padding: 0 !important; justify-content: center; border-radius: 50% !important; border-width: 3px !important; box-shadow: inset 0 3px 0 rgba(255,255,255,.55), inset 0 -4px 0 rgba(0,0,0,.18), 0 4px 0 var(--ink-dark), 0 10px 14px -8px rgba(0,0,0,.45) !important; }
   header.brand .topbar .topbtn:not(.acct) span { display: none !important; }
@@ -1925,11 +1934,11 @@ body.clawon .stage .clawstart, .stage:has(.sizecard:not([hidden])) .clawstart { 
     <div id="planBody" class="planbody" hidden>
       <div class="plancfg">
         <b class="pp-cfgtitle">Your setup</b>
-        <label class="field" for="slicerSel"><span aria-hidden="true">💻</span> Slicer</label>
+        <label class="field" for="slicerSel"><span class="ppl" data-i3="laptop" aria-hidden="true"></span> Slicer</label>
         <select id="slicerSel" class="sel"></select>
-        <label class="field" for="printerSel"><span aria-hidden="true">🖨️</span> Printer</label>
+        <label class="field" for="printerSel"><span class="ppl" data-i3="printer" aria-hidden="true"></span> Printer</label>
         <select id="printerSel" class="sel"></select>
-        <label class="field"><span aria-hidden="true">📋</span> Copies on each plate</label>
+        <label class="field"><span class="ppl" data-i3="copies" aria-hidden="true"></span> Copies on each plate</label>
         <div class="stepper"><button type="button" id="copiesMinus" aria-label="Fewer copies">−</button><output id="copiesOut">1</output><button type="button" id="copiesPlus" aria-label="More copies">+</button></div>
         <button type="button" class="go plandone" id="planDone">Done</button>
       </div>
@@ -7118,6 +7127,64 @@ var DECO = (function () {
         var b = rbox(1.6, 1.1, 0.4, 0.2, M(0xFFFFFF)); b.position.y = 0.15; g.add(b);
         g.add(shapeMesh([[-0.45, -0.3], [-0.05, -0.3], [-0.55, -0.85]], 0.22, 0.06, M(0xFFFFFF)));
         [-0.4, 0, 0.4].forEach(function (x) { g.add(mesh(new THREE.SphereGeometry(0.11, 12, 8), M(0xFF6A00), x, 0.15, 0.25)); });
+      },
+      stopwatch: function (g) {   // yellow stopwatch: white face, red buttons, two hands
+        var body = mesh(new THREE.CylinderGeometry(0.95, 0.95, 0.34, 40), M(0xFFD000), 0, 0, 0); body.rotation.x = Math.PI / 2; g.add(body);
+        var face = mesh(new THREE.CylinderGeometry(0.75, 0.75, 0.06, 40), M(0xFFFFFF, { r: 0.4 }), 0, 0, 0.16); face.rotation.x = Math.PI / 2; g.add(face);
+        g.add(mesh(new THREE.CylinderGeometry(0.11, 0.11, 0.24, 14), M(0xC9D2D4, { m: 0.8 }), 0, 1.04, 0));
+        var top = rbox(0.46, 0.2, 0.32, 0.08, M(0xFF4D6D)); top.position.set(0, 1.22, 0); g.add(top);
+        var side = rbox(0.24, 0.18, 0.24, 0.06, M(0xFF4D6D)); side.position.set(0.74, 0.74, 0); side.rotation.z = -0.8; g.add(side);
+        [0, 1, 2, 3].forEach(function (i) { var a = i * Math.PI / 2, t = rbox(0.09, 0.2, 0.05, 0.02, M(0x0B3B38)); t.position.set(Math.sin(a) * 0.58, Math.cos(a) * 0.58, 0.2); t.rotation.z = -a; g.add(t); });
+        var h1 = new THREE.Group(); h1.position.z = 0.22; h1.rotation.z = -0.75; h1.add(mesh(new THREE.BoxGeometry(0.1, 0.5, 0.05), M(0x0B3B38), 0, 0.25, 0)); g.add(h1);
+        var h2 = new THREE.Group(); h2.position.z = 0.22; h2.rotation.z = 1.9; h2.add(mesh(new THREE.BoxGeometry(0.1, 0.34, 0.05), M(0xFF4D6D), 0, 0.17, 0)); g.add(h2);
+        g.add(mesh(new THREE.SphereGeometry(0.1, 14, 10), M(0x0B3B38), 0, 0, 0.24));
+      },
+      spool: function (g) {   // filament spool: grey flanges, yellow filament, dark hub
+        var sp = new THREE.Group(); sp.rotation.set(0, 0.95, Math.PI / 2); g.add(sp);
+        var fl = M(0x9AA4A8, { r: 0.35 });
+        [-0.42, 0.42].forEach(function (y) { sp.add(mesh(new THREE.CylinderGeometry(1.0, 1.0, 0.12, 44), fl, 0, y, 0)); });
+        sp.add(mesh(new THREE.CylinderGeometry(0.8, 0.8, 0.74, 44), M(0xFFD000, { r: 0.28 }), 0, 0, 0));
+        sp.add(mesh(new THREE.CylinderGeometry(0.3, 0.3, 0.98, 24), M(0xE9EDEF), 0, 0, 0));
+        sp.add(mesh(new THREE.CylinderGeometry(0.16, 0.16, 1.0, 20), M(0x2A2F33), 0, 0, 0));
+      },
+      puzzle: function (g) {   // green puzzle piece
+        var h = 0.7, s = new THREE.Shape();
+        s.moveTo(-h, -h); s.lineTo(h, -h); s.lineTo(h, -0.22); s.absarc(h + 0.18, 0, 0.3, -2.3, 2.3, false); s.lineTo(h, h);
+        s.lineTo(0.22, h); s.absarc(0, h + 0.18, 0.3, -0.73, Math.PI + 0.73, false); s.lineTo(-h, h);
+        s.lineTo(-h, 0.22); s.absarc(-h + 0.18, 0, 0.3, Math.PI - 0.73, -Math.PI + 0.73, true); s.lineTo(-h, -h);
+        var gg = new THREE.ExtrudeGeometry(s, { depth: 0.34, bevelEnabled: true, bevelThickness: 0.08, bevelSize: 0.07, bevelSegments: 4, curveSegments: 16 }); gg.center();
+        g.add(new THREE.Mesh(gg, M(0x34C759)));
+      },
+      warn: function (g) {   // yellow warning triangle with "!"
+        g.add(shapeMesh([[0, 0.95], [1.08, -0.82], [-1.08, -0.82]], 0.24, 0.1, M(0xFFD000)));
+        var bar = rbox(0.22, 0.72, 0.1, 0.06, M(0x0B3B38)); bar.position.set(0, 0.0, 0.22); g.add(bar);
+        g.add(mesh(new THREE.SphereGeometry(0.13, 14, 10), M(0x0B3B38), 0, -0.55, 0.22));
+      },
+      pin: function (g) {   // red push pin
+        var p = new THREE.Group(); p.rotation.z = -0.55; g.add(p);
+        var red = M(0xFF4D6D, { r: 0.28 });
+        p.add(mesh(new THREE.CylinderGeometry(0.55, 0.55, 0.24, 32), red, 0, 0.9, 0));
+        p.add(mesh(new THREE.CylinderGeometry(0.26, 0.38, 0.62, 28), red, 0, 0.47, 0));
+        p.add(mesh(new THREE.CylinderGeometry(0.5, 0.5, 0.14, 32), red, 0, 0.12, 0));
+        var nd = mesh(new THREE.ConeGeometry(0.08, 0.95, 12), M(0xD9DEE2, { m: 0.8, r: 0.25 }), 0, -0.42, 0); nd.rotation.x = Math.PI; p.add(nd);
+      },
+      info: function (g) {   // blue round "i"
+        var d = mesh(new THREE.CylinderGeometry(0.95, 0.95, 0.3, 40), M(0x1E6FD9), 0, 0, 0); d.rotation.x = Math.PI / 2; g.add(d);
+        g.add(mesh(new THREE.SphereGeometry(0.15, 16, 12), M(0xFFFFFF), 0, 0.46, 0.2));
+        var st = rbox(0.28, 0.72, 0.12, 0.07, M(0xFFFFFF)); st.position.set(0, -0.18, 0.18); g.add(st);
+      },
+      laptop: function (g) {   // laptop showing a sliced model
+        var grey = M(0xD9DEE0), dark = M(0x2A2F33);
+        var base = rbox(1.9, 0.14, 1.25, 0.06, grey); base.position.set(0, -0.62, 0.15); g.add(base);
+        var keys = rbox(1.5, 0.04, 0.55, 0.02, M(0x9AA4A8)); keys.position.set(0, -0.53, 0.0); g.add(keys);
+        var lid = new THREE.Group(); lid.position.set(0, -0.58, -0.45); lid.rotation.x = -0.22; g.add(lid);
+        var scr = rbox(1.9, 1.25, 0.1, 0.06, dark); scr.position.set(0, 0.64, 0); lid.add(scr);
+        var disp = rbox(1.66, 1.0, 0.04, 0.02, M(0x2FC4B8, { r: 0.45 })); disp.position.set(0, 0.66, 0.06); lid.add(disp);
+        var cube = rbox(0.42, 0.42, 0.2, 0.07, M(0xFFD000)); cube.position.set(0, 0.62, 0.16); lid.add(cube);
+      },
+      copies: function (g) {   // three boxes on a gold build plate
+        var plate = rbox(2.0, 0.14, 1.3, 0.05, M(0xE0A520, { m: 0.35 })); plate.position.y = -0.35; g.add(plate);
+        [[-0.62, 0xFFD000], [0, 0x2FC4B8], [0.62, 0xFF6FA8]].forEach(function (b) { var x = rbox(0.5, 0.5, 0.5, 0.09, M(b[1])); x.position.set(b[0], 0.0, 0.05); g.add(x); });
       }
     };
     function render(kind) {
@@ -7164,7 +7231,16 @@ var DECO = (function () {
       } catch (e) { /* keep the flat icons if 3D rendering isn't available */ }
       if (r3) { r3.dispose(); r3.forceContextLoss(); r3 = null; }
     }
-    return { apply: apply, render: render };
+    var ONE = {}, oneT = 0;
+    function url(k) {
+      if (!(k in ONE)) {
+        try { ONE[k] = render(k); } catch (e) { ONE[k] = ''; }
+        clearTimeout(oneT);
+        oneT = setTimeout(function () { if (r3) { r3.dispose(); r3.forceContextLoss(); r3 = null; } }, 1500);
+      }
+      return ONE[k];
+    }
+    return { apply: apply, render: render, url: url };
   })();
   setTimeout(function () { ICON3D.apply(); }, 300);
   // ---------- slim tool bar: Undo, Redo and Reset view stay out; the other preview tools live in a Tools menu ----------
@@ -8750,6 +8826,7 @@ var DECO = (function () {
   document.getElementById('planDone').addEventListener('click', function () { closeModal(); });
   document.getElementById('planBtn').addEventListener('click', function () {
     openModal('Print plan', function (b) { b.closest('.mpanel').classList.add('wide', 'gpanel', 'pppanel'); planBody.hidden = false; b.appendChild(planBody); });
+    planBody.querySelectorAll('.ppl[data-i3]').forEach(function (sp) { if (sp.firstChild) return; var u = ICON3D.url(sp.getAttribute('data-i3')); if (u) sp.innerHTML = '<img class="ppi" alt="" src="' + u + '">'; });
     renderPlan();
   });
   function renderPlan() {
@@ -8763,11 +8840,12 @@ var DECO = (function () {
       rows.forEach(function (r) { r.colors.forEach(function (c) { allCols[String(c).toUpperCase()] = c; }); });
       var nCols = Object.keys(allCols).length, swaps = rows.reduce(function (t, r) { return t + r.swaps; }, 0), slotWord = pr.single ? 'Color' : pr.neutral ? 'Tool' : 'Slot';
       function esc(t) { return String(t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
-      html += '<div class="pp-sum"><div class="pp-sumhead"><span class="pp-printer">\u{1F5A8}️ ' + esc(pr.name.replace(/ \(.*\)/, '')) + '</span><span class="pp-slicer">' + esc(slicerOf(PLAN.slicer).name) + (PLAN.copies > 1 ? ' · ' + PLAN.copies + ' copies each' : '') + '</span></div><div class="pp-stats">' +
-        '<div class="pp-stat"><i>⏱️</i><b>' + fmtTime(totMin) + '</b><small>print time</small></div>' +
-        '<div class="pp-stat"><i>⚖️</i><b>' + Math.round(totG) + ' g</b><small>filament</small></div>' +
-        '<div class="pp-stat"><i>\u{1F3A8}</i><b>' + nCols + '</b><small>' + (nCols === 1 ? 'color' : 'colors') + '</small></div>' +
-        '<div class="pp-stat"><i>\u{1F9E9}</i><b>' + rows.length + '</b><small>' + (rows.length === 1 ? 'piece' : 'pieces') + '</small></div></div>' +
+      function ic(k) { var u = ICON3D.url(k); return u ? '<img class="ppi" alt="" src="' + u + '">' : ''; }
+      html += '<div class="pp-sum"><div class="pp-sumhead"><span class="pp-printer">' + ic('printer') + esc(pr.name.replace(/ \(.*\)/, '')) + '</span><span class="pp-slicer">' + esc(slicerOf(PLAN.slicer).name) + (PLAN.copies > 1 ? ' · ' + PLAN.copies + ' copies each' : '') + '</span></div><div class="pp-stats">' +
+        '<div class="pp-stat"><i>' + ic('stopwatch') + '</i><b>' + fmtTime(totMin) + '</b><small>print time</small></div>' +
+        '<div class="pp-stat"><i>' + ic('spool') + '</i><b>' + Math.round(totG) + ' g</b><small>filament</small></div>' +
+        '<div class="pp-stat"><i>' + ic('palette') + '</i><b>' + nCols + '</b><small>' + (nCols === 1 ? 'color' : 'colors') + '</small></div>' +
+        '<div class="pp-stat"><i>' + ic('puzzle') + '</i><b>' + rows.length + '</b><small>' + (rows.length === 1 ? 'piece' : 'pieces') + '</small></div></div>' +
         '<div class="pp-palette">' + Object.keys(allCols).map(function (k) { return '<i title="' + esc(colorLabel(allCols[k])) + '" style="background:' + allCols[k] + '"></i>'; }).join('') + '</div></div>';
       // ---- one card per piece
       rows.forEach(function (r, ri) {
@@ -8776,17 +8854,17 @@ var DECO = (function () {
         if (pr.single) { if (r.colors.length > 1) warn = 'This printer prints one color: the ' + r.name.toLowerCase() + ' comes out in a single color of your choice. The per-color files let you print parts separately if you like.'; }
         else if (r.colors.length > pr.slots) warn = 'Needs ' + r.colors.length + ' colors: more than one ' + pr.slotsLabel + ' (' + pr.slots + '). Swap a color by hand, or use fewer colors.';
         html += '<article class="pp-piece"><div class="pp-pic">' + (th ? '<img alt="" src="' + th + '">' : '') + '<span class="pp-num">' + (ri + 1) + '</span></div><div class="pp-info">' +
-          '<div class="pp-head"><b>' + esc(r.name) + '</b><span class="pp-pills"><em>⏱️ ' + fmtTime(r.mins) + '</em><em>⚖️ ' + Math.round(r.grams) + ' g' + (PLAN.copies > 1 ? ' for ' + PLAN.copies : '') + '</em></span></div>' +
+          '<div class="pp-head"><b>' + esc(r.name) + '</b><span class="pp-pills"><em>' + ic('stopwatch') + fmtTime(r.mins) + '</em><em>' + ic('spool') + Math.round(r.grams) + ' g' + (PLAN.copies > 1 ? ' for ' + PLAN.copies : '') + '</em></span></div>' +
           '<div class="pp-share" title="Share of the total print time"><i style="width:' + share + '%"></i></div><ul class="pp-slots">';
         r.colors.forEach(function (c, i) {
           html += '<li><span class="pp-spool" style="--c:' + c + '"><b>' + (i + 1) + '</b></span><span class="pp-ctext"><b>' + esc(colorLabel(c)) + '</b><small>' + slotWord + ' ' + (i + 1) + ' · ' + esc(r.uses[c].join(', ')) + '</small></span></li>';
         });
         html += '</ul>';
-        if (warn) html += '<p class="pp-warn"><i>⚠️</i><span>' + warn + '</span></p>';
-        if (pc && pc.blindNote) html += '<p class="pp-note"><i>\u{1F4CC}</i><span><b>Print note</b>' + esc(pc.blindNote) + '</span></p>';
+        if (warn) html += '<p class="pp-warn"><i>' + ic('warn') + '</i><span>' + warn + '</span></p>';
+        if (pc && pc.blindNote) html += '<p class="pp-note"><i>' + ic('pin') + '</i><span><b>Print note</b>' + esc(pc.blindNote) + '</span></p>';
         html += '</div></article>';
       });
-      html += '<p class="pp-est"><i>ℹ️</i><span><b>Estimate only, not exact.</b> Times and weights are a rough guide for the ' + esc(pr.name.replace(/ \(.*\)/, '')) + (pr.single ? '' : ' (about ' + swaps + (pr.neutral ? ' tool' : ' color') + ' changes)') + '. ' + (pr.neutral ? 'Your slicer' : 'Bambu Studio') + ' shows the real numbers after slicing.</span></p>';
+      html += '<p class="pp-est"><i>' + ic('info') + '</i><span><b>Estimate only, not exact.</b> Times and weights are a rough guide for the ' + esc(pr.name.replace(/ \(.*\)/, '')) + (pr.single ? '' : ' (about ' + swaps + (pr.neutral ? ' tool' : ' color') + ' changes)') + '. ' + (pr.neutral ? 'Your slicer' : 'Bambu Studio') + ' shows the real numbers after slicing.</span></p>';
       var sl = slicerOf(PLAN.slicer), xo = exportOpts();
       if (xo) html += '<p class="note">' + (xo.stlOnly ? 'For ' + sl.name + ': one .stl per color. Load them together as one object and give each its own filament.' : pr.single ? 'You get one .stl per piece to print in any color, plus one .stl per color.' : 'The 3MF opens in ' + sl.name + ' with each part on its ' + (pr.unit || 'filament').toLowerCase() + ', using your own printer profile. One .stl per color is included too.') + '</p>';
       if (pr.dual) html += '<p class="note">The ' + pr.name + ' has two nozzles: the file opens set up for it, and Bambu Studio decides which nozzle prints each color.</p>';
@@ -9359,7 +9437,6 @@ var DECO = (function () {
     if (e.badge) { var bd = document.createElement('i'); bd.className = 'libbadge ' + e.badge; bd.textContent = e.badge === 'new' ? 'NEW' : '★'; bd.title = e.badge === 'new' ? 'New' : 'Featured'; b.appendChild(bd); }
     var nm = document.createElement('span'); nm.textContent = e.name; b.appendChild(nm);
     var th = document.createElement('small'); th.textContent = e.theme; b.appendChild(th);
-    if (COLLECTED[e.id]) { var ck = document.createElement('i'); ck.className = 'got'; ck.textContent = '★'; ck.title = 'In your collection'; b.appendChild(ck); b.setAttribute('aria-label', e.name + ', in your collection'); }
     b.addEventListener('click', function () { selectChar(e.id); if (after) after(); });
     return b;
   }
@@ -9404,13 +9481,11 @@ var DECO = (function () {
         chip(themes, 'All ' + all.length, BROWSE.theme === 'All', function () { BROWSE.theme = 'All'; draw(); });
         Object.keys(names).sort().forEach(function (t) { chip(themes, t + ' ' + names[t], BROWSE.theme === t, function () { BROWSE.theme = t; draw(); }); });
         shows.textContent = '';
-        [['all', 'Everything'], ['new', 'New'], ['got', 'In my collection'], ['need', 'Not collected yet']].forEach(function (o) { chip(shows, o[1], BROWSE.show === o[0], function () { BROWSE.show = o[0]; draw(); }); });
+        [['all', 'Everything'], ['new', 'New']].forEach(function (o) { chip(shows, o[1], BROWSE.show === o[0], function () { BROWSE.show = o[0]; draw(); }); });
         var list = all.filter(function (e) {
           if (BROWSE.theme !== 'All' && e.theme !== BROWSE.theme) return false;
           if (words && (e.name + ' ' + e.theme).toLowerCase().indexOf(words) < 0) return false;
           if (BROWSE.show === 'new' && e.badge !== 'new') return false;
-          if (BROWSE.show === 'got' && !COLLECTED[e.id]) return false;
-          if (BROWSE.show === 'need' && COLLECTED[e.id]) return false;
           return true;
         });
         if (BROWSE.sort === 'az') list.sort(function (a, b) { return a.name.localeCompare(b.name); });
