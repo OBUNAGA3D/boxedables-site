@@ -1032,6 +1032,34 @@ body.maint-admin::before { content: "Maintenance mode is on: members see a “Ba
 .bbseg button[aria-checked="true"] { background: linear-gradient(180deg, #FFF09A 0%, #FFD84A 47%, #F7B500 53%, #E99E00 100%); }
 .bbseg button:focus-visible, .bbsame:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
 .bbchips { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+
+/* storage box card */
+.sthint { margin: 0 0 6px; font: 700 12.5px/1.35 "Figtree", sans-serif; color: #2F3B3D; }
+.stslots { display: grid; grid-template-columns: repeat(var(--cols, 2), minmax(0, 62px)); justify-content: center; gap: 6px; margin-bottom: 6px; padding: 7px; border: 3px solid var(--ink-dark); border-radius: 14px; background: linear-gradient(180deg, #0E5F5A, #0B3B38); }
+.stslot { position: relative; display: grid; place-items: center; aspect-ratio: 1; min-width: 0; padding: 0; border: 2.5px dashed rgba(255,255,255,.55); border-radius: 10px; background: rgba(255,255,255,.08); color: #FFFFFF; cursor: pointer; overflow: hidden; transition: transform .1s, background .1s; }
+.stslot.full { border-style: solid; border-color: var(--ink-dark); background: linear-gradient(180deg, #FFFFFF, #D7DEE0); }
+.stslot.over { transform: scale(1.06); border-color: #FFD84A; background: rgba(255,216,74,.35); }
+.stslot img { width: 92%; height: 92%; object-fit: contain; pointer-events: none; }
+.stslot .stplus { font: 400 26px "Lilita One", sans-serif; opacity: .85; }
+.stslot .stph { font: 400 24px "Lilita One", sans-serif; color: var(--ink-dark); }
+.stslot .stnum { position: absolute; left: 3px; top: 2px; min-width: 16px; height: 16px; padding: 0 3px; border-radius: 8px; background: #FFD84A; color: var(--ink-dark); font: 800 10.5px/16px "Figtree", sans-serif; text-align: center; }
+.stslot .stx { position: absolute; right: 3px; top: 3px; display: grid; place-items: center; width: 16px; height: 16px; border-radius: 50%; background: #E5484D; color: #FFFFFF; font: 800 9px sans-serif; font-style: normal; opacity: 0; transition: opacity .12s; }
+.stslot.full:hover .stx, .stslot.full:focus-visible .stx { opacity: 1; }
+@media (hover: none) { .stslot.full .stx { opacity: .9; } }
+.sttpls button { flex: 1 1 30%; }
+.strange { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 8px; margin: 4px 0; font: 700 13px "Figtree", sans-serif; color: var(--ink-dark); }
+.strange em { min-width: 52px; font: 800 12.5px "Figtree", sans-serif; font-style: normal; text-align: right; }
+@media (max-width: 420px) { .strange { grid-template-columns: 1fr auto; } .strange input { grid-column: 1 / -1; grid-row: 2; } }
+.sttog { margin: 4px 0; font: 700 14px "Figtree", sans-serif !important; }
+.sttog > span { display: grid !important; gap: 0 !important; }
+.sttog small { font: 600 11.5px "Figtree", sans-serif; opacity: .8; }
+.stsub { font-weight: 600; font-size: 11.5px; opacity: .75; }
+.stghost { position: fixed; left: 0; top: 0; z-index: 9999; display: grid; justify-items: center; gap: 2px; width: 74px; margin: -37px 0 0 -37px; padding: 5px; border: 3px solid var(--ink-dark); border-radius: 14px; background: linear-gradient(180deg, #FFF09A, #FFD84A); box-shadow: 0 8px 18px rgba(0,0,0,.35); pointer-events: none; rotate: -6deg; }
+.stghost img { width: 56px; height: 56px; object-fit: contain; }
+.stghost span { font: 400 30px "Lilita One", sans-serif; }
+.stghost small { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 800 10.5px "Figtree", sans-serif; color: var(--ink-dark); }
+body.stdragging, body.stdragging * { cursor: grabbing !important; user-select: none; -webkit-user-select: none; }
+#libGrid .libtile img { -webkit-touch-callout: none; -webkit-user-drag: none; }
 .bbsame { padding: 2px 10px; height: 24px; border-radius: 999px; border: 2px solid var(--ink-dark); background: #FFFFFF; color: var(--ink-dark); font: 700 12px "Figtree", sans-serif; box-shadow: 0 2px 0 var(--ink-dark); }
 .bbsame[aria-pressed="true"] { outline: 3px solid #FFD000; outline-offset: 1px; }
 .bbseal { font-size: 13.5px; }
@@ -1381,6 +1409,30 @@ body.clawon .stage .clawstart, .stage:has(.sizecard:not([hidden])) .clawstart { 
   .stage .clawstart small { display: none; }
 }
 @media (prefers-reduced-motion: reduce) { .stage .clawstart::before, .stage .clawstart .csic { animation: none; } }
+
+/* admin: section titles had letters squeezed together by the thick outline, and sat on top of the tabs */
+.gpanel .admsub { margin: 2px 0 10px; font-size: 20px; letter-spacing: 1.1px; word-spacing: 3px; -webkit-text-stroke: 3.5px var(--ink-dark); text-shadow: 0 2px 0 var(--ink-dark); line-height: 1.25; }
+.gpanel .admsub.nocard { margin: 14px 0 8px; }
+/* the Save / shelf / Community / Share / Leaderboard bar wraps onto a second line when the preview is narrow */
+.stage .toolrow > .tools.pill.actbar { flex-wrap: wrap !important; flex: 0 1 auto; min-width: 0; max-width: 100% !important; row-gap: 6px; overflow: visible; }
+.toolrow .actbar .topbtn { flex: none; white-space: nowrap; }
+/* the claw game: a big arcade button at the bottom right, the clicks counter above it */
+.stage .clawstart { bottom: 14px; gap: 12px; padding: 8px 22px 8px 8px; border-radius: 20px; }
+.stage .clawstart::before { border-radius: 15px; }
+.stage .clawstart .csic { width: 56px; height: 56px; border-radius: 15px; }
+.stage .clawstart .csic .i3dimg { width: 62px; height: 62px; margin: -4px; filter: drop-shadow(0 2px 0 rgba(11,59,56,.45)); }
+.stage .clawstart b { font-size: 25px; }
+.stage .clawstart small { font-size: 12.5px; }
+.stage .clicks { bottom: 104px; }
+.stage:has(.sizecard:not([hidden])) .clicks, .stage.clawon .clicks { bottom: 14px; }
+@media (max-width: 640px) {
+  .stage .clawstart { bottom: 8px; padding: 5px 12px 5px 5px; gap: 7px; border-radius: 15px; }
+  .stage .clawstart .csic { width: 38px; height: 38px; border-radius: 11px; }
+  .stage .clawstart .csic .i3dimg { width: 42px; height: 42px; margin: -2px; }
+  .stage .clawstart b { font-size: 18px; }
+  .stage .clicks { bottom: 66px; }
+  .stage:has(.sizecard:not([hidden])) .clicks { bottom: 8px; }
+}
 /* the leaderboard */
 .mpanel.lbpanel { width: min(600px, 100%); }
 .lb2 { display: grid; gap: 12px; color: var(--ink-dark); }
@@ -1818,6 +1870,29 @@ body.clawon .stage .clawstart, .stage:has(.sizecard:not([hidden])) .clawstart { 
         <p class="bbnote"><b>Print note:</b> <span id="dbNote"></span></p>
       </div>
     </div>
+    <div class="bbcard" id="stCard">
+      <div class="toggle"><span id="stL"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><rect x="2.5" y="7" width="19" height="12" rx="2.5" fill="#6EC6FF" stroke="#0B3B38" stroke-width="1.8"/><rect x="5" y="9.5" width="6" height="7" rx="1.2" fill="#0E5F5A" stroke="#0B3B38" stroke-width="1.3"/><rect x="13" y="9.5" width="6" height="7" rx="1.2" fill="#0E5F5A" stroke="#0B3B38" stroke-width="1.3"/><circle cx="8" cy="7.6" r="2.6" fill="#FFD45C" stroke="#0B3B38" stroke-width="1.3"/></svg>Storage box</span><button type="button" class="switch" role="switch" id="stToggle" aria-checked="false" aria-labelledby="stL"></button></div>
+      <div class="bbbody" id="stBody" hidden>
+        <p class="bbsub">An open tray that keeps your characters out of their boxes, like keycaps on a board. Every slot fits any Boxedable character.</p>
+        <b class="bblab" id="stCountL">How many slots</b>
+        <div class="bbseg" role="radiogroup" aria-labelledby="stCountL"><button type="button" role="radio" data-stcount="2">2</button><button type="button" role="radio" data-stcount="4">4</button><button type="button" role="radio" data-stcount="6">6</button><button type="button" role="radio" data-stcount="8">8</button><button type="button" role="radio" data-stcount="10">10</button></div>
+        <b class="bblab">Fill the slots</b>
+        <p class="sthint" id="stHint"></p>
+        <div class="stslots" id="stSlots"></div>
+        <b class="bblab" id="stTplL">Design</b>
+        <div class="bbseg sttpls" role="radiogroup" aria-labelledby="stTplL"><button type="button" role="radio" data-sttpl="classic">Classic</button><button type="button" role="radio" data-sttpl="rounded">Rounded</button><button type="button" role="radio" data-sttpl="keycap">Keycap</button><button type="button" role="radio" data-sttpl="crate">Crate</button><button type="button" role="radio" data-sttpl="honey">Honeycomb</button></div>
+        <b class="bblab" id="stTexL">Texture on the sides</b>
+        <div class="bbseg" role="radiogroup" aria-labelledby="stTexL"><button type="button" role="radio" data-sttex="none">None</button><button type="button" role="radio" data-sttex="ribs">Ribs</button><button type="button" role="radio" data-sttex="dots">Dots</button><button type="button" role="radio" data-sttex="stripes">Stripes</button><button type="button" role="radio" data-sttex="planks">Planks</button></div>
+        <label class="strange"><span>Space between slots</span><input type="range" id="stGap" min="2" max="12" step="0.5"><em id="stGapV"></em></label>
+        <label class="strange"><span>Wall thickness</span><input type="range" id="stWall" min="1.6" max="5" step="0.2"><em id="stWallV"></em></label>
+        <label class="strange"><span>Slot depth</span><input type="range" id="stDepth" min="6" max="20" step="1"><em id="stDepthV"></em></label>
+        <div class="toggle sttog"><span id="stStemL">Switch posts<small>Characters click onto a post, like keycaps</small></span><button type="button" class="switch" role="switch" id="stStem" aria-checked="true" aria-labelledby="stStemL"></button></div>
+        <b class="bblab">Tray color</b><div class="bbchips" id="stColTray"></div>
+        <b class="bblab">Trim color <small class="stsub">(keycap rims, crate corners, side texture)</small></b><div class="bbchips" id="stColAcc"></div>
+        <p class="bbhint" id="stSize"></p>
+        <p class="bbnote"><b>Print note:</b> <span id="stNote"></span></p>
+      </div>
+    </div>
     <button type="button" class="planbtn" id="planBtn"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M6 3h12v6H6zM3 9h18v8h-3v4H6v-4H3z" fill="currentColor"/><path d="M8 15h8v5H8z" fill="#FFFFFF"/></svg><span>Print plan</span><em id="planHint"></em></button>
     <div class="actbody">
       <button type="button" class="go" id="download">Download all</button>
@@ -1827,6 +1902,7 @@ body.clawon .stage .clawstart, .stage:has(.sizecard:not([hidden])) .clawstart { 
         <button type="button" class="dlmini" id="dlBlind" hidden><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M7 8 12 3l5 5v13H7Z" fill="currentColor"/></svg><span>Blind box only</span></button>
         <button type="button" class="dlmini" id="dlDisplay" hidden><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M4 7h16v14H4Z M3 3h18v4H3Z" fill="currentColor"/></svg><span>Display box only</span></button>
         <button type="button" class="dlmini" id="dlTray" hidden><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M3 14h18v6H3Z M5 8h4v6H5Z M10 8h4v6h-4Z M15 8h4v6h-4Z M8 3h8v4H8Z" fill="currentColor"/></svg><span>Seller tray only</span></button>
+        <button type="button" class="dlmini" id="dlStorage" hidden><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M2 8h20v11H2Z M5 10.5v6h5v-6Z M14 10.5v6h5v-6Z" fill="currentColor" fill-rule="evenodd"/></svg><span>Storage box only</span></button>
       </div>
       <p class="note" id="dlNote">Download all gives a .zip with a separate Bambu Studio 3MF for the character and for the box (parts named and assigned to filament colors), plus an STL of each.</p>
     </div>
@@ -4271,7 +4347,18 @@ var DECO = (function () {
       var rim = new THREE.Mesh(new THREE.TorusGeometry((CH.r + CH.R) / 2, (CH.R - CH.r) / 2 + 0.6, 12, 40), goldM); rim.rotation.x = Math.PI / 2; rim.position.set(CH.x, CH.rim, CH.z); chute.add(rim);
       var star = new THREE.Mesh(new THREE.RingGeometry(CH.R + 3, CH.R + 5, 40), new THREE.MeshBasicMaterial({ color: 0xFFD84A, transparent: true, opacity: 0.0, depthWrite: false })); star.rotation.x = -Math.PI / 2; star.position.set(CH.x, CH.rim + 0.5, CH.z); chute.add(star); CH.glow = star;
       chute.traverse(function (m) { if (m.isMesh) { m.castShadow = true; m.receiveShadow = true; } });
+      growPlate();
     }
+    var plateSave = null;
+    function growPlate() {   // a bigger plate, so the hole stands on it instead of on nothing
+      if (!plate) return;
+      if (!plateSave) plateSave = { s: plate.scale.clone(), p: plate.position.clone() };
+      var ph = CH.half, m = 12, x0 = Math.min(-ph, CH.x - CH.R - m), x1 = Math.max(ph, CH.x + CH.R + m), z0 = Math.min(-ph, CH.z - CH.R - m), z1 = Math.max(ph, CH.z + CH.R + m);
+      var half = Math.max(x1 - x0, z1 - z0) / 2, cx = (x0 + x1) / 2, cz = (z0 + z1) / 2;
+      plate.scale.set(half / ph, 1, half / ph); plate.position.set(cx, plateSave.p.y, cz);
+      CH.ext = { x0: cx - half, x1: cx + half, z0: cz - half, z1: cz + half };
+    }
+    function shrinkPlate() { if (plate && plateSave) { plate.scale.copy(plateSave.s); plate.position.copy(plateSave.p); } plateSave = null; CH.ext = null; }
     // ---- the world the character can bump into
     var SOLIDS = [];
     function buildSolids() { SOLIDS = [{ min: new V3(-CH.half, CH.ground - 50, -CH.half), max: new V3(CH.half, CH.plateTop, CH.half) }]; }   // the plate
@@ -4289,7 +4376,8 @@ var DECO = (function () {
     function collide(p) {   // deepest push-out for a point: { n, d }
       var best = null;
       var rr = Math.hypot(p.x - CH.x, p.z - CH.z), inHole = rr < CH.r;
-      if (!inHole && p.y < CH.ground) best = { n: new V3(0, 1, 0), d: CH.ground - p.y };
+      var gy = CH.ext && p.x > CH.ext.x0 && p.x < CH.ext.x1 && p.z > CH.ext.z0 && p.z < CH.ext.z1 ? CH.plateTop : CH.ground;   // the grown plate is floor too
+      if (!inHole && p.y < gy) best = { n: new V3(0, 1, 0), d: gy - p.y };
       SOLIDS.forEach(function (S2) {
         if (p.x <= S2.min.x || p.x >= S2.max.x || p.y <= S2.min.y || p.y >= S2.max.y || p.z <= S2.min.z || p.z >= S2.max.z) return;
         var c = [[p.x - S2.min.x, -1, 0, 0], [S2.max.x - p.x, 1, 0, 0], [p.y - S2.min.y, 0, -1, 0], [S2.max.y - p.y, 0, 1, 0], [p.z - S2.min.z, 0, 0, -1], [S2.max.z - p.z, 0, 0, 1]];
@@ -4405,7 +4493,7 @@ var DECO = (function () {
         frameCam();
         btn.setAttribute('aria-pressed', 'true'); hideBubble(); SFX.play('pop');
       } else {
-        C.on = false; st = 'off'; dropBody(); chute.visible = false; rig.visible = false; aim.visible = false; ui.hidden = true; winEl.hidden = true;
+        C.on = false; st = 'off'; dropBody(); shrinkPlate(); chute.visible = false; rig.visible = false; aim.visible = false; ui.hidden = true; winEl.hidden = true;
         stageEl().classList.remove('clawon'); document.body.classList.remove('clawon'); renderer.domElement.classList.remove('overchar', 'spinning'); renderer.domElement.style.cursor = ''; btn.setAttribute('aria-pressed', 'false');
         if (camSave) camAnim = { p0: camera.position.clone(), t0: controls.target.clone(), p1: camSave.p, t1: camSave.t, s: performance.now() };
         placeChar();
@@ -6712,7 +6800,43 @@ var DECO = (function () {
       var strip = rbox(26, 1.2, 4.6, 0.5, M(0xFFFFFF)); strip.rotation.x = Math.PI / 2; strip.position.set(0, -21.3, -1.4); holder.add(strip);
       g.position.y = -0.1;
     }
+    function shelfBase(g) {   // a little wooden bookcase
+      var wood = M(0xC98A4B, { r: 0.55 }), dark = M(0x8A5527, { r: 0.6 });
+      var back = rbox(1.86, 1.86, 0.08, 0.03, dark); back.position.set(0, 0, -0.32); g.add(back);
+      [-0.97, 0.97].forEach(function (x) { var sd = rbox(0.16, 2.0, 0.72, 0.05, wood); sd.position.set(x, 0, 0); g.add(sd); });
+      [-0.92, -0.02, 0.92].forEach(function (y) { var b = rbox(1.86, 0.14, 0.72, 0.04, wood); b.position.set(0, y, 0); g.add(b); });
+    }
+    var BRIGHT = [0xFF4D6D, 0xFFD000, 0x34C759, 0x2FC4B8, 0x1E6FD9, 0x7B4FE8, 0xFF8A3D, 0xFF6FA8];
+    function pick() { return BRIGHT[Math.floor(Math.random() * BRIGHT.length)]; }
     var B = {
+      woodShelf: function (g) {
+        shelfBase(g);
+        [-0.82, 0.08].forEach(function (y) { [-0.5, 0, 0.5].forEach(function (x) { g.add(mesh(new THREE.SphereGeometry(0.19, 20, 14), M(pick(), { r: 0.3 }), x, y + 0.27, 0.05)); }); });
+      },
+      commShelf: function (g) {
+        shelfBase(g);
+        [-0.82, 0.08].forEach(function (y, row) { [-0.5, 0, 0.5].forEach(function (x, i) {
+          var bx = rbox(0.36, 0.36, 0.36, 0.06, M(pick(), { r: 0.35 })); bx.position.set(x, y + 0.25, 0.05); bx.rotation.y = (i - 1) * 0.25; g.add(bx);
+        }); });
+        var hs = new THREE.Shape(); hs.moveTo(0, -0.42); hs.bezierCurveTo(-0.55, -0.05, -0.42, 0.42, 0, 0.2); hs.bezierCurveTo(0.42, 0.42, 0.55, -0.05, 0, -0.42);
+        var hg = new THREE.ExtrudeGeometry(hs, { depth: 0.16, bevelEnabled: true, bevelThickness: 0.06, bevelSize: 0.05, bevelSegments: 3 }); hg.center();
+        var heart = mesh(hg, M(0xFF3B5C, { r: 0.3 }), 0.62, 1.32, 0.15); heart.scale.setScalar(1.05); g.add(heart);
+      },
+      clawToy: function (g) {
+        var yel = M(0xFFD23A, { r: 0.3 }), grn = M(0x34C759, { r: 0.32 }), chr = M(0xD9DEE2, { m: 0.8, r: 0.25 });
+        g.add(mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.9, 10), chr, 0, 1.25, 0));
+        g.add(mesh(new THREE.CylinderGeometry(0.42, 0.5, 0.42, 28), yel, 0, 0.62, 0));
+        var band = mesh(new THREE.TorusGeometry(0.47, 0.07, 10, 28), grn, 0, 0.6, 0); band.rotation.x = Math.PI / 2; g.add(band);
+        g.add(mesh(new THREE.CylinderGeometry(0.2, 0.3, 0.22, 20), M(0x0B3B38), 0, 0.93, 0));
+        for (var i = 0; i < 3; i++) {
+          var a = i * Math.PI * 2 / 3 + 0.5, pv = new THREE.Group(); pv.position.set(Math.cos(a) * 0.32, 0.42, Math.sin(a) * 0.32); pv.rotation.set(0, -a, 0.62, 'YXZ');
+          var arm = mesh(new THREE.BoxGeometry(0.14, 0.75, 0.14), grn, 0, -0.37, 0); pv.add(arm);
+          pv.add(mesh(new THREE.SphereGeometry(0.11, 12, 10), yel, 0, -0.75, 0));
+          var tip = new THREE.Group(); tip.position.y = -0.75; tip.rotation.z = -1.15; tip.add(mesh(new THREE.BoxGeometry(0.13, 0.5, 0.13), grn, 0, -0.25, 0)); pv.add(tip);
+          g.add(pv);
+        }
+        g.add(mesh(new THREE.SphereGeometry(0.3, 22, 16), M(0xFF6FA8, { r: 0.3 }), 0, -0.55, 0));
+      },
       palette: function (g) {   // watercolor box: blue tin, white tray, 8 paint pans (4 on top, 4 below)
         var tin = rbox(2.1, 0.28, 1.25, 0.1, M(0x1E6FD9)); tin.position.y = -0.06; g.add(tin);
         var tray = rbox(1.94, 0.12, 1.1, 0.04, M(0xF4F6F7)); tray.position.y = 0.1; g.add(tray);
@@ -6920,7 +7044,7 @@ var DECO = (function () {
     }
     var MAP = { logoSec: 'logoPlate', charColSec: 'palette', extrasSec: 'sparkle', boxColSec: 'bucket', shapeSec: 'shape', hookSec: 'ring', latchSec: 'lock', nameSec: 'letters',
       texSec: 'bumps', patternSec: 'dots', emojiSec: 'smile', partsBox: 'clipboard', loadBox: 'upArrow' };
-    var TOP = { btnSave: 'floppy', btnShare: 'share', btnGallery: 'frame', btnAdmin: 'shield', planBtn: 'printer', feedbackBtn: 'bubble',
+    var TOP = { clawBtn: 'clawToy', btnCommunity: 'commShelf', btnSave: 'floppy', btnShare: 'share', btnGallery: 'woodShelf', btnAdmin: 'shield', planBtn: 'printer', feedbackBtn: 'bubble',
       lightBtn: 'sun', measure: 'ruler', expand: 'liftOut', seeInside: 'eye', hideChar: 'hideHead', hideBox: 'hideBox',
       tabChar: 'charHead', tabBox: 'cube', dlChar: 'charHead', dlBox: 'cube', resetView: 'resetCam', btnSound: 'speaker', btnMusic: 'notes', bbL: 'carton', dlBlind: 'carton', dbL: 'showcase', dlDisplay: 'showcase' };
     function apply() {
@@ -7669,7 +7793,9 @@ var DECO = (function () {
     dlBtn.disabled = off;
     var hasBox = objs.some(isBoxObj), hasChar = objs.some(function (o) { return !isBoxObj(o); });
     var bbOn = typeof BB !== 'undefined' && BB.on, dbOn = typeof DB !== 'undefined' && DB.on;
-    document.getElementById('dlRow').hidden = !(hasBox && hasChar) && !bbOn && !dbOn;
+    var stOn = typeof ST !== 'undefined' && ST.on;
+    document.getElementById('dlRow').hidden = !(hasBox && hasChar) && !bbOn && !dbOn && !stOn;
+    var dls = document.getElementById('dlStorage'); if (dls) { dls.disabled = off; dls.hidden = !stOn; }
     var dld = document.getElementById('dlDisplay'); if (dld) { dld.disabled = off; dld.hidden = !dbOn; }
     var dlt = document.getElementById('dlTray'); if (dlt) { dlt.disabled = off; dlt.hidden = !(bbOn && BB.tray && BB.tray.on); }
     dlChar.disabled = off; dlBoxB.disabled = off;
@@ -7703,7 +7829,7 @@ var DECO = (function () {
       { name: 'note text', geom: txt, color: textHex || '#2A2A2E' }
     ] };
   }
-  var DL_LABEL = { all: 'Download all', char: 'Character only', box: 'Box only', blind: 'Blind box only', display: 'Display box only', tray: 'Seller tray only' };
+  var DL_LABEL = { all: 'Download all', char: 'Character only', box: 'Box only', blind: 'Blind box only', display: 'Display box only', tray: 'Seller tray only', storage: 'Storage box only' };
   // the pieces that go into the files (also used by the print plan)
   // ---------- separate switch socket ----------
   // The socket prints on its own, upside down (no supports), and presses into the square hole sculpted under each character.
@@ -7744,10 +7870,11 @@ var DECO = (function () {
     }
     ['pattern', 'hook', 'emoji', 'logo'].forEach(function (k) { var m = decoMeshes[k]; if (m && objs[m.userData.obj]) objs[m.userData.obj].parts.push({ name: k === 'emoji' ? 'icon' : k, geom: m.geometry, color: S.groups[k].color }); });
     var parts = objs.filter(function (o) { return o.parts.some(function (p) { return !p.enforcer; }) && (which === 'all' || (which === 'box') === o.box); });
-    if (which === 'blind' || which === 'display' || which === 'tray') parts = [];
+    if (which === 'blind' || which === 'display' || which === 'tray' || which === 'storage') parts = [];
     if (typeof BB !== 'undefined' && BB.on && (which === 'all' || which === 'blind')) { parts.push(bbPiece()); if (BB.tray && BB.tray.on) parts = parts.concat(trPieces()); }
     if (which === 'tray') { parts = []; if (typeof BB !== 'undefined' && BB.on && BB.tray && BB.tray.on) parts = trPieces(); }   // the milk carton (and the seller tray), their own files
     if (typeof DB !== 'undefined' && DB.on && (which === 'all' || which === 'display')) parts.push(dbPiece());   // the display box, its own file
+    if (typeof ST !== 'undefined' && ST.on && (which === 'all' || which === 'storage')) parts.push(stPiece());   // the storage box, its own file
     parts.forEach(function (o) {
       var src = S.objects.filter(function (x) { return x.name === o.name; })[0];
       if (!o.box && src && src.note) {
@@ -7781,8 +7908,8 @@ var DECO = (function () {
     parts.forEach(function (o) { o.copies = PLAN.copies; });
     var tpl = tplFor(PLAN.printer);
     var base = 'Boxedable-' + (safe(S.title) || 'design') + '-' + (current === 'clicker' ? 'Clicker' : 'Normal') + (S.name.trim() ? '-' + safe(S.name) : '');
-    if (which !== 'all') base += which === 'box' ? '-Box' : which === 'blind' ? '-Blind-box' : which === 'display' ? '-Display-box' : which === 'tray' ? '-Seller-tray' : '-Character';
-    var btn = which === 'all' ? dlBtn : which === 'box' ? dlBoxB : which === 'blind' ? dlBlind : which === 'display' ? dlDisplay : which === 'tray' ? document.getElementById('dlTray') : dlChar, lab = btn.querySelector('span') || btn;
+    if (which !== 'all') base += which === 'box' ? '-Box' : which === 'blind' ? '-Blind-box' : which === 'display' ? '-Display-box' : which === 'tray' ? '-Seller-tray' : which === 'storage' ? '-Storage-box' : '-Character';
+    var btn = which === 'all' ? dlBtn : which === 'box' ? dlBoxB : which === 'blind' ? dlBlind : which === 'display' ? dlDisplay : which === 'tray' ? document.getElementById('dlTray') : which === 'storage' ? document.getElementById('dlStorage') : dlChar, lab = btn.querySelector('span') || btn;
     busy = true; syncDownload(); lab.textContent = 'Building\u2026'; dlNote.textContent = 'Full-detail files take a few seconds.';
     function done() { busy = false; lab.textContent = DL_LABEL[which]; syncDownload(); }
     setTimeout(function () {
@@ -8078,6 +8205,288 @@ var DECO = (function () {
   dlDisplay.addEventListener('click', function () { runDownload('display'); });
   if (DB.on && BB.on) { BB.on = false; bbSave(); bbPaint(); bbRender(); }
   dbPaint(); dbRender(); setTimeout(dbRefresh, 0);   // again once the box settings have loaded
+
+  // ---------- storage box: an open tray with square slots that keep characters out of their boxes, like keycaps ----------
+  var ST = { on: false, count: 4, tpl: 'rounded', tex: 'none', gap: 4, wall: 2.4, depth: 8, stem: true, color: '#6EC6FF', acc: '#FFD45C', slots: ['cur'] };
+  try { var sts = JSON.parse(localStorage.getItem('bx-storage') || 'null'); if (sts) Object.keys(ST).forEach(function (k) { if (sts[k] !== undefined) ST[k] = sts[k]; }); } catch (e) {}
+  if (!Array.isArray(ST.slots)) ST.slots = ['cur'];
+  function stSave() { try { localStorage.setItem('bx-storage', JSON.stringify(ST)); } catch (e) {} }
+  var ST_SLOT = 40;   // inside of a square slot (mm): the box's inside is 37.6, so any character fits
+  var ST_TPL = { classic: { ro: 1.5, rp: 1 }, rounded: { ro: 8, rp: 5 }, keycap: { ro: 5, rp: 3 }, crate: { ro: 0.6, rp: 1 }, honey: { ro: 7, rp: 0 } };
+  var ST_NOTE = 'Print it flat, as it is, with no supports. 15% infill is plenty. With switch posts, press the switch socket under each character onto a post; if a post is too tight, file it lightly. Every slot fits any Boxedable character.';
+  function stLayout() {
+    var n = ST.count, cols = n === 2 ? 2 : n / 2, rows = n === 2 ? 1 : 2, hex = ST.tpl === 'honey';
+    var cx = hex ? 47.4 : ST_SLOT, cy = hex ? 41 : ST_SLOT, g = ST.gap, w = Math.max(ST.wall, ST_TPL[ST.tpl].ro * 0.5);
+    var W = cols * cx + (cols - 1) * g + 2 * w, D = rows * cy + (rows - 1) * g + 2 * w, F = 2, H = F + ST.depth, cells = [];
+    for (var r = 0; r < rows; r++) for (var c = 0; c < cols; c++) cells.push({ x: -W / 2 + w + cx / 2 + c * (cx + g), y: -D / 2 + w + cy / 2 + r * (cy + g) });   // slot 1 is front left
+    return { cols: cols, rows: rows, cx: cx, cy: cy, W: W, D: D, F: F, H: H, w: w, cells: cells, hex: hex };
+  }
+  function rrPath(P, cx, cy, w, h, r) {
+    r = Math.max(0, Math.min(r, w / 2 - 0.01, h / 2 - 0.01));
+    var x0 = cx - w / 2, y0 = cy - h / 2, x1 = cx + w / 2, y1 = cy + h / 2;
+    if (r < 0.05) { P.moveTo(x0, y0); P.lineTo(x1, y0); P.lineTo(x1, y1); P.lineTo(x0, y1); P.lineTo(x0, y0); return P; }
+    P.moveTo(x0 + r, y0); P.lineTo(x1 - r, y0); P.absarc(x1 - r, y0 + r, r, -Math.PI / 2, 0, false);
+    P.lineTo(x1, y1 - r); P.absarc(x1 - r, y1 - r, r, 0, Math.PI / 2, false);
+    P.lineTo(x0 + r, y1); P.absarc(x0 + r, y1 - r, r, Math.PI / 2, Math.PI, false);
+    P.lineTo(x0, y0 + r); P.absarc(x0 + r, y0 + r, r, Math.PI, Math.PI * 1.5, false);
+    return P;
+  }
+  function hexPath(P, cx, cy, af) { var R = af / Math.sqrt(3); for (var i = 0; i <= 6; i++) { var a = (i % 6) * Math.PI / 3; P[i ? 'lineTo' : 'moveTo'](cx + R * Math.cos(a), cy + R * Math.sin(a)); } return P; }
+  function stExt(shape, h, z0) { var g = new THREE.ExtrudeGeometry(shape, { depth: h, bevelEnabled: false, curveSegments: 10 }); g.translate(0, 0, z0); return g; }
+  function stBox(x, y, z, sx, sy, sz) { var g = new THREE.BoxGeometry(sx, sy, sz); g.translate(x, y, z); return g; }
+  function stPocket(P, L, c, grow) { return L.hex ? hexPath(P, c.x, c.y, L.cy + grow * 2) : rrPath(P, c.x, c.y, L.cx + grow * 2, L.cy + grow * 2, ST_TPL[ST.tpl].rp + grow); }
+  function stStem(x, y, z0) {   // a keyboard-switch post (cross stem) the character's switch socket presses onto
+    var base = new THREE.CylinderGeometry(2.9, 3.1, 1.4, 24); base.rotateX(Math.PI / 2); base.translate(x, y, z0 + 0.69);
+    return concat([base, stBox(x, y, z0 + 1.38 + 1.9, 4.05, 1.25, 3.8), stBox(x, y, z0 + 1.38 + 1.9, 1.25, 4.05, 3.8)]);
+  }
+  var stCache = {};
+  function stGeo() {
+    var key = JSON.stringify([ST.count, ST.tpl, ST.tex, ST.gap, ST.wall, ST.depth, ST.stem]); if (stCache[key]) return stCache[key];
+    var L = stLayout(), T = ST_TPL[ST.tpl], tray = [], acc = [];
+    var outer = rrPath(new THREE.Shape(), 0, 0, L.W, L.D, T.ro), walls = rrPath(new THREE.Shape(), 0, 0, L.W, L.D, T.ro);
+    L.cells.forEach(function (c) { walls.holes.push(stPocket(new THREE.Path(), L, c, 0)); });
+    tray.push(stExt(outer, L.F, 0), stExt(walls, ST.depth + 0.02, L.F - 0.01));
+    if (ST.stem) L.cells.forEach(function (c) { tray.push(stStem(c.x, c.y, L.F - 0.01)); });
+    if (ST.tpl === 'keycap') L.cells.forEach(function (c) {   // a raised rim around each slot, like a keycap's edge
+      var rim = stPocket(new THREE.Shape(), L, c, 1.8); rim.holes.push(stPocket(new THREE.Path(), L, c, 0)); acc.push(stExt(rim, 1.4, L.H - 0.02));
+    });
+    if (ST.tpl === 'crate') [[-1, -1], [1, -1], [1, 1], [-1, 1]].forEach(function (k) {   // corner posts standing a little proud
+      var p = Math.max(6, L.w + 3.5); acc.push(stBox(k[0] * (L.W / 2 - p / 2 + 1), k[1] * (L.D / 2 - p / 2 + 1), (L.H + 1.6) / 2, p, p, L.H + 1.6));
+    });
+    if (ST.tex !== 'none') {
+      var m = T.ro + 2.5, out = 0.8, sides = [   // the four flat sides: middle point, direction along, outward normal, length
+        { x: 0, y: -L.D / 2, ax: 1, ay: 0, nx: 0, ny: -1, len: L.W - 2 * m }, { x: 0, y: L.D / 2, ax: 1, ay: 0, nx: 0, ny: 1, len: L.W - 2 * m },
+        { x: -L.W / 2, y: 0, ax: 0, ay: 1, nx: -1, ny: 0, len: L.D - 2 * m }, { x: L.W / 2, y: 0, ax: 0, ay: 1, nx: 1, ny: 0, len: L.D - 2 * m }];
+      sides.forEach(function (sd) {
+        if (sd.len < 6) return;
+        var px = sd.x + sd.nx * (out / 2 - 0.05), py = sd.y + sd.ny * (out / 2 - 0.05);
+        function bar(t, z, along, tall) { var sx = sd.ax ? along : out, sy = sd.ay ? along : out; acc.push(stBox(px + sd.ax * t, py + sd.ay * t, z, sx, sy, tall)); }
+        if (ST.tex === 'ribs') { var nr = Math.floor(sd.len / 5); for (var i = 0; i <= nr; i++) bar(-sd.len / 2 + i * sd.len / Math.max(1, nr), L.H / 2, 1.3, L.H - 3); }
+        else if (ST.tex === 'stripes') { bar(0, L.H * 0.36, sd.len, 1.6); bar(0, L.H * 0.7, sd.len, 1.6); }
+        else if (ST.tex === 'planks') { var np = L.H >= 11 ? 3 : 2, ph = (L.H - 2) / np; for (var j = 0; j < np; j++) bar(0, 1 + ph * j + ph / 2, sd.len, ph - 1.1); }
+        else if (ST.tex === 'dots') {
+          var nd = Math.floor(sd.len / 6), zs = []; for (var z = 3; z <= L.H - 2.5; z += 4.5) zs.push(z);
+          zs.forEach(function (z, zi) { for (var q = 0; q <= nd; q++) {
+            var t = -sd.len / 2 + q * sd.len / Math.max(1, nd) + (zi % 2 ? sd.len / Math.max(1, nd) / 2 : 0); if (t > sd.len / 2) continue;
+            var cy = new THREE.CylinderGeometry(1.15, 1.15, out, 14); if (sd.nx) cy.rotateZ(Math.PI / 2); cy.translate(px + sd.ax * t, py + sd.ay * t, z); acc.push(cy);
+          } });
+        }
+      });
+    }
+    return (stCache[key] = { tray: concat(tray), acc: acc.length ? concat(acc) : null, L: L });
+  }
+  function stPiece() {
+    var G = stGeo(), parts = [{ name: 'storage tray', geom: G.tray, color: ST.color }];
+    if (G.acc) parts.push({ name: 'trim', geom: G.acc, color: ST.acc });
+    var note = ST_NOTE + ' It is about ' + Math.round(G.L.W / 10) + ' cm wide, so it needs a print bed at least that wide.';
+    return { name: 'Storage box', file: 'Storage-box', box: false, planName: 'Storage box (' + ST.count + ' slots)', blindNote: note, extras: [], parts: parts };
+  }
+  // ---- in the preview: the tray beside the plate, with characters in their slots
+  function stMat(hex) { var m = new THREE.MeshPhysicalMaterial({ roughness: 0.6, metalness: 0, clearcoat: 0.45, clearcoatRoughness: 0.35, envMapIntensity: 0.32 * light.bright }); m.color.set(hex).convertSRGBToLinear().multiplyScalar(0.9); return m; }
+  var stGroup = new THREE.Group(), stInner = new THREE.Group(); stInner.rotation.x = -Math.PI / 2; stGroup.add(stInner); stGroup.visible = false; scene.add(stGroup);
+  var stTray = new THREE.Mesh(new THREE.BufferGeometry(), stMat(ST.color)), stAcc = new THREE.Mesh(new THREE.BufferGeometry(), stMat(ST.acc)), stSlotsG = new THREE.Group();
+  [stTray, stAcc].forEach(function (m) { m.castShadow = true; m.receiveShadow = true; stInner.add(m); }); stInner.add(stSlotsG);
+  var stLabelTex = (function () {
+    var c = document.createElement('canvas'); c.width = 256; c.height = 256; var x = c.getContext('2d');
+    x.strokeStyle = 'rgba(11,59,56,.55)'; x.lineWidth = 7; x.setLineDash([20, 13]); x.strokeRect(12, 12, 232, 232);
+    x.textAlign = 'center'; x.font = '900 40px Figtree, sans-serif'; x.lineWidth = 9; x.setLineDash([]); x.strokeStyle = 'rgba(255,255,255,.9)'; x.fillStyle = '#0B3B38';
+    [['DRAG A', 70], ['CHARACTER', 214]].forEach(function (t) { x.strokeText(t[0], 128, t[1]); x.fillText(t[0], 128, t[1]); });
+    var t = new THREE.CanvasTexture(c); t.encoding = THREE.sRGBEncoding; return t;
+  })();
+  var stGlow = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ color: 0xFFD84A, transparent: true, opacity: 0.55, depthWrite: false })); stGlow.visible = false; stGlow.renderOrder = 4; stInner.add(stGlow);
+  var stHits = [], stLibCache = {};
+  function stCharGroup(id) {   // a copy of a character, standing upright (Z up), in its own colors
+    var g = new THREE.Group();
+    if (id === 'cur') {
+      model.updateMatrixWorld(true); var inv = new THREE.Matrix4().copy(model.matrixWorld).invert();
+      S.parts.forEach(function (p) {
+        if (p.obj !== 0 || !p.mesh || !p.mesh.geometry) return;
+        var mt = p.mesh.material, m2 = Array.isArray(mt) ? mt.map(function (x) { var y = x.clone(); y.defines = Object.assign({}, x.defines); return y; }) : (function () { var y = mt.clone(); y.defines = Object.assign({}, mt.defines); return y; })();
+        var me = new THREE.Mesh(p.mesh.geometry, m2); me.matrixAutoUpdate = false; me.matrix.multiplyMatrices(inv, p.mesh.matrixWorld); me.castShadow = true; me.userData.ownMat = true; g.add(me);
+      });
+    } else {
+      var e = (typeof LIB !== 'undefined' ? LIB : []).filter(function (x) { return x.id === id; })[0]; if (!e || !e.parts) return null;
+      var seen = {}, idx = 0;
+      e.parts.forEach(function (p) {
+        if (isSwitchPart(p)) return;
+        var c = BX.classify(p.name); if (c.group === 'support' || c.optional || c.pick) return;
+        if (seen[c.group] === undefined) seen[c.group] = BX.defaultColor(c.group, idx++);
+        var me = new THREE.Mesh(p.geom, new THREE.MeshPhysicalMaterial({ color: softWhite(new THREE.Color(p.filColor || seen[c.group]).convertSRGBToLinear()), roughness: 0.48, clearcoat: 0.6, clearcoatRoughness: 0.25, envMapIntensity: 0.28 * light.bright }));
+        me.castShadow = true; me.userData.ownMat = true; g.add(me);
+      });
+    }
+    if (!g.children.length) return null;
+    g.updateMatrixWorld(true);
+    var bb = new THREE.Box3().setFromObject(g), ctr = bb.getCenter(new THREE.Vector3()), sz = bb.getSize(new THREE.Vector3());
+    var k = Math.min(1, (ST_SLOT - 3) / Math.max(sz.x, sz.y, 1));   // never wider than a slot
+    var wrap = new THREE.Group(); wrap.add(g); g.position.set(-ctr.x, -ctr.y, -bb.min.z); wrap.scale.setScalar(k);
+    return wrap;
+  }
+  function stClearSlots() {
+    stSlotsG.children.slice().forEach(function (o) { stSlotsG.remove(o); o.traverse(function (m) { if (m.isMesh && m.userData.ownMat) (Array.isArray(m.material) ? m.material : [m.material]).forEach(function (x) { x.dispose(); }); }); });
+    stHits = [];
+  }
+  function stPlace() {   // stand the tray on the floor, to the right of the plate
+    if (!plate) return;
+    var L = stGeo().L; model.updateMatrixWorld(true);
+    var pb = new THREE.Box3().setFromObject(plate); if (pb.isEmpty()) pb.set(new THREE.Vector3(-40, 0, -40), new THREE.Vector3(40, 0, 40));
+    stGroup.position.set(pb.max.x + 14 + L.W / 2, ground.position.y + 0.02, (pb.min.z + pb.max.z) / 2 - 4);
+    // stretch the shadow so the tray casts one too
+    var r = Math.max(lightR || 0, stGroup.position.x + L.W / 2 + 20, L.D + 40);
+    ['left', 'right', 'top', 'bottom'].forEach(function (sd, i) { key.shadow.camera[sd] = [-r, r, r, -r][i]; }); key.shadow.camera.far = Math.max(key.shadow.camera.far, r * 5); key.shadow.camera.updateProjectionMatrix();
+  }
+  function stRender() {
+    stGroup.visible = ST.on && !(CLAW && CLAW.on);
+    if (!ST.on) { stClearSlots(); return; }
+    var G = stGeo(), L = G.L;
+    stTray.geometry = G.tray; stAcc.geometry = G.acc || new THREE.BufferGeometry(); stAcc.visible = !!G.acc;
+    stTray.material.color.set(ST.color).convertSRGBToLinear().multiplyScalar(0.9); stAcc.material.color.set(ST.acc).convertSRGBToLinear().multiplyScalar(0.9);
+    stTray.material.envMapIntensity = stAcc.material.envMapIntensity = 0.32 * light.bright;
+    stClearSlots();
+    var seat = L.F + (ST.stem ? 1.4 : 0.2);
+    L.cells.forEach(function (c, i) {
+      var id = ST.slots[i] || null, ch = id ? stCharGroup(id) : null;
+      if (ch) { ch.position.set(c.x, c.y, seat); stSlotsG.add(ch); }
+      else {
+        var lab = new THREE.Mesh(new THREE.PlaneGeometry(L.cx * 0.86, L.cy * 0.86), new THREE.MeshBasicMaterial({ map: stLabelTex, transparent: true, depthWrite: false, opacity: 0.9 }));
+        lab.userData.ownMat = true; lab.position.set(c.x, c.y, L.F + (ST.stem ? 0.2 : 0.05)); lab.renderOrder = 2; stSlotsG.add(lab);
+      }
+      var hit = new THREE.Mesh(new THREE.PlaneGeometry(L.cx + ST.gap, L.cy + ST.gap), new THREE.MeshBasicMaterial({ visible: false, side: THREE.DoubleSide })); hit.userData.ownMat = true; hit.userData.slot = i;
+      hit.position.set(c.x, c.y, L.H); stSlotsG.add(hit); stHits.push(hit);   // the slot's opening: aim at the top of the tray
+    });
+    stPlace();
+  }
+  function stView(on) {   // zoom out to the design and the tray, or back to the design
+    if (on) {
+      model.updateMatrixWorld(true); stGroup.updateMatrixWorld(true);
+      var bb = new THREE.Box3().setFromObject(stGroup); S.parts.forEach(function (p) { if (p.mesh && p.mesh.visible) bb.expandByObject(p.mesh); });
+      var sph = bb.getBoundingSphere(new THREE.Sphere()), dir = camera.position.clone().sub(controls.target).normalize(); dir.y = Math.max(dir.y, 0.62); dir.normalize(); var d = sph.radius / Math.sin(THREE.MathUtils.degToRad(camera.fov / 2)) * 1.02;
+      controls.maxDistance = Math.max(controls.maxDistance, d * 2.5); controls.target.copy(sph.center); camera.position.copy(sph.center).addScaledVector(dir, d); controls.update();
+    } else { frame.done = false; frame(); }
+  }
+  var frame0 = frame; frame = function () { frame0(); if (ST.on) stPlace(); };
+  // ---- the card
+  var stToggle = document.getElementById('stToggle'), stSlotsEl = document.getElementById('stSlots');
+  function stChips(host, k) {
+    host.textContent = '';
+    SWATCHES.forEach(function (sw) {
+      var b = document.createElement('button'); b.type = 'button'; b.className = 'chip'; b.style.background = sw[1]; b.setAttribute('aria-label', sw[0]); b.title = sw[0]; b.setAttribute('aria-pressed', String(ST[k] === sw[1]));
+      b.addEventListener('click', function (e) { ST[k] = sw[1]; stSave(); stPaint(); stRender(); renderPlan(); colorPop(e, sw[1], null); });
+      host.appendChild(b);
+    });
+  }
+  function stThumb(id) {
+    if (id === 'cur') { var cid = typeof libSel !== 'undefined' ? libSel : null, ce = cid && (typeof LIB !== 'undefined' ? LIB : []).filter(function (x) { return x.id === cid; })[0]; return { name: (S.title || (ce && ce.name) || 'Your design') + ' (current)', src: ce && ce.thumb }; }
+    var e = (typeof LIB !== 'undefined' ? LIB : []).filter(function (x) { return x.id === id; })[0]; return { name: e ? e.name : 'Character', src: e && e.thumb };
+  }
+  function stPaintSlots() {
+    stSlotsEl.textContent = ''; stSlotsEl.style.setProperty('--cols', ST.count === 2 ? 2 : ST.count / 2);
+    var order = []; for (var i = 0; i < ST.count; i++) order.push(i);
+    var cols = ST.count === 2 ? 2 : ST.count / 2; if (ST.count > 2) order = order.slice(cols).concat(order.slice(0, cols));   // back row on top, like looking down at the tray
+    order.forEach(function (i) {
+      var id = ST.slots[i] || null, b = document.createElement('button'); b.type = 'button'; b.className = 'stslot' + (id ? ' full' : ''); b.dataset.i = i;
+      b.appendChild(el('b', 'stnum', String(i + 1)));
+      if (id) {
+        var t = stThumb(id); if (t.src) { var im = el('img'); im.src = t.src; im.alt = ''; b.appendChild(im); } else b.appendChild(el('span', 'stph', t.name.charAt(0)));
+        b.title = t.name; b.setAttribute('aria-label', 'Slot ' + (i + 1) + ': ' + t.name + '. Press to empty it.');
+        b.appendChild(el('i', 'stx', '✕'));
+        b.addEventListener('click', function () { ST.slots[i] = null; stSave(); stPaintSlots(); stRender(); SFX.play('tap'); });
+      } else {
+        b.appendChild(el('span', 'stplus', '+')); b.title = 'Empty: drag a character here, or press to add your current one'; b.setAttribute('aria-label', 'Slot ' + (i + 1) + ', empty. Press to put your current character here.');
+        b.addEventListener('click', function () { ST.slots[i] = 'cur'; stSave(); stPaintSlots(); stRender(); SFX.play('pop'); });
+      }
+      stSlotsEl.appendChild(b);
+    });
+  }
+  function stPaint() {
+    stToggle.setAttribute('aria-checked', String(ST.on)); document.getElementById('stBody').hidden = !ST.on;
+    document.querySelectorAll('[data-stcount]').forEach(function (b) { b.setAttribute('aria-checked', String(+b.dataset.stcount === ST.count)); });
+    document.querySelectorAll('[data-sttpl]').forEach(function (b) { b.setAttribute('aria-checked', String(b.dataset.sttpl === ST.tpl)); });
+    document.querySelectorAll('[data-sttex]').forEach(function (b) { b.setAttribute('aria-checked', String(b.dataset.sttex === ST.tex)); });
+    [['stGap', 'gap'], ['stWall', 'wall'], ['stDepth', 'depth']].forEach(function (r) { var inp = document.getElementById(r[0]); inp.value = ST[r[1]]; document.getElementById(r[0] + 'V').textContent = (+ST[r[1]]).toFixed(r[1] === 'depth' ? 0 : 1) + ' mm'; });
+    document.getElementById('stStem').setAttribute('aria-checked', String(!!ST.stem));
+    var touch = matchMedia('(hover: none)').matches;
+    document.getElementById('stHint').textContent = (touch ? 'Press and hold a character in the library, then drag it' : 'Drag a character from the library') + ' onto a slot in the preview or below. Press an empty slot to add your current character, or a full one to empty it.';
+    stPaintSlots();
+    stChips(document.getElementById('stColTray'), 'color'); stChips(document.getElementById('stColAcc'), 'acc');
+    var L = stGeo().L;
+    document.getElementById('stSize').textContent = 'About ' + (L.W / 10).toFixed(1) + ' × ' + (L.D / 10).toFixed(1) + ' × ' + (L.H / 10).toFixed(1) + ' cm. ' + (L.W > 250 ? 'That’s wider than most print beds: try fewer slots or less space between them.' : L.W > 175 ? 'It needs a bed at least ' + Math.ceil(L.W / 10) + ' cm wide (not an A1 mini).' : 'It fits most print beds.');
+    document.getElementById('stNote').textContent = ST_NOTE;
+    syncDownload();
+  }
+  function stChanged(view) { stSave(); stPaint(); stRender(); if (view && ST.on) stView(true); renderPlan(); }
+  stToggle.addEventListener('click', function () { ST.on = !ST.on; if (ST.on && !ST.slots.some(Boolean)) ST.slots[0] = 'cur'; stChanged(false); stView(ST.on); if (ST.on) SFX.play('tap'); });
+  document.querySelectorAll('[data-stcount]').forEach(function (b) { b.addEventListener('click', function () { ST.count = +b.dataset.stcount; stChanged(true); }); });
+  document.querySelectorAll('[data-sttpl]').forEach(function (b) { b.addEventListener('click', function () { ST.tpl = b.dataset.sttpl; if (ST.tpl === 'crate' && ST.tex === 'none') ST.tex = 'planks'; stChanged(false); }); });
+  document.querySelectorAll('[data-sttex]').forEach(function (b) { b.addEventListener('click', function () { ST.tex = b.dataset.sttex; stChanged(false); }); });
+  [['stGap', 'gap'], ['stWall', 'wall'], ['stDepth', 'depth']].forEach(function (r) {
+    var inp = document.getElementById(r[0]), t = null;
+    inp.addEventListener('input', function () { ST[r[1]] = +inp.value; document.getElementById(r[0] + 'V').textContent = (+inp.value).toFixed(r[1] === 'depth' ? 0 : 1) + ' mm'; clearTimeout(t); t = setTimeout(function () { stSave(); stRender(); }, 60); });
+    inp.addEventListener('change', function () { stChanged(false); });
+  });
+  document.getElementById('stStem').addEventListener('click', function () { ST.stem = !ST.stem; stChanged(false); });
+  document.getElementById('dlStorage').addEventListener('click', function () { runDownload('storage'); });
+  // keep the current character's slots up to date when the design or its colors change
+  var stSig = '';
+  setInterval(function () {
+    if (!ST.on || !S.parts.length) return;
+    var sg = S.parts.length + ':' + (S.parts[0].mesh ? S.parts[0].mesh.uuid : '') + ':' + S.groupOrder.map(function (g) { return S.groups[g] && S.groups[g].color; }).join(',');
+    if (sg !== stSig) { stSig = sg; if (ST.slots.indexOf('cur') >= 0) stRender(); if (typeof libSel !== 'undefined') stPaintSlots(); }
+  }, 700);
+  new MutationObserver(function () { stGroup.visible = ST.on && !(CLAW && CLAW.on); }).observe(document.body, { attributes: true, attributeFilter: ['class'] });
+  // ---- drag a character from the library into a slot
+  var DRAG = null, stEat = false, stGhost = null, stOver = null, stRay = new THREE.Raycaster();
+  function stTarget(x, y) {
+    if (stGhost) stGhost.style.display = 'none';
+    var hit = document.elementFromPoint(x, y); if (stGhost) stGhost.style.display = '';
+    if (!hit) return null;
+    var sl = hit.closest && hit.closest('.stslot'); if (sl) return { i: +sl.dataset.i, el: sl };
+    if (hit === renderer.domElement && stGroup.visible) {
+      var r = renderer.domElement.getBoundingClientRect(), v = new THREE.Vector2((x - r.left) / r.width * 2 - 1, -(y - r.top) / r.height * 2 + 1);
+      stRay.setFromCamera(v, camera); var h = stRay.intersectObjects(stHits, false)[0];
+      if (h) return { i: h.object.userData.slot };
+    }
+    return null;
+  }
+  function stMark(t) {
+    document.querySelectorAll('.stslot.over').forEach(function (e) { e.classList.remove('over'); });
+    stGlow.visible = false;
+    if (!t) return;
+    var sl = stSlotsEl.querySelector('.stslot[data-i="' + t.i + '"]'); if (sl) sl.classList.add('over');
+    var L = stGeo().L, c = L.cells[t.i]; if (c) { stGlow.scale.set(L.cx, L.cy, 1); stGlow.position.set(c.x, c.y, L.H + 0.3); stGlow.visible = true; }
+  }
+  function dragStart(d, x, y) {
+    d.on = true; stEat = true;
+    var g = el('div', 'stghost'), im = d.tile.querySelector('img'); if (im) { var c = el('img'); c.src = im.src; c.alt = ''; g.appendChild(c); } else g.appendChild(el('span', '', d.tile.title.charAt(0)));
+    g.appendChild(el('small', '', d.tile.title)); document.body.appendChild(g); stGhost = g; document.body.classList.add('stdragging');
+    if (navigator.vibrate) try { navigator.vibrate(12); } catch (e) {}
+    dragMove(x, y);
+  }
+  function dragMove(x, y) { if (stGhost) stGhost.style.transform = 'translate(' + x + 'px,' + y + 'px)'; stOver = stTarget(x, y); stMark(stOver); }
+  function dragStop() { if (stGhost) stGhost.remove(); stGhost = null; stMark(null); document.body.classList.remove('stdragging'); setTimeout(function () { stEat = false; }, 350); }
+  document.addEventListener('pointerdown', function (ev) {
+    if (!ST.on) return;
+    var t = ev.target.closest && ev.target.closest('#libGrid .libtile[data-id]'); if (!t || (ev.pointerType === 'mouse' && ev.button !== 0)) return;
+    var d = { id: t.dataset.id, x: ev.clientX, y: ev.clientY, pid: ev.pointerId, on: false, tile: t, touch: ev.pointerType !== 'mouse' };
+    if (d.touch) d.timer = setTimeout(function () { if (DRAG === d) dragStart(d, d.x, d.y); }, 300);
+    DRAG = d;
+  }, true);
+  window.addEventListener('pointermove', function (ev) {
+    var d = DRAG; if (!d || ev.pointerId !== d.pid) return;
+    if (!d.on) { if (Math.hypot(ev.clientX - d.x, ev.clientY - d.y) < 7) return; if (d.touch) { clearTimeout(d.timer); DRAG = null; return; } dragStart(d, ev.clientX, ev.clientY); }
+    ev.preventDefault(); dragMove(ev.clientX, ev.clientY);
+  });
+  function dragUp(ev, cancel) {
+    var d = DRAG; if (!d || ev.pointerId !== d.pid) return; clearTimeout(d.timer); DRAG = null; if (!d.on) return;
+    var t = cancel ? null : stTarget(ev.clientX, ev.clientY); dragStop();
+    if (t && t.i < ST.count) { while (ST.slots.length < ST.count) ST.slots.push(null); ST.slots[t.i] = d.id; stSave(); stPaintSlots(); stRender(); SFX.play('pop'); }
+  }
+  window.addEventListener('pointerup', function (ev) { dragUp(ev, false); });
+  window.addEventListener('pointercancel', function (ev) { dragUp(ev, true); });
+  document.addEventListener('touchmove', function (e) { if (DRAG && DRAG.on) e.preventDefault(); }, { passive: false });
+  document.addEventListener('contextmenu', function (e) { if (DRAG) e.preventDefault(); }, true);
+  document.addEventListener('click', function (e) { if (stEat && e.target.closest && e.target.closest('.libtile')) { e.stopPropagation(); e.preventDefault(); stEat = false; } }, true);
+  stPaint(); stRender(); setTimeout(function () { stRender(); if (ST.on) stView(true); }, 1200);
 
   resize();
   // ---------- printers, print plan, estimates, copies ----------
@@ -8723,7 +9132,7 @@ var DECO = (function () {
       return pb;
     }
     var b = document.createElement('button'); b.type = 'button'; b.className = 'libtile'; b.setAttribute('role', 'option');
-    b.setAttribute('aria-selected', String(e.id === libSel && !pendingPick)); b.title = e.name;
+    b.setAttribute('aria-selected', String(e.id === libSel && !pendingPick)); b.title = e.name; b.dataset.id = e.id;
     if (e.thumb) { var im = document.createElement('img'); im.src = e.thumb; im.alt = ''; b.appendChild(im); }
     else { var ph = document.createElement('span'); ph.className = 'ph'; ph.textContent = e.name.charAt(0); b.appendChild(ph); }
     if (e.badge) { var bd = document.createElement('i'); bd.className = 'libbadge ' + e.badge; bd.textContent = e.badge === 'new' ? 'NEW' : '★'; bd.title = e.badge === 'new' ? 'New' : 'Featured'; b.appendChild(bd); }
