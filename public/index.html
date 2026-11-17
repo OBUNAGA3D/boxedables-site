@@ -4097,7 +4097,7 @@ var DECO = (function () {
       rig.add(pv); prongs.push(pv);
     }
     rig.traverse(function (m) { if (m.isMesh) m.castShadow = true; });
-    var TIP = 21;   // how far the closed tips reach below the claw
+    var TIP0 = 21, TIP = 21, SCL = 1;   // how far the closed tips reach below the claw (grows with the claw)
     var aim = new THREE.Mesh(new THREE.RingGeometry(4.5, 6.5, 32), new THREE.MeshBasicMaterial({ color: 0xFFD84A, transparent: true, opacity: 0.85, depthWrite: false })); aim.rotation.x = -Math.PI / 2; aim.visible = false; scene.add(aim);
     // ---- the prize hole beside the plate
     var chute = new THREE.Group(); chute.visible = false; scene.add(chute);
@@ -4112,7 +4112,7 @@ var DECO = (function () {
       plate.geometry.computeBoundingBox(); var pb = plate.geometry.boundingBox, ph = pb.max.x;
       CH.ground = ground.position.y; CH.plateTop = pb.max.y; CH.half = ph;
       var cb0 = charBox(), cs0 = cb0.isEmpty() ? new THREE.Vector3(40, 40, 40) : cb0.getSize(new THREE.Vector3());
-      CH.r = Math.max(18, Math.max(cs0.x, cs0.z) * 0.62 + 5); CH.R = CH.r + 4;   // the hole fits the character with room to spare
+      CH.r = Math.max(24, Math.hypot(cs0.x, cs0.z) * 0.5 + 6); CH.R = CH.r + 4;   // the hole fits the character with room to spare
       CH.x = ph + CH.R + 8; CH.z = ph * 0.3; CH.rim = CH.plateTop + 16;
       var h = CH.rim - CH.ground;
       var tube = new THREE.Mesh(new THREE.CylinderGeometry(CH.R, CH.R + 2, h, 40, 1, true), new THREE.MeshPhysicalMaterial({ map: stripeTex(), roughness: 0.4, clearcoat: 0.6, side: THREE.DoubleSide }));
@@ -4125,18 +4125,18 @@ var DECO = (function () {
     }
     // ---- the world the character can bump into
     var SOLIDS = [];
-    function buildSolids() {
-      SOLIDS = [];
-      SOLIDS.push({ min: new V3(-CH.half, CH.ground - 50, -CH.half), max: new V3(CH.half, CH.plateTop, CH.half) });   // the plate
-      var bb = new THREE.Box3(); S.parts.forEach(function (p) { if (p.obj === 1 && p.mesh.visible) bb.expandByObject(p.mesh); });
-      if (!bb.isEmpty()) {
-        var t = 2.6, a = bb.min, b = bb.max;
-        SOLIDS.push({ min: new V3(a.x, a.y, a.z), max: new V3(a.x + t, b.y, b.z) }, { min: new V3(b.x - t, a.y, a.z), max: new V3(b.x, b.y, b.z) },
-          { min: new V3(a.x, a.y, a.z), max: new V3(b.x, b.y, a.z + t) }, { min: new V3(a.x, a.y, b.z - t), max: new V3(b.x, b.y, b.z) },
-          { min: new V3(a.x, a.y, a.z), max: new V3(b.x, a.y + 2.2, b.z) });
-        C.box = bb;
-      }
+    function buildSolids() { SOLIDS = [{ min: new V3(-CH.half, CH.ground - 50, -CH.half), max: new V3(CH.half, CH.plateTop, CH.half) }]; }   // the plate
+    function modelMeshes() {   // the Boxedable as it stands: character, box, name, icon (not the carton or display box)
+      var out = [];
+      model.traverse(function (m) {
+        if (!m.isMesh || m.isInstancedMesh || !m.geometry) return;
+        for (var o = m; o && o !== model; o = o.parent) if (o === bbGroup || o === trGroup || o === dbGroup || !o.visible) return;
+        if (!m.layers.test(camera.layers)) return;
+        out.push(m);
+      });
+      return out;
     }
+    function modelBox() { var bb = new THREE.Box3(); model.updateMatrixWorld(true); modelMeshes().forEach(function (m) { bb.expandByObject(m); }); return bb; }
     function collide(p) {   // deepest push-out for a point: { n, d }
       var best = null;
       var rr = Math.hypot(p.x - CH.x, p.z - CH.z), inHole = rr < CH.r;
@@ -4158,26 +4158,38 @@ var DECO = (function () {
     // ---- the character as a body
     var body = null, G = 1500;
     function makeBody() {
-      var parts = S.parts.filter(function (p) { return p.obj === 0 && p.mesh.visible; }); if (!parts.length) return null;
-      var bb = new THREE.Box3(); parts.forEach(function (p) { p.mesh.updateMatrixWorld(true); bb.expandByObject(p.mesh); });
+      model.updateMatrixWorld(true);
+      var parts = modelMeshes().map(function (m) { return { mesh: m }; }); if (!parts.length) return null;
+      var bb = new THREE.Box3(); parts.forEach(function (p) { bb.expandByObject(p.mesh); });
       var c = bb.getCenter(new V3()), half = bb.getSize(new V3()).multiplyScalar(0.5);
       var g = new THREE.Group(); g.position.copy(c); g.updateMatrixWorld(true);
       var inv = new THREE.Matrix4().copy(g.matrixWorld).invert();
       parts.forEach(function (p) { var m = new THREE.Mesh(p.mesh.geometry, p.mesh.material); m.matrixAutoUpdate = false; m.matrix.multiplyMatrices(inv, p.mesh.matrixWorld); m.castShadow = true; m.receiveShadow = true; g.add(m); });
       scene.add(g);
-      var pts = [], s3 = [-1, 1];
-      s3.forEach(function (sx) { s3.forEach(function (sy) { s3.forEach(function (sz) { pts.push(new V3(sx * half.x * 0.8, sy * half.y * 0.92, sz * half.z * 0.8)); }); }); });
-      pts.push(new V3(0, -half.y, 0), new V3(0, half.y * 0.95, 0), new V3(half.x * 0.95, 0, 0), new V3(-half.x * 0.95, 0, 0), new V3(0, 0, half.z * 0.95), new V3(0, 0, -half.z * 0.95));
-      C.hideReal = true;
-      return { g: g, x: c.clone(), v: new V3(), q: new THREE.Quaternion(), w: new V3(), half: half, pts: pts, R: (half.x + half.y + half.z) / 3, home: c.clone(), free: false, rest: 0, t0: performance.now(), won: false };
+      var pts = [];   // contact points: the corners, edges and faces of the Boxedable's outline
+      [-1, 0, 1].forEach(function (sx) { [-1, 0, 1].forEach(function (sy) { [-1, 0, 1].forEach(function (sz) { if (sx || sy || sz) pts.push(new V3(sx * half.x * 0.96, sy * half.y * 0.98, sz * half.z * 0.96)); }); }); });
+      model.visible = false;
+      // a box-shaped body: separate turning resistance for each axis, so it swings and tumbles like a real block
+      var m2 = 1, Ix = m2 * (half.y * half.y + half.z * half.z) / 3, Iy = m2 * (half.x * half.x + half.z * half.z) / 3, Iz = m2 * (half.x * half.x + half.y * half.y) / 3;
+      return { g: g, x: c.clone(), v: new V3(), q: new THREE.Quaternion(), w: new V3(), half: half, pts: pts, invI: new V3(1 / Ix, 1 / Iy, 1 / Iz), home: c.clone(), free: false, rest: 0, t0: performance.now(), won: false };
     }
     function dropBody() {
-      if (!body) return; scene.remove(body.g); body = null; C.hideReal = false;
+      if (!body) return; scene.remove(body.g); body = null; model.visible = true;
     }
-    var dq = new THREE.Quaternion(), tv = new V3(), rv = new V3(), vp = new V3(), rn = new V3();
-    function physics(dt) {
-      var B = body, invI = 1 / (0.4 * B.R * B.R), e = 0.32, mu = 0.55;
-      B.v.y -= G * dt; B.w.multiplyScalar(Math.pow(0.6, dt));
+    var dq = new THREE.Quaternion(), tv = new V3(), rv = new V3(), vp = new V3(), rn = new V3(), qi = new THREE.Quaternion();
+    function invIw(B, vec) {   // world-space inverse inertia times a vector
+      qi.copy(B.q).invert(); var l = vec.clone().applyQuaternion(qi); l.x *= B.invI.x; l.y *= B.invI.y; l.z *= B.invI.z; return l.applyQuaternion(B.q);
+    }
+    function impulse(B, r, j) { B.v.add(j); B.w.add(invIw(B, new V3().copy(r).cross(j))); }
+    function kOf(B, r, n) { var rn2 = new V3().copy(r).cross(n); return 1 + invIw(B, rn2).cross(r).dot(n); }
+    function physics(dt, hold) {
+      var B = body, e = 0.3, mu = 0.55;
+      B.v.y -= G * dt; B.w.multiplyScalar(Math.pow(hold ? 0.45 : 0.7, dt)); B.v.multiplyScalar(Math.pow(hold ? 0.6 : 0.95, dt));
+      if (hold) {   // the claw holds one point of the Boxedable: a stiff spring at that point, so it hangs, tilts and swings
+        var a = B.grip.clone().applyQuaternion(B.q).add(B.x), ra = a.clone().sub(B.x), va = new V3().copy(B.w).cross(ra).add(B.v);
+        var err = hold.clone().sub(a), kk = 1600, cc = 60, F = err.multiplyScalar(kk).addScaledVector(va, -cc).multiplyScalar(dt);
+        impulse(B, ra, F);
+      }
       B.x.addScaledVector(B.v, dt);
       var wl = B.w.length(); if (wl > 1e-6) { dq.setFromAxisAngle(tv.copy(B.w).divideScalar(wl), wl * dt); B.q.premultiply(dq).normalize(); }
       var push = new V3(), touching = false;
@@ -4186,10 +4198,10 @@ var DECO = (function () {
         touching = true; if (hit.d > push.dot(hit.n)) push.addScaledVector(hit.n, hit.d - push.dot(hit.n));
         rv.copy(p).sub(B.x); vp.copy(B.w).cross(rv).add(B.v);
         var vn = vp.dot(hit.n); if (vn >= 0) return;
-        rn.copy(rv).cross(hit.n); var k = 1 + invI * rn.lengthSq(), j = -(1 + e) * vn / k;
-        B.v.addScaledVector(hit.n, j); B.w.addScaledVector(rn, j * invI);
+        var j = -(1 + e) * vn / kOf(B, rv, hit.n);
+        impulse(B, rv, hit.n.clone().multiplyScalar(j));
         var vt = vp.addScaledVector(hit.n, -vn), lt = vt.length();
-        if (lt > 1e-4) { vt.divideScalar(lt); var rt = new V3().copy(rv).cross(vt), kt = 1 + invI * rt.lengthSq(), jt = Math.min(lt / kt, mu * j); B.v.addScaledVector(vt, -jt); B.w.addScaledVector(rt, -jt * invI); }
+        if (lt > 1e-4) { vt.divideScalar(lt); var jt = Math.min(lt / kOf(B, rv, vt), mu * j); impulse(B, rv, vt.clone().multiplyScalar(-jt)); }
       });
       B.x.add(push.multiplyScalar(0.9));
       if (touching) { B.v.multiplyScalar(Math.pow(0.35, dt)); B.w.multiplyScalar(Math.pow(0.2, dt)); }
@@ -4198,15 +4210,15 @@ var DECO = (function () {
     var st = 'off', t0 = 0, pos = new V3(), cy = 0, hoverY = 60, ang = 0.5, angGoal = 0.5, stopY = 0, hitChar = false, grip = null, vel = new V3(), lastT = 0;
     var joy = { x: 0, y: 0 }, keys = {}, camSave = null, camAnim = null;
     function msg(t) { msgEl.textContent = t; }
-    function charBox() { var bb = new THREE.Box3(); S.parts.forEach(function (p) { if (p.obj === 0 && p.mesh.visible && p.mesh.layers.test(camera.layers)) bb.expandByObject(p.mesh); }); return bb; }
+    function charBox() { return modelBox(); }
     function groundAt(x, z) {   // the height of whatever is under the claw, and whether it's the character
       var r = new THREE.Raycaster(new V3(x, hoverY + 50, z), new V3(0, -1, 0), 0, 1000), objs = [];
       if (body) body.g.traverse(function (m) { if (m.isMesh) objs.push(m); });
-      S.parts.forEach(function (p) { if (p.mesh.visible && (p.obj === 1 || !C.hideReal)) objs.push(p.mesh); });
+      if (!body) modelMeshes().forEach(function (m) { objs.push(m); });
       objs.push(plate); chute.traverse(function (m) { if (m.isMesh) objs.push(m); });
       var h = r.intersectObjects(objs, false)[0];
       if (!h) return { y: CH.ground, char: false };
-      var isChar = false; S.parts.forEach(function (p) { if (p.mesh === h.object && p.obj === 0) isChar = true; }); if (body && body.g.children.indexOf(h.object) >= 0) isChar = true;
+      var isChar = h.object !== plate && !chute.children.some(function (c) { return c === h.object; });   // anything that's part of the Boxedable
       return { y: h.point.y, char: isChar };
     }
     function bounds() { return { x0: -CH.half + 6, x1: CH.x + 4, z0: -CH.half + 6, z1: CH.half - 6 }; }
@@ -4216,7 +4228,8 @@ var DECO = (function () {
         if (!S.parts.length) return;
         ['expand', 'seeInside', 'hideChar', 'hideBox'].forEach(function (id) { var b = document.getElementById(id); if (b && !b.hidden && b.getAttribute('aria-pressed') === 'true') b.click(); });
         C.on = true; buildChute(); buildSolids(); chute.visible = true; rig.visible = true; aim.visible = true; ui.hidden = false; stageEl().classList.add('clawon'); document.body.classList.add('clawon');
-        var cb = charBox(); hoverY = Math.max(cb.isEmpty() ? 60 : cb.max.y, CH.rim) + 42;
+        var cb = charBox(), tall = cb.isEmpty() ? 60 : cb.max.y - cb.min.y, wide = cb.isEmpty() ? 42 : Math.max(cb.max.x - cb.min.x, cb.max.z - cb.min.z);
+        SCL = Math.max(1.5, Math.min(3.2, wide * 1.1 / 26)); rig.scale.setScalar(SCL); TIP = TIP0 * SCL; /* a claw big enough to hug the whole box */ hoverY = Math.max(cb.isEmpty() ? 60 : cb.max.y + 42, CH.rim + tall + TIP + 12);
         pos.set(0, 0, 0); cy = hoverY + 240; st = 'enter'; t0 = performance.now(); ang = angGoal = 0.5;
         scoreEl.textContent = CLAWS.total; msg('Move the claw, then GRAB!');
         camSave = { p: camera.position.clone(), t: controls.target.clone() };
@@ -4294,11 +4307,12 @@ var DECO = (function () {
       else if (st === 'grip') {
         if (now - t0 > 520) {
           var cb = charBox(), cc = cb.isEmpty() ? null : cb.getCenter(new V3()), d = cc ? Math.hypot(cc.x - pos.x, cc.z - pos.z) : 99;
-          if (hitChar && d < 16 && !body) {
+          var reach = cb.isEmpty() ? 16 : Math.max(cb.max.x - cb.min.x, cb.max.z - cb.min.z) * 0.5;
+          if (hitChar && d < reach && !body) {
             body = makeBody();
             if (body) {
-              body.attached = true; body.off = body.x.clone().sub(new V3(pos.x, cy, pos.z));
-              var hold = Math.max(0.25, Math.min(0.82, 0.25 + 0.6 * (1 - d / 16)));   // the better the aim, the better the grip
+              body.attached = true; var tipW = new V3(pos.x, cy - TIP + 5, pos.z); body.grip = tipW.clone().sub(body.x);   // where the prongs hold it
+              var hold = Math.max(0.15, Math.min(0.85, 0.2 + 0.68 * (1 - d / reach)));   // off-centre grabs swing more and slip more
               if (C.forceGrip === 'strong' || (C.forceGrip !== 'weak' && Math.random() < hold)) grip = { slipRate: C.forceGrip === 'strong' ? 0 : 0.05 }; else grip = { slipAt: stopY + (hoverY - stopY) * (0.04 + Math.random() * 0.8) };
               angGoal = 0.24; msg('Got it… hold on!'); SFX.play('pop');
             }
@@ -4317,21 +4331,21 @@ var DECO = (function () {
       // the claw sways a little when it moves
       var sway = Math.max(-0.2, Math.min(0.2, vel.length() / 300));
       rig.position.set(pos.x, cy, pos.z); rig.rotation.set(-vel.z / 300, 0, vel.x / 300);
-      cable.scale.y = 900; cable.position.y = 10 + 450;
+      cable.scale.y = 900 / SCL; cable.position.y = 10 + 450 / SCL;
       // the aim ring shows where it will land
-      var g2 = groundAt(pos.x, pos.z); aim.position.set(pos.x, g2.y + 0.4, pos.z); aim.material.color.set(g2.char ? 0x7CEDE3 : 0xFFD84A);
+      var g2 = groundAt(pos.x, pos.z); aim.position.set(pos.x, g2.y + 0.4, pos.z); aim.scale.setScalar(SCL); aim.material.color.set(g2.char ? 0x7CEDE3 : 0xFFD84A);
       // the character
       if (body) {
         if (body.attached) {
-          var tgt2 = new V3(pos.x, cy, pos.z).add(body.off); body.x.lerp(tgt2, Math.min(1, dt * 14));
-          var tilt = new THREE.Quaternion().setFromEuler(new THREE.Euler(vel.z / 260, 0, -vel.x / 260)); body.q.slerp(tilt, Math.min(1, dt * 3));
+          var holdAt = new V3(pos.x, cy - TIP + 5, pos.z);
+          for (var n0 = 0; n0 < 8; n0++) physics(dt / 8, holdAt);
         } else if (body.resetting) {
           var rk = Math.min(1, (now - body.resetting.s) / 850), re = rk * rk * (3 - 2 * rk);
           body.x.lerpVectors(body.resetting.x0, body.home, re); body.x.y += Math.sin(rk * Math.PI) * 30; body.q.copy(body.resetting.q0).slerp(new THREE.Quaternion(), re);
           if (rk >= 1) { dropBody(); placeChar(); msg('Move the claw, then GRAB!'); SFX.play('pop'); }
         } else if (body.free) {
           for (var n = 0; n < 4; n++) physics(dt / 4);
-          if (!body.won && Math.hypot(body.x.x - CH.x, body.x.z - CH.z) < CH.r && body.x.y < CH.rim - 4) win();
+          if (!body.won && Math.hypot(body.x.x - CH.x, body.x.z - CH.z) < CH.r && body.x.y < CH.rim) win();
           var still = body.v.length() < 12 && body.w.length() < 0.6;
           body.rest = still ? body.rest + dt : 0;
           if (body.won && body.x.y < CH.rim - 60) { body.x.y = CH.rim - 60; body.v.set(0, 0, 0); }
