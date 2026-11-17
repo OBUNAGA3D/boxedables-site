@@ -1358,6 +1358,100 @@ body.clawon .chat { display: none !important; }
 .lbval { font: 400 16px "Lilita One", sans-serif; font-style: normal; white-space: nowrap; }
 .lbgap { text-align: center; font: 700 18px sans-serif; color: var(--ink-dark); }
 .lbempty, .lbnote { margin: 4px 0; text-align: center; font: 700 14px "Figtree", sans-serif; color: var(--ink-dark); }
+
+/* the claw game's own arcade button, above the clicks counter */
+.stage .clawstart { position: absolute; z-index: 4; right: 14px; bottom: 82px; display: flex; align-items: center; gap: 10px; padding: 7px 16px 7px 7px; border: 3px solid var(--ink-dark); border-radius: 18px; background: linear-gradient(180deg, #6BEA7F 0%, #34C759 50%, #1E8E3E 100%); box-shadow: inset 0 2px 0 rgba(255,255,255,.55), 0 4px 0 var(--ink-dark), 0 12px 22px -12px rgba(0,0,0,.45); color: #FFFFFF; cursor: pointer; transition: transform .08s, box-shadow .08s, right .32s cubic-bezier(.2,.8,.2,1); }
+.stage .clawstart::before { content: ""; position: absolute; inset: 3px; border-radius: 13px; pointer-events: none; background: radial-gradient(circle, #FFF6B0 0 1.6px, transparent 2.2px) 0 0 / 10px 10px; -webkit-mask: linear-gradient(#000 0 0) top / 100% 3px no-repeat, linear-gradient(#000 0 0) bottom / 100% 3px no-repeat; mask: linear-gradient(#000 0 0) top / 100% 3px no-repeat, linear-gradient(#000 0 0) bottom / 100% 3px no-repeat; animation: csbulb 1.2s steps(2) infinite; }
+@keyframes csbulb { 50% { background-position: 5px 0; } }
+.stage .clawstart:hover { filter: brightness(1.05); }
+.stage .clawstart:active { transform: translateY(3px); box-shadow: inset 0 2px 0 rgba(255,255,255,.55), 0 1px 0 var(--ink-dark); }
+.stage .clawstart .csic { display: grid; place-items: center; width: 40px; height: 40px; border: 2.5px solid var(--ink-dark); border-radius: 12px; background: linear-gradient(180deg, #FFF09A 0%, #FFD84A 47%, #F7B500 53%, #E99E00 100%); color: var(--ink-dark); font-style: normal; box-shadow: inset 0 2px 0 rgba(255,255,255,.6); animation: csbob 2.4s ease-in-out infinite; }
+@keyframes csbob { 0%, 100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-2px) rotate(-6deg); } }
+.stage .clawstart span { display: grid; text-align: left; line-height: 1.05; }
+.stage .clawstart b { font: 400 19px "Lilita One", "Fredoka", sans-serif; letter-spacing: .3px; -webkit-text-stroke: 4px var(--ink-dark); paint-order: stroke fill; }
+.stage .clawstart small { font: 800 11px "Figtree", sans-serif; color: #FFF6B0; text-shadow: 0 1px 0 var(--ink-dark); }
+.wrap.floatui:not(.panelhid) .stage .clawstart { right: 432px; }
+body.clawon .stage .clawstart, .stage:has(.sizecard:not([hidden])) .clawstart { display: none; }
+@media (max-width: 640px) {
+  .stage .clawstart { right: 8px; bottom: 54px; padding: 4px 10px 4px 4px; gap: 6px; border-radius: 14px; }
+  .stage .clawstart::before { border-radius: 10px; }
+  .stage .clawstart .csic { width: 28px; height: 28px; border-radius: 9px; }
+  .stage .clawstart .csic svg { width: 18px; height: 18px; }
+  .stage .clawstart b { font-size: 15px; -webkit-text-stroke-width: 3px; }
+  .stage .clawstart small { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { .stage .clawstart::before, .stage .clawstart .csic { animation: none; } }
+/* the leaderboard */
+.mpanel.lbpanel { width: min(600px, 100%); }
+.lb2 { display: grid; gap: 12px; color: var(--ink-dark); }
+.lb2games { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.lb2game { display: flex; align-items: center; gap: 10px; padding: 8px 12px 8px 8px; border: 3px solid var(--ink-dark); border-radius: 16px; background: linear-gradient(180deg, #FFFFFF, #E3E8EA); box-shadow: inset 0 2px 0 #FFFFFF, 0 4px 0 var(--ink-dark); color: var(--ink-dark); text-align: left; cursor: pointer; transition: transform .08s; }
+.lb2game i { display: grid; place-items: center; flex: none; width: 40px; height: 40px; border: 2.5px solid var(--ink-dark); border-radius: 12px; background: #E3E8EA; font-size: 21px; font-style: normal; }
+.lb2game span { display: grid; line-height: 1.1; min-width: 0; }
+.lb2game b { font: 400 19px "Lilita One", sans-serif; }
+.lb2game small { font: 700 12px "Figtree", sans-serif; opacity: .75; }
+.lb2game[aria-pressed="true"] { background: linear-gradient(180deg, #6BEA7F 0%, #34C759 50%, #1E8E3E 100%); color: #FFFFFF; }
+.lb2game[aria-pressed="true"] b { -webkit-text-stroke: 3.5px var(--ink-dark); paint-order: stroke fill; }
+.lb2game[aria-pressed="true"] small { opacity: 1; color: #FFF6B0; text-shadow: 0 1px 0 var(--ink-dark); }
+.lb2game[aria-pressed="true"] i { background: linear-gradient(180deg, #FFF09A 0%, #FFD84A 47%, #F7B500 53%, #E99E00 100%); }
+.lb2bar { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.lb2when { display: flex; gap: 6px; padding: 4px; border: 2.5px solid var(--ink-dark); border-radius: 999px; background: #0B3B38; }
+.lb2when button { padding: 5px 14px; border: 0; border-radius: 999px; background: transparent; color: #FFFFFF; font: 800 13px "Figtree", sans-serif; cursor: pointer; }
+.lb2when button[aria-pressed="true"] { background: linear-gradient(180deg, #FFF09A 0%, #FFD84A 47%, #F7B500 53%, #E99E00 100%); color: var(--ink-dark); box-shadow: inset 0 -2px 0 rgba(0,0,0,.15); }
+.lb2reset { padding: 5px 12px; border: 2.5px solid var(--ink-dark); border-radius: 999px; background: #FFFFFF; font: 800 12.5px "Figtree", sans-serif; }
+.lb2pod { display: grid; grid-template-columns: 1fr 1.15fr 1fr; align-items: end; gap: 8px; padding: 14px 10px 0; border: 3px solid var(--ink-dark); border-radius: 18px; background: radial-gradient(circle at 50% 0%, rgba(255,240,154,.85), rgba(255,240,154,0) 60%), linear-gradient(180deg, #1BB5AA 0%, #0E8A82 100%); box-shadow: inset 0 3px 0 rgba(255,255,255,.35); overflow: hidden; }
+.lb2spot { position: relative; display: grid; justify-items: center; gap: 3px; min-width: 0; text-align: center; }
+.lb2crown { font-size: 26px; line-height: 1; filter: drop-shadow(0 2px 0 var(--ink-dark)); animation: lbcrown 2.6s ease-in-out infinite; }
+@keyframes lbcrown { 50% { transform: translateY(-3px) rotate(-5deg); } }
+.lb2pav { display: grid; place-items: center; width: 56px; height: 56px; border: 3px solid var(--ink-dark); border-radius: 50%; overflow: hidden; background: #12AFA5; color: #FFFFFF; font: 400 24px "Lilita One", sans-serif; font-style: normal; box-shadow: 0 0 0 3px #FFFFFF, 0 4px 0 3px var(--ink-dark); }
+.lb2pav img { width: 100%; height: 100%; object-fit: cover; }
+.lb2spot.p1 .lb2pav { width: 72px; height: 72px; font-size: 30px; box-shadow: 0 0 0 4px #FFD84A, 0 5px 0 4px var(--ink-dark); }
+.lb2spot.p2 .lb2pav { box-shadow: 0 0 0 3px #D9DEE2, 0 4px 0 3px var(--ink-dark); }
+.lb2spot.p3 .lb2pav { box-shadow: 0 0 0 3px #E59A5C, 0 4px 0 3px var(--ink-dark); }
+.lb2spot.empty .lb2pav { background: rgba(255,255,255,.25); color: rgba(255,255,255,.8); border-style: dashed; }
+.lb2pname { max-width: 100%; margin-top: 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 800 13.5px "Figtree", sans-serif; color: #FFFFFF; text-shadow: 0 1px 0 var(--ink-dark), 0 0 3px var(--ink-dark); }
+.lb2pval { font: 400 15px "Lilita One", sans-serif; font-style: normal; color: #FFD84A; -webkit-text-stroke: 3px var(--ink-dark); paint-order: stroke fill; }
+.lb2step { display: grid; place-items: start center; width: 100%; margin-top: 4px; padding-top: 6px; border: 3px solid var(--ink-dark); border-bottom: 0; border-radius: 12px 12px 0 0; font: 400 26px "Lilita One", sans-serif; color: #FFFFFF; -webkit-text-stroke: 4px var(--ink-dark); paint-order: stroke fill; box-shadow: inset 0 3px 0 rgba(255,255,255,.5); }
+.lb2spot.p1 .lb2step { height: 74px; background: linear-gradient(180deg, #FFF09A 0%, #FFD84A 47%, #F7B500 53%, #E99E00 100%); font-size: 32px; }
+.lb2spot.p2 .lb2step { height: 52px; background: linear-gradient(180deg, #FFFFFF 0%, #D9DEE2 50%, #AEB8BC 100%); }
+.lb2spot.p3 .lb2step { height: 38px; background: linear-gradient(180deg, #FFD1A8 0%, #E59A5C 50%, #B86A2E 100%); }
+.lb2spot.empty .lb2step { opacity: .55; }
+.lb2spot.me .lb2pname::after { content: " \2B50"; }
+.lb2list { display: grid; gap: 6px; max-height: min(300px, 38vh); overflow-y: auto; padding: 2px 4px 6px 2px; }
+.lb2row { display: grid; grid-template-columns: 44px 36px minmax(0, 1fr) auto; align-items: center; gap: 10px; padding: 6px 14px 6px 8px; border: 3px solid var(--ink-dark); border-radius: 14px; background: linear-gradient(180deg, #FFFFFF, #E9EDEE); box-shadow: 0 3px 0 var(--ink-dark); }
+.lb2row.me { background: linear-gradient(180deg, #FFF6C8, #FFE27A); }
+.lb2rank { font: 400 18px "Lilita One", sans-serif; text-align: center; }
+.lb2av { display: grid; place-items: center; flex: none; width: 36px; height: 36px; border: 2.5px solid var(--ink-dark); border-radius: 50%; overflow: hidden; background: #12AFA5; color: #FFFFFF; font: 400 17px "Lilita One", sans-serif; font-style: normal; }
+.lb2av img { width: 100%; height: 100%; object-fit: cover; }
+.lb2av.big { width: 46px; height: 46px; font-size: 21px; }
+.lb2mid { display: grid; gap: 4px; min-width: 0; }
+.lb2name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 800 14.5px "Figtree", sans-serif; }
+.lb2track { display: block; height: 7px; border: 2px solid var(--ink-dark); border-radius: 999px; background: #D7DEE0; overflow: hidden; }
+.lb2fill { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg, #34C759, #6BEA7F); }
+.lb2val { font: 400 17px "Lilita One", sans-serif; font-style: normal; white-space: nowrap; }
+.lb2gap { text-align: center; font: 700 18px sans-serif; }
+.lb2empty { margin: 2px 0; text-align: center; font: 800 14px "Figtree", sans-serif; }
+.lb2empty.small { font-size: 12.5px; opacity: .8; }
+.lb2me { position: sticky; bottom: 0; display: flex; align-items: center; gap: 12px; padding: 10px 12px; border: 3px solid var(--ink-dark); border-radius: 16px; background: linear-gradient(180deg, #4AA6FF 0%, #1E78E6 55%, #155FC0 100%); box-shadow: inset 0 2px 0 rgba(255,255,255,.45), 0 4px 0 var(--ink-dark); color: #FFFFFF; }
+.lb2mt { display: grid; gap: 2px; flex: 1; min-width: 0; }
+.lb2mt b { font: 400 18px "Lilita One", sans-serif; -webkit-text-stroke: 3.5px var(--ink-dark); paint-order: stroke fill; }
+.lb2mt small { font: 700 12.5px "Figtree", sans-serif; }
+.lb2myval { display: grid; justify-items: center; line-height: 1; font-style: normal; }
+.lb2myval b { font: 400 26px "Lilita One", sans-serif; color: #FFD84A; -webkit-text-stroke: 4px var(--ink-dark); paint-order: stroke fill; }
+.lb2myval small { font: 800 11px "Figtree", sans-serif; }
+.lb2play { flex: none; padding: 8px 14px; border: 3px solid var(--ink-dark); border-radius: 12px; background: linear-gradient(180deg, #6BEA7F 0%, #34C759 50%, #1E8E3E 100%); color: #FFFFFF; font: 400 16px "Lilita One", sans-serif; -webkit-text-stroke: 3px var(--ink-dark); paint-order: stroke fill; box-shadow: inset 0 2px 0 rgba(255,255,255,.5), 0 3px 0 var(--ink-dark); cursor: pointer; }
+@media (max-width: 520px) {
+  .lb2game { padding: 6px 8px 6px 6px; gap: 7px; }
+  .lb2game i { width: 32px; height: 32px; font-size: 17px; }
+  .lb2game b { font-size: 16px; }
+  .lb2game small { display: none; }
+  .lb2pav { width: 44px; height: 44px; font-size: 19px; }
+  .lb2spot.p1 .lb2pav { width: 56px; height: 56px; }
+  .lb2pname { font-size: 12px; }
+  .lb2me { flex-wrap: wrap; gap: 8px 10px; }
+  .lb2play { width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) { .lb2crown { animation: none; } }
 </style>
 </head>
 <body>
@@ -1444,12 +1538,13 @@ body.clawon .chat { display: none !important; }
       <button type="button" class="tbtn" id="seeInside" aria-pressed="false" aria-label="See inside the box" data-tip="See inside" hidden><svg viewBox="0 0 24 24" width="21" height="21" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/></svg></button>
       <button type="button" class="tbtn" id="hideChar" aria-pressed="false" aria-label="Hide the character" data-tip="Hide character" hidden><svg viewBox="0 0 24 24" width="21" height="21" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="10" r="5"/><circle cx="7.5" cy="5.5" r="2"/><circle cx="16.5" cy="5.5" r="2"/><path d="M8 19h8"/><path d="M3 3l18 18"/></svg></button>
       <button type="button" class="tbtn" id="hideBox" aria-pressed="false" aria-label="Hide the box" data-tip="Hide box" hidden><svg viewBox="0 0 24 24" width="21" height="21" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8l8-4 8 4v8l-8 4-8-4z"/><path d="M4 8l8 4 8-4M12 12v8"/><path d="M3 3l18 18"/></svg></button>
-      <button type="button" class="tbtn" id="clawBtn" aria-pressed="false" aria-label="Claw game" data-tip="Claw game"><svg viewBox="0 0 24 24" width="21" height="21" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v6"/><rect x="8.5" y="8" width="7" height="3.5" rx="1.2"/><path d="M9.5 11.5 6 15.5l2.5 4M14.5 11.5l3.5 4-2.5 4M12 11.5v8"/></svg></button>
+      
       <button type="button" class="tbtn" id="resetView" aria-label="Reset the view" data-tip="Reset view"><svg viewBox="0 0 24 24" width="21" height="21" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 12a8 8 0 1 0 3-6.2M4 4v4h4"/></svg></button>
       <button type="button" class="tbtn" id="undoBtn" aria-label="Undo (Ctrl+Z)" data-tip="Undo" disabled><svg viewBox="0 0 24 24" width="21" height="21" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg></button>
       <button type="button" class="tbtn" id="redoBtn" aria-label="Redo (Ctrl+Shift+Z)" data-tip="Redo" disabled><svg viewBox="0 0 24 24" width="21" height="21" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m15 14 5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13"/></svg></button>
     </div>
     <button type="button" class="paneltog" id="panelTog" aria-pressed="false" aria-label="Hide the settings panel"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M14.5 4v16" stroke="currentColor" stroke-width="2.4"/><path class="pt-a" d="M9 9.5 11.5 12 9 14.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Hide panel</span></button>
+    <button type="button" class="clawstart" id="clawBtn" aria-pressed="false" aria-label="Play the claw game"><i class="csic"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v6"/><rect x="8.5" y="8" width="7" height="3.5" rx="1.2"/><path d="M9.5 11.5 6 15.5l2.5 4M14.5 11.5l3.5 4-2.5 4M12 11.5v8"/></svg></i><span><b>Claw game</b><small>Win a catch!</small></span></button>
     <div class="clawui" id="clawUi" hidden>
       <div class="clawjoy" id="clawJoy" role="application" aria-label="Claw joystick: drag to move the claw (or use the arrow keys)"><i></i></div>
       <div class="clawmid"><b id="clawMsg">Move the claw, then GRAB!</b><span>Catches <em id="clawScore">0</em> <button type="button" class="clawlb" id="clawLb">🏆 Leaderboard</button></span></div>
@@ -4012,53 +4107,103 @@ var DECO = (function () {
     if (needAccount('Leaderboard')) return;
     var state = { game: start === 'clicks' ? 'clicks' : 'claw', when: start === 'clicks' ? 'today' : 'week' };
     openModal('Leaderboard', function (body) {
-      body.closest('.mpanel').classList.add('gpanel');
-      var wrap = el('div', 'lb'); body.appendChild(wrap);
-      var games = el('div', 'seg lbgames'), whens = el('div', 'chips2 lbwhen'), list = el('div', 'lblist'), note = el('p', 'lbnote');
-      wrap.appendChild(games); wrap.appendChild(whens); wrap.appendChild(list); wrap.appendChild(note);
+      var panel = body.closest('.mpanel'); panel.classList.add('gpanel', 'lbpanel');
+      var wrap = el('div', 'lb2'); body.appendChild(wrap);
+      var games = el('div', 'lb2games'), bar = el('div', 'lb2bar'), whens = el('div', 'lb2when'), reset = el('span', 'lb2reset');
+      var pod = el('div', 'lb2pod'), list = el('div', 'lb2list'), me = el('div', 'lb2me');
+      bar.appendChild(whens); bar.appendChild(reset);
+      [games, bar, pod, list, me].forEach(function (x) { wrap.appendChild(x); });
       var rows = null, ps = {};
-      [['claw', '\u{1F579}️ Claw'], ['clicks', '\u{1F446} Clicks']].forEach(function (g) {
-        var b = el('button', '', g[1]); b.type = 'button'; b.dataset.g = g[0];
-        b.addEventListener('click', function () { state.game = g[0]; state.when = g[0] === 'claw' ? 'week' : 'today'; draw(); });
-        games.appendChild(b);
+      var GAMES = { claw: { ic: '\u{1F579}️', t: 'Claw game', s: 'Catches', one: 'catch', many: 'catches' }, clicks: { ic: '\u{1F446}', t: 'Clicks', s: 'Character presses', one: 'click', many: 'clicks' } };
+      Object.keys(GAMES).forEach(function (k) {
+        var g = GAMES[k], bt = el('button', 'lb2game lb2g-' + k); bt.type = 'button'; bt.dataset.g = k;
+        bt.appendChild(el('i', '', g.ic)); var tx = el('span'); tx.appendChild(el('b', '', g.t)); tx.appendChild(el('small', '', g.s)); bt.appendChild(tx);
+        bt.addEventListener('click', function () { state.game = k; state.when = k === 'claw' ? 'week' : 'today'; draw(); });
+        games.appendChild(bt);
       });
+      function left(ms) { var h = Math.max(0, Math.floor(ms / 36e5)), d = Math.floor(h / 24), m = Math.max(0, Math.floor(ms / 6e4) % 60); return d ? d + 'd ' + (h % 24) + 'h' : h ? h + 'h ' + m + 'm' : m + 'm'; }
+      function resetText() {
+        var now = new Date();
+        if (state.when === 'all') return '∞ Never resets';
+        if (state.when === 'today') return '⏱ Resets in ' + left(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1) - now.getTime());
+        var k = (now.getUTCDay() + 6) % 7; return '⏱ Resets in ' + left(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - k + 7) - now.getTime());
+      }
+      function person(id) { return ps[id] || (id === UID && CHAT.names && CHAT.names[UID]) || {}; }
+      function avatar(id, cls) {
+        var p = person(id), av = el('i', cls);
+        if (p.avatarUrl) { var im = el('img'); im.src = p.avatarUrl; im.alt = ''; av.appendChild(im); } else av.textContent = ((p.name || 'M').trim().charAt(0) || 'M').toUpperCase();
+        return av;
+      }
+      function nm(id) { return (person(id).name || 'A member'); }
+      function unit(v) { var g = GAMES[state.game]; return v === 1 ? g.one : g.many; }
       function draw() {
-        games.querySelectorAll('button').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.g === state.game)); });
+        games.querySelectorAll('button').forEach(function (x) { x.setAttribute('aria-pressed', String(x.dataset.g === state.game)); });
         whens.textContent = '';
         (state.game === 'claw' ? [['week', 'This week'], ['all', 'All time']] : [['today', 'Today'], ['all', 'All time']]).forEach(function (w) {
-          var b = el('button', '', w[1]); b.type = 'button'; b.setAttribute('aria-pressed', String(state.when === w[0]));
-          b.addEventListener('click', function () { state.when = w[0]; draw(); }); whens.appendChild(b);
+          var x = el('button', '', w[1]); x.type = 'button'; x.setAttribute('aria-pressed', String(state.when === w[0]));
+          x.addEventListener('click', function () { state.when = w[0]; draw(); }); whens.appendChild(x);
         });
-        list.textContent = '';
-        if (!rows) { list.appendChild(el('p', 'lbempty', 'Loading the leaderboard…')); return; }
+        reset.textContent = resetText();
+        pod.textContent = ''; list.textContent = ''; me.textContent = '';
+        if (!rows) { list.appendChild(el('p', 'lb2empty', 'Loading the leaderboard…')); return; }
         var wk = weekKey(), dk = dayKey();
         var scored = rows.map(function (r) {
           var v = 0;
           if (state.game === 'claw') v = state.when === 'week' ? (r.claw && r.claw.wk === wk ? +r.claw.wn || 0 : 0) : (r.claw ? +r.claw.total || 0 : 0);
           else v = state.when === 'today' ? (r.clicks && r.clicks.d === dk ? +r.clicks.n || 0 : 0) : (r.clicks ? +r.clicks.total || 0 : 0);
           return { id: r.id, v: Math.max(0, Math.min(1e7, v)) };
-        }).filter(function (r) { return r.v > 0; }).sort(function (a, b) { return b.v - a.v; });
+        }).filter(function (r) { return r.v > 0; }).sort(function (x, y) { return y.v - x.v; });
         var meAt = -1; scored.forEach(function (r, i) { if (r.id === UID) meAt = i; });
-        if (!scored.length) { list.appendChild(el('p', 'lbempty', state.game === 'claw' ? 'No catches yet. Turn on the claw in Tools and be the first!' : 'No clicks yet. Press the character!')); }
+        // the podium: 2nd, 1st, 3rd
+        [1, 0, 2].forEach(function (i) {
+          var r = scored[i], spot = el('div', 'lb2spot p' + (i + 1) + (r ? '' : ' empty') + (r && r.id === UID ? ' me' : ''));
+          if (i === 0) spot.appendChild(el('span', 'lb2crown', '\u{1F451}'));
+          if (r) spot.appendChild(avatar(r.id, 'lb2pav')); else spot.appendChild(el('i', 'lb2pav', '?'));
+          spot.appendChild(el('b', 'lb2pname', r ? nm(r.id) + (r.id === UID ? ' (you)' : '') : 'Open spot'));
+          spot.appendChild(el('em', 'lb2pval', r ? r.v.toLocaleString('en-US') + ' ' + unit(r.v) : '—'));
+          var step = el('div', 'lb2step'); step.appendChild(el('span', '', String(i + 1))); spot.appendChild(step);
+          pod.appendChild(spot);
+        });
+        // everyone after the podium
+        var top = scored.length ? scored[0].v : 1;
         function row(r, i) {
-          var p = ps[r.id] || (r.id === UID && CHAT.names[UID]) || {}, d = el('div', 'lbrow' + (r.id === UID ? ' me' : '') + (i < 3 ? ' top' + (i + 1) : ''));
-          d.appendChild(el('b', 'lbrank', i < 3 ? ['\u{1F947}', '\u{1F948}', '\u{1F949}'][i] : '#' + (i + 1)));
-          var av = el('i', 'lbav'); if (p.avatarUrl) { var im = el('img'); im.src = p.avatarUrl; im.alt = ''; av.appendChild(im); } else av.textContent = ((p.name || 'M').trim().charAt(0) || 'M').toUpperCase();
-          d.appendChild(av); d.appendChild(el('span', 'lbname', (p.name || 'A member') + (r.id === UID ? ' (you)' : '')));
-          d.appendChild(el('em', 'lbval', r.v.toLocaleString('en-US') + (state.game === 'claw' ? (r.v === 1 ? ' catch' : ' catches') : (r.v === 1 ? ' click' : ' clicks'))));
+          var d = el('div', 'lb2row' + (r.id === UID ? ' me' : ''));
+          d.appendChild(el('b', 'lb2rank', '#' + (i + 1)));
+          d.appendChild(avatar(r.id, 'lb2av'));
+          var mid = el('span', 'lb2mid'); mid.appendChild(el('span', 'lb2name', nm(r.id) + (r.id === UID ? ' (you)' : '')));
+          var tr = el('i', 'lb2track'), fill = el('i', 'lb2fill'); fill.style.width = Math.max(4, Math.round(r.v / top * 100)) + '%'; tr.appendChild(fill); mid.appendChild(tr); d.appendChild(mid);
+          d.appendChild(el('em', 'lb2val', r.v.toLocaleString('en-US')));
           list.appendChild(d);
         }
-        scored.slice(0, 20).forEach(row);
-        if (meAt >= 20) { list.appendChild(el('div', 'lbgap', '⋮')); row(scored[meAt], meAt); }
-        note.textContent = meAt >= 0 ? 'You’re #' + (meAt + 1) + ' of ' + scored.length + '.' : (state.game === 'claw' ? 'Win a catch with the claw to get on the board.' : 'Press the character to get on the board.');
+        scored.slice(3, 25).forEach(function (r, k) { row(r, k + 3); });
+        if (meAt >= 25) { list.appendChild(el('div', 'lb2gap', '⋮')); row(scored[meAt], meAt); }
+        if (!scored.length) list.appendChild(el('p', 'lb2empty', state.game === 'claw' ? 'No catches yet. Be the first on the podium!' : 'No clicks yet. Press the character to start!'));
+        else if (scored.length <= 3) list.appendChild(el('p', 'lb2empty small', scored.length + (scored.length === 1 ? ' player' : ' players') + ' so far. Plenty of room on the board!'));
+        // your card
+        var mine = meAt >= 0 ? scored[meAt].v : 0;
+        me.appendChild(avatar(UID, 'lb2av big'));
+        var mt = el('span', 'lb2mt');
+        mt.appendChild(el('b', '', meAt >= 0 ? 'You’re #' + (meAt + 1) + ' of ' + scored.length : 'You’re not on the board yet'));
+        var tip;
+        if (meAt === 0) tip = scored.length > 1 ? 'You’re on top! ' + (mine - scored[1].v + 1).toLocaleString('en-US') + ' ahead of ' + nm(scored[1].id) + '.' : 'You’re on top. Keep it that way!';
+        else if (meAt > 0) { var need = scored[meAt - 1].v - mine + 1; tip = need.toLocaleString('en-US') + ' more ' + unit(need) + ' to pass ' + nm(scored[meAt - 1].id) + '.'; }
+        else tip = state.game === 'claw' ? 'Drop a Boxedable in the hole to join.' : 'Press the character to join.';
+        mt.appendChild(el('small', '', tip)); me.appendChild(mt);
+        var sc = el('em', 'lb2myval'); sc.appendChild(el('b', '', mine.toLocaleString('en-US'))); sc.appendChild(el('small', '', unit(mine))); me.appendChild(sc);
+        if (state.game === 'claw') {
+          var play = el('button', 'lb2play', CLAW && CLAW.on ? 'Keep playing' : '\u{1F579}️ Play'); play.type = 'button';
+          play.addEventListener('click', function () { closeModal(); var cb = document.getElementById('clawBtn'); if (cb && !(CLAW && CLAW.on)) cb.click(); });
+          me.appendChild(play);
+        }
       }
       draw();
+      var tick = setInterval(function () { if (!document.body.contains(reset) || modal.hidden) { clearInterval(tick); return; } reset.textContent = resetText(); }, 30000);
       DBX.collection('chat').get().then(function (snap) {
         var rs = []; snap.docs.forEach(function (d) { if (d.id === '_meta') return; var x = d.data() || {}; if (x.clicks || x.claw) rs.push({ id: d.id, clicks: x.clicks, claw: x.claw }); });
         if (UID && !rs.some(function (r) { return r.id === UID; })) rs.push({ id: UID });
         rs.forEach(function (r) { if (r.id === UID) { r.clicks = { d: CLK.day.d, n: todayMine(), total: CLK.mine }; r.claw = { total: CLAWS.total, wk: CLAWS.wk, wn: CLAWS.wk === weekKey() ? CLAWS.wn : 0 }; } });
         return names(rs.map(function (r) { return r.id; })).then(function (p) { ps = p || {}; rows = rs; draw(); });
-      }).catch(function () { list.textContent = ''; list.appendChild(el('p', 'lbempty', 'Couldn’t load the leaderboard right now.')); });
+      }).catch(function () { list.textContent = ''; list.appendChild(el('p', 'lb2empty', 'Couldn’t load the leaderboard right now.')); });
     });
   }
   setTimeout(function () {   // a Leaderboard button beside Share on the preview (once that bar is built)
@@ -4076,7 +4221,9 @@ var DECO = (function () {
     var V3 = THREE.Vector3, ui = document.getElementById('clawUi'), msgEl = document.getElementById('clawMsg'), scoreEl = document.getElementById('clawScore');
     var winEl = document.getElementById('clawWin'), winTxt = document.getElementById('clawWinTxt'), btn = document.getElementById('clawBtn');
     function col(h) { return new THREE.Color(h).convertSRGBToLinear(); }
-    var goldM = new THREE.MeshPhysicalMaterial({ color: col('#F2B200'), metalness: 0.55, roughness: 0.28, clearcoat: 0.7 });
+    var goldM = new THREE.MeshPhysicalMaterial({ color: col('#FFD23A'), metalness: 0.08, roughness: 0.32, clearcoat: 0.9, clearcoatRoughness: 0.15 });
+    var greenM = new THREE.MeshPhysicalMaterial({ color: col('#34C759'), metalness: 0.05, roughness: 0.34, clearcoat: 0.85, clearcoatRoughness: 0.15 });
+    var inkM = new THREE.MeshPhysicalMaterial({ color: col('#0B3B38'), roughness: 0.4, clearcoat: 0.6 });
     var chromeM = new THREE.MeshPhysicalMaterial({ color: col('#D9DEE2'), metalness: 0.9, roughness: 0.22 });
     var redM = new THREE.MeshPhysicalMaterial({ color: col('#E5484D'), roughness: 0.35, clearcoat: 0.8 });
     var darkM = new THREE.MeshBasicMaterial({ color: col('#0B1416') });
@@ -4084,16 +4231,16 @@ var DECO = (function () {
     var rig = new THREE.Group(); rig.visible = false; scene.add(rig);
     var cable = new THREE.Mesh(new THREE.CylinderGeometry(0.7, 0.7, 1, 10), chromeM); rig.add(cable);
     var hub = new THREE.Mesh(new THREE.CylinderGeometry(7, 8, 7, 28), goldM); hub.position.y = 3.5; rig.add(hub);
-    var cap = new THREE.Mesh(new THREE.CylinderGeometry(3.5, 5, 4, 20), chromeM); cap.position.y = 9; rig.add(cap);
-    var band = new THREE.Mesh(new THREE.TorusGeometry(7.6, 1, 10, 32), redM); band.rotation.x = Math.PI / 2; band.position.y = 3.5; rig.add(band);
+    var cap = new THREE.Mesh(new THREE.CylinderGeometry(3.5, 5, 4, 20), inkM); cap.position.y = 9; rig.add(cap);
+    var band = new THREE.Mesh(new THREE.TorusGeometry(7.6, 1, 10, 32), greenM); band.rotation.x = Math.PI / 2; band.position.y = 3.5; rig.add(band);
     var prongs = [], armG = new THREE.BoxGeometry(2.4, 15, 2.4), tipG = new THREE.BoxGeometry(2.4, 10, 2.4), ballG = new THREE.SphereGeometry(1.9, 14, 10);
     armG.translate(0, -7.5, 0); tipG.translate(0, -5, 0);
     for (var i = 0; i < 3; i++) {
       var a = i * Math.PI * 2 / 3 + Math.PI / 6, pv = new THREE.Group();
       pv.position.set(Math.cos(a) * 5.5, 0.5, Math.sin(a) * 5.5); pv.rotation.set(0, -a, 0.5, 'YXZ');
-      var arm = new THREE.Mesh(armG, chromeM); pv.add(arm);
+      var arm = new THREE.Mesh(armG, greenM); pv.add(arm);
       var el2 = new THREE.Mesh(ballG, goldM); el2.position.y = -15; pv.add(el2);
-      var tip = new THREE.Group(); tip.position.y = -15; tip.rotation.z = -0.95; tip.add(new THREE.Mesh(tipG, chromeM)); pv.add(tip);
+      var tip = new THREE.Group(); tip.position.y = -15; tip.rotation.z = -0.95; tip.add(new THREE.Mesh(tipG, greenM)); pv.add(tip);
       rig.add(pv); prongs.push(pv);
     }
     rig.traverse(function (m) { if (m.isMesh) m.castShadow = true; });
@@ -4104,7 +4251,7 @@ var DECO = (function () {
     var CH = { x: 0, z: 0, r: 15, R: 19, rim: 0, ground: 0 };
     function stripeTex() {
       var c = document.createElement('canvas'); c.width = 256; c.height = 64; var x = c.getContext('2d');
-      for (var k = 0; k < 16; k++) { x.fillStyle = k % 2 ? '#FFFFFF' : '#E5484D'; x.beginPath(); x.moveTo(k * 16, 0); x.lineTo(k * 16 + 16, 0); x.lineTo(k * 16 + 4, 64); x.lineTo(k * 16 - 12, 64); x.fill(); }
+      for (var k = 0; k < 16; k++) { x.fillStyle = k % 2 ? '#FFFFFF' : '#34C759'; x.beginPath(); x.moveTo(k * 16, 0); x.lineTo(k * 16 + 16, 0); x.lineTo(k * 16 + 4, 64); x.lineTo(k * 16 - 12, 64); x.fill(); }
       var t = new THREE.CanvasTexture(c); t.encoding = THREE.sRGBEncoding; t.wrapS = THREE.RepeatWrapping; t.repeat.set(3, 1); return t;
     }
     function buildChute() {
@@ -4113,7 +4260,9 @@ var DECO = (function () {
       CH.ground = ground.position.y; CH.plateTop = pb.max.y; CH.half = ph;
       var cb0 = charBox(), cs0 = cb0.isEmpty() ? new THREE.Vector3(40, 40, 40) : cb0.getSize(new THREE.Vector3());
       CH.r = Math.max(24, Math.hypot(cs0.x, cs0.z) * 0.5 + 6); CH.R = CH.r + 4;   // the hole fits the character with room to spare
-      CH.x = ph + CH.R + 8; CH.z = ph * 0.3; CH.rim = CH.plateTop + 16;
+      var th, tries = 0; do { th = Math.random() * Math.PI * 2; tries++; } while (CH.th != null && tries < 20 && Math.abs(Math.atan2(Math.sin(th - CH.th), Math.cos(th - CH.th))) < 1.1);
+      CH.th = th; var cth = Math.cos(th), sth = Math.sin(th), far = (ph + CH.R + 8 + Math.random() * 30) / Math.max(Math.abs(cth), Math.abs(sth));
+      CH.x = cth * far; CH.z = sth * far; CH.rim = CH.plateTop + 16;
       var h = CH.rim - CH.ground;
       var tube = new THREE.Mesh(new THREE.CylinderGeometry(CH.R, CH.R + 2, h, 40, 1, true), new THREE.MeshPhysicalMaterial({ map: stripeTex(), roughness: 0.4, clearcoat: 0.6, side: THREE.DoubleSide }));
       tube.position.set(CH.x, CH.ground + h / 2, CH.z); chute.add(tube);
@@ -4221,7 +4370,26 @@ var DECO = (function () {
       var isChar = h.object !== plate && !chute.children.some(function (c) { return c === h.object; });   // anything that's part of the Boxedable
       return { y: h.point.y, char: isChar };
     }
-    function bounds() { return { x0: -CH.half + 6, x1: CH.x + 4, z0: -CH.half + 6, z1: CH.half - 6 }; }
+    function bounds() { return { x0: Math.min(-CH.half + 6, CH.x - 4), x1: Math.max(CH.half - 6, CH.x + 4), z0: Math.min(-CH.half + 6, CH.z - 4), z1: Math.max(CH.half - 6, CH.z + 4) }; }
+    function frameCam() {   // fit the plate, the hole and the claw on screen, above the controls
+      var dir = camera.position.clone().sub(controls.target); dir.y = 0; if (dir.lengthSq() < 1e-6) dir.set(0, 0, 1); dir.normalize();
+      var behind = -dir.dot(new V3(CH.x, 0, CH.z).normalize()); dir.y = behind > 0.5 ? 1.1 : 0.62; dir.normalize();
+      var P = [], h = CH.half, k;
+      [[-h, -h], [h, -h], [h, h], [-h, h]].forEach(function (c) { P.push(new V3(c[0], CH.plateTop, c[1])); });
+      for (k = 0; k < 10; k++) { var q = k / 10 * Math.PI * 2; P.push(new V3(CH.x + Math.cos(q) * (CH.R + 2), CH.rim + 2, CH.z + Math.sin(q) * (CH.R + 2))); P.push(new V3(CH.x + Math.cos(q) * (CH.R + 2), CH.ground, CH.z + Math.sin(q) * (CH.R + 2))); }
+      P.push(new V3(0, hoverY + 12 * SCL, 0)); P.push(new V3(CH.x, hoverY + 12 * SCL, CH.z));
+      var bb = new THREE.Box3().setFromPoints(P), tgt = bb.getCenter(new V3());
+      var se = stageEl(), uiH = ui.offsetHeight || 110, lo = Math.min(0.1, -1 + 2 * (uiH + 34) / Math.max(200, se ? se.clientHeight : 600)), hi = 0.84, lx = -0.86, rx = 0.86, wr = document.querySelector('.wrap.floatui');
+      if (wr && !wr.classList.contains('panelhid') && se) rx = Math.max(-0.2, Math.min(rx, 1 - 2 * 440 / Math.max(300, se.clientWidth)));   // the floating panel covers the right side
+      var cam = camera.clone(), d = 40, i, mn, mx, pr = new V3();
+      function look() { cam.position.copy(tgt).addScaledVector(dir, d); cam.lookAt(tgt); cam.updateMatrixWorld(); mn = [9, 9]; mx = [-9, -9]; P.forEach(function (p) { pr.copy(p).project(cam); mn[0] = Math.min(mn[0], pr.x); mn[1] = Math.min(mn[1], pr.y); mx[0] = Math.max(mx[0], pr.x); mx[1] = Math.max(mx[1], pr.y); }); }
+      for (i = 0; i < 80; i++) { look(); if (mx[0] - mn[0] <= rx - lx && mx[1] - mn[1] <= hi - lo) break; d *= 1.06; }
+      for (i = 0; i < 3; i++) {   // slide the view so the scene sits between the controls and the top
+        var halfH = d * Math.tan(cam.fov * Math.PI / 360), up = new V3(0, 1, 0).applyQuaternion(cam.quaternion), rt = new V3(1, 0, 0).applyQuaternion(cam.quaternion);
+        tgt.addScaledVector(up, ((mn[1] + mx[1]) / 2 - (lo + hi) / 2) * halfH).addScaledVector(rt, ((mn[0] + mx[0]) / 2 - (lx + rx) / 2) * halfH * cam.aspect); look();
+      }
+      camAnim = { p0: camera.position.clone(), t0: controls.target.clone(), p1: cam.position.clone(), t1: tgt.clone(), s: performance.now() };
+    }
     function setOn(on) {
       if (on === C.on) return;
       if (on) {
@@ -4234,8 +4402,7 @@ var DECO = (function () {
         pos.set(0, 0, 0); cy = hoverY + 240; st = 'enter'; t0 = performance.now(); ang = angGoal = OPEN;
         scoreEl.textContent = CLAWS.total; msg('Move the claw, then GRAB!');
         camSave = { p: camera.position.clone(), t: controls.target.clone() };
-        var tgt = new V3(CH.x * 0.42, 22, CH.z * 0.3), dir = camera.position.clone().sub(controls.target).normalize(); dir.y = Math.max(dir.y, 0.42); dir.normalize();
-        camAnim = { p0: camera.position.clone(), t0: controls.target.clone(), p1: tgt.clone().addScaledVector(dir, (CH.x + CH.half) * 2.15 * Math.max(1, 1.3 / camera.aspect)), t1: tgt, s: performance.now() };
+        frameCam();
         btn.setAttribute('aria-pressed', 'true'); hideBubble(); SFX.play('pop');
       } else {
         C.on = false; st = 'off'; dropBody(); chute.visible = false; rig.visible = false; aim.visible = false; ui.hidden = true; winEl.hidden = true;
@@ -4353,7 +4520,7 @@ var DECO = (function () {
         } else if (body.resetting) {
           var rk = Math.min(1, (now - body.resetting.s) / 850), re = rk * rk * (3 - 2 * rk);
           body.x.lerpVectors(body.resetting.x0, body.home, re); body.x.y += Math.sin(rk * Math.PI) * 30; body.q.copy(body.resetting.q0).slerp(new THREE.Quaternion(), re);
-          if (rk >= 1) { dropBody(); placeChar(); msg('Move the claw, then GRAB!'); SFX.play('pop'); }
+          if (rk >= 1) { var wasWon = body.won; dropBody(); placeChar(); if (wasWon) { buildChute(); buildSolids(); frameCam(); msg('The hole moved! Find it and GRAB!'); } else msg('Move the claw, then GRAB!'); SFX.play('pop'); }
         } else if (body.free) {
           for (var n = 0; n < 4; n++) physics(dt / 4);
           if (!body.won && Math.hypot(body.x.x - CH.x, body.x.z - CH.z) < CH.r && body.x.y < CH.rim) win();
@@ -6777,7 +6944,7 @@ var DECO = (function () {
   // ---------- slim tool bar: Undo, Redo and Reset view stay out; the other preview tools live in a Tools menu ----------
   (function () {
     var bar = document.querySelector('.stage .tools'); if (!bar) return;
-    var ids = ['clawBtn', 'lightBtn', 'measure', 'expand', 'seeInside', 'hideChar', 'hideBox'];
+    var ids = ['lightBtn', 'measure', 'expand', 'seeInside', 'hideChar', 'hideBox'];
     var menu = document.createElement('div'); menu.className = 'toolsmenu'; menu.id = 'toolsMenu'; menu.hidden = true; menu.setAttribute('role', 'group'); menu.setAttribute('aria-label', 'Preview tools');
     var mt = document.createElement('b'); mt.className = 'tmtitle'; mt.textContent = 'Tools'; menu.appendChild(mt);
     ids.forEach(function (id) {
