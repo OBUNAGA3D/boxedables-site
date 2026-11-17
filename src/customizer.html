@@ -2648,6 +2648,7 @@ var DECO = (function () {
   var fonts = { joy: new THREE.Font(FONT_DATA.joy), sans: new THREE.Font(FONT_DATA.sans), serif: new THREE.Font(FONT_DATA.serif) };
   var SWATCHES = [['White', '#F4F4F2'], ['Black', '#2A2A2E'], ['Grey', '#8C8C94'], ['Bubblegum', '#FF6FAE'], ['Sky', '#6EC6FF'],
     ['Mint', '#64D6B3'], ['Leaf', '#3BAA5C'], ['Butter', '#FFD45C'], ['Lilac', '#B79CFF'], ['Tangerine', '#FF9147']];
+  var PKG_SWATCHES = SWATCHES.concat([['Red', '#E5484D']]);   // packaging (blind, display, storage boxes) also comes in red
   var ORIENTS = [new THREE.Euler(-Math.PI / 2, 0, 0), new THREE.Euler(0, 0, 0), new THREE.Euler(Math.PI / 2, 0, 0), new THREE.Euler(Math.PI, 0, 0)];
   var S = { title: '', parts: [], groups: {}, groupOrder: [], optional: {}, picks: {}, orient: 0,
     name: '', font: 'joy', size: 4.8, raise: 0.4, lift: 0, push: 0, nameMesh: null };
@@ -2931,7 +2932,7 @@ var DECO = (function () {
   function isGenericName(n) { return !n || /\.(stl|obj|3mf|step)/i.test(n) || /^(part|object|body|mesh|shape)[\s_-]*\d*$/i.test(n) || /_\d+$/.test(n); }
   var COLOR_NAMES = [['White', 245, 245, 242], ['Black', 30, 30, 34], ['Gray', 140, 140, 148], ['Red', 220, 50, 47], ['Orange', 255, 140, 40], ['Yellow', 250, 215, 40],
     ['Green', 60, 170, 80], ['Teal', 1, 148, 140], ['Blue', 40, 110, 220], ['Sky blue', 110, 198, 255], ['Purple', 140, 90, 220], ['Pink', 255, 120, 175], ['Brown', 140, 90, 50], ['Beige', 225, 200, 160]];
-  function swatchOf(hex) { var h = String(hex).toUpperCase(), s = SWATCHES.filter(function (x) { return x[1].toUpperCase() === h; })[0]; return s ? s[0] : null; }
+  function swatchOf(hex) { var h = String(hex).toUpperCase(), s = PKG_SWATCHES.filter(function (x) { return x[1].toUpperCase() === h; })[0]; return s ? s[0] : null; }
   function colorName(hex) {
     var c = new THREE.Color(hex), r = c.r * 255, g = c.g * 255, b = c.b * 255, best = null, bd = 1e9;
     COLOR_NAMES.forEach(function (n) { var d = Math.pow(r - n[1], 2) + Math.pow(g - n[2], 2) + Math.pow(b - n[3], 2); if (d < bd) { bd = d; best = n[0]; } });
@@ -3993,7 +3994,7 @@ var DECO = (function () {
   // ---------- design summary: one chip per choice; tap a chip to jump to that setting ----------
   var sumRaf = 0;
   function sumLater() { if (!sumRaf) sumRaf = requestAnimationFrame(function () { sumRaf = 0; try { renderSummary(); } catch (e) {} }); }
-  function colorName(hex) { hex = String(hex || '').toUpperCase(); var sw = SWATCHES.filter(function (x) { return x[1] === hex; })[0]; return sw ? sw[0] : 'Custom'; }
+  function colorName(hex) { hex = String(hex || '').toUpperCase(); var sw = PKG_SWATCHES.filter(function (x) { return x[1] === hex; })[0]; return sw ? sw[0] : 'Custom'; }
   function renderSummary() {
     var host = document.getElementById('dsum'); if (!host) return;
     if (!S.parts.length) { host.hidden = true; return; }
@@ -7971,7 +7972,7 @@ var DECO = (function () {
   var DL_NOTE0 = dlNote.textContent;
   function bbChips(host, key, same) {
     host.textContent = '';
-    (same ? [['Same as carton', null]] : []).concat(SWATCHES).forEach(function (s) {
+    (same ? [['Same as carton', null]] : []).concat(PKG_SWATCHES).forEach(function (s) {
       var b = document.createElement('button'); b.type = 'button';
       if (s[1]) { b.className = 'chip'; b.style.background = s[1]; } else { b.className = 'bbsame'; b.textContent = 'Same as carton'; }
       b.setAttribute('aria-label', s[0]); b.title = s[0]; b.setAttribute('aria-pressed', String(BB[key] === s[1]));
@@ -8083,7 +8084,7 @@ var DECO = (function () {
   }
   function trChips(host, key) {
     host.textContent = '';
-    SWATCHES.forEach(function (s) {
+    PKG_SWATCHES.forEach(function (s) {
       var b = document.createElement('button'); b.type = 'button'; b.className = 'chip'; b.style.background = s[1]; b.setAttribute('aria-label', s[0]); b.title = s[0]; b.setAttribute('aria-pressed', String(BB.tray[key] === s[1]));
       b.addEventListener('click', function (e) { BB.tray[key] = s[1]; bbSave(); trPaint(); trRender(); renderPlan(); colorPop(e, s[1], null); });
       host.appendChild(b);
@@ -8181,7 +8182,7 @@ var DECO = (function () {
   rebuildName = dbUntilted(rebuildName); raiseGuideText = dbUntilted(raiseGuideText); rebuildDeco = dbUntilted(rebuildDeco); refreshDims = dbUntilted(refreshDims);
   function dbChips(host, key) {
     host.textContent = '';
-    SWATCHES.forEach(function (s) {
+    PKG_SWATCHES.forEach(function (s) {
       var b = document.createElement('button'); b.type = 'button'; b.className = 'chip'; b.style.background = s[1]; b.setAttribute('aria-label', s[0]); b.title = s[0]; b.setAttribute('aria-pressed', String(DB[key] === s[1]));
       b.addEventListener('click', function (e) { DB[key] = s[1]; dbSave(); dbPaint(); dbRender(); renderPlan(); colorPop(e, s[1], null); });
       host.appendChild(b);
@@ -8420,7 +8421,7 @@ var DECO = (function () {
   var stToggle = document.getElementById('stToggle'), stSlotsEl = document.getElementById('stSlots');
   function stChips(host, k) {
     host.textContent = '';
-    SWATCHES.forEach(function (sw) {
+    PKG_SWATCHES.forEach(function (sw) {
       var b = document.createElement('button'); b.type = 'button'; b.className = 'chip'; b.style.background = sw[1]; b.setAttribute('aria-label', sw[0]); b.title = sw[0]; b.setAttribute('aria-pressed', String(ST[k] === sw[1]));
       b.addEventListener('click', function (e) { ST[k] = sw[1]; stSave(); stPaint(); stRender(); renderPlan(); colorPop(e, sw[1], null); });
       host.appendChild(b);
@@ -8543,7 +8544,7 @@ var DECO = (function () {
   (function () {
     function lum(h) { var c = new THREE.Color(h); return 0.2126 * c.r + 0.7152 * c.g + 0.0722 * c.b; }
     function pickSet(n) {   // n different swatches; every one after the first stands out from the first
-      var out = [], pool = SWATCHES.map(function (x) { return x[1]; });
+      var out = [], pool = PKG_SWATCHES.map(function (x) { return x[1]; });
       out.push(pool[Math.floor(Math.random() * pool.length)]);
       for (var i = 1; i < n; i++) {
         var ok = pool.filter(function (h) { return out.indexOf(h) < 0 && Math.abs(lum(h) - lum(out[0])) > 0.12; });
