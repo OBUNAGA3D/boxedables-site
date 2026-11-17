@@ -1033,6 +1033,60 @@ body.maint-admin::before { content: "Maintenance mode is on: members see a “Ba
 .bbseg button:focus-visible, .bbsame:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
 .bbchips { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
 
+/* ---------- print plan ---------- */
+.mpanel.pppanel { width: min(920px, 100%); }
+.pppanel .planbody { gap: 16px; grid-template-columns: 240px minmax(0, 1fr); }
+.pppanel .plancfg { padding: 12px; border: 3px solid var(--ink-dark); border-radius: 18px; background: linear-gradient(180deg, #FFFFFF, #E3E8EA); box-shadow: inset 0 2px 0 #FFFFFF, 0 4px 0 var(--ink-dark); gap: 2px; }
+.pp-cfgtitle { font: 400 20px "Lilita One", sans-serif; color: #FFD84A; -webkit-text-stroke: 4px var(--ink-dark); paint-order: stroke fill; letter-spacing: .6px; margin-bottom: 4px; }
+.pppanel .plancfg .field { display: flex; align-items: center; gap: 6px; margin-top: 8px; font: 800 13px "Figtree", sans-serif; color: var(--ink-dark); }
+.pppanel .plancfg .sel { border: 2.5px solid var(--ink-dark); border-radius: 12px; box-shadow: 0 3px 0 var(--ink-dark); }
+#printPlan { display: grid; gap: 12px; }
+.pp-sum { padding: 12px 14px 12px; border: 3px solid var(--ink-dark); border-radius: 18px; background: radial-gradient(circle at 85% -20%, rgba(255,240,154,.55), rgba(255,240,154,0) 55%), linear-gradient(180deg, #1BB5AA 0%, #0E8A82 100%); box-shadow: inset 0 3px 0 rgba(255,255,255,.35), 0 4px 0 var(--ink-dark); color: #FFFFFF; }
+.pp-sumhead { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+.pp-printer { font: 400 20px "Lilita One", sans-serif; letter-spacing: .3px; -webkit-text-stroke: 4px var(--ink-dark); paint-order: stroke fill; }
+.pp-slicer { padding: 3px 10px; border: 2px solid var(--ink-dark); border-radius: 999px; background: #0B3B38; font: 800 12px "Figtree", sans-serif; }
+.pp-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.pp-stat { display: grid; justify-items: center; gap: 1px; padding: 8px 4px 7px; border: 2.5px solid var(--ink-dark); border-radius: 14px; background: linear-gradient(180deg, #FFFFFF, #E3E8EA); color: var(--ink-dark); box-shadow: inset 0 2px 0 #FFFFFF, 0 3px 0 var(--ink-dark); text-align: center; }
+.pp-stat i { font-style: normal; font-size: 19px; line-height: 1; }
+.pp-stat b { font: 400 19px/1.15 "Lilita One", sans-serif; }
+.pp-stat small { font: 800 11px "Figtree", sans-serif; opacity: .7; text-transform: uppercase; letter-spacing: .5px; }
+.pp-palette { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
+.pp-palette i { width: 20px; height: 20px; border: 2.5px solid var(--ink-dark); border-radius: 50%; box-shadow: inset 0 -3px 0 rgba(0,0,0,.18), inset 0 2px 0 rgba(255,255,255,.45); }
+.pp-piece { display: grid; grid-template-columns: 124px minmax(0, 1fr); gap: 14px; padding: 12px; border: 3px solid var(--ink-dark); border-radius: 18px; background: linear-gradient(180deg, #FFFFFF, #EEF2F3); box-shadow: inset 0 2px 0 #FFFFFF, 0 4px 0 var(--ink-dark); }
+.pp-pic { position: relative; align-self: start; width: 124px; height: 124px; border: 3px solid var(--ink-dark); border-radius: 16px; background: radial-gradient(circle at 50% 35%, #7CC6FF 0%, #2F8FE0 55%, #1E6FD9 100%); box-shadow: inset 0 3px 0 rgba(255,255,255,.35); overflow: hidden; }
+.pp-pic img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 4px 4px rgba(0,0,0,.25)); }
+.pp-num { position: absolute; left: 6px; top: 6px; display: grid; place-items: center; width: 24px; height: 24px; border: 2.5px solid var(--ink-dark); border-radius: 50%; background: linear-gradient(180deg, #FFF09A, #F7B500); color: var(--ink-dark); font: 400 14px "Lilita One", sans-serif; }
+.pp-info { display: grid; gap: 8px; min-width: 0; align-content: start; }
+.pp-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.pp-head > b { font: 400 21px "Lilita One", sans-serif; color: var(--ink-dark); }
+.pp-pills { display: flex; gap: 6px; flex-wrap: wrap; }
+.pp-pills em { padding: 3px 10px; border: 2px solid var(--ink-dark); border-radius: 999px; background: #E3E8EA; font: 800 12.5px "Figtree", sans-serif; font-style: normal; color: var(--ink-dark); white-space: nowrap; }
+.pp-pills em:first-child { background: linear-gradient(180deg, #FFF09A, #FFD84A); }
+.pp-share { height: 8px; border: 2px solid var(--ink-dark); border-radius: 999px; background: #D7DEE0; overflow: hidden; }
+.pp-share i { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg, #34C759, #6BEA7F); }
+.pp-slots { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 6px; }
+.pp-slots li { display: flex; align-items: center; gap: 9px; min-width: 0; padding: 5px 8px 5px 5px; border: 2px solid #C9D2D4; border-radius: 12px; background: #FFFFFF; }
+.pp-spool { position: relative; flex: none; display: grid; place-items: center; width: 34px; height: 34px; border: 2.5px solid var(--ink-dark); border-radius: 50%; background: radial-gradient(circle at 50% 50%, #FFFFFF 0 5px, var(--ink-dark) 5.5px 7px, var(--c) 7.5px); box-shadow: inset 0 -3px 0 rgba(0,0,0,.18); }
+.pp-spool b { position: absolute; right: -6px; bottom: -5px; display: grid; place-items: center; min-width: 17px; height: 17px; padding: 0 3px; border: 2px solid var(--ink-dark); border-radius: 9px; background: #FFD84A; color: var(--ink-dark); font: 800 10px "Figtree", sans-serif; }
+.pp-ctext { display: grid; min-width: 0; line-height: 1.2; }
+.pp-ctext b { font: 800 13.5px "Figtree", sans-serif; color: var(--ink-dark); }
+.pp-ctext small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 600 11.5px "Figtree", sans-serif; color: #5E6F6C; }
+.pp-warn, .pp-note, .pp-est { display: flex; gap: 9px; align-items: flex-start; margin: 0; padding: 9px 11px; border-radius: 12px; font: 600 12.5px/1.45 "Figtree", sans-serif; }
+.pp-warn i, .pp-note i, .pp-est i { font-style: normal; font-size: 16px; line-height: 1.2; }
+.pp-warn { border: 2.5px solid #C62828; background: #FFE4DC; color: #8A1C14; font-weight: 700; }
+.pp-note { border: 2.5px solid #E0B400; background: linear-gradient(180deg, #FFF8D6, #FFEFA8); color: #4A3B12; box-shadow: 0 3px 0 rgba(11,59,56,.25); transform: rotate(-.4deg); }
+.pp-note b { display: block; font: 400 15px "Lilita One", sans-serif; color: var(--ink-dark); margin-bottom: 1px; }
+.pp-est { border: 2.5px solid var(--ink-dark); background: #FFFFFF; color: #2F3B3D; }
+.pp-est b { color: var(--ink-dark); }
+#printPlan > .note { margin: 0; padding: 0 4px; font: 600 12.5px/1.45 "Figtree", sans-serif; color: var(--ink-dark); }
+@media (max-width: 760px) {
+  .pppanel .planbody { grid-template-columns: 1fr; }
+  .pp-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .pp-piece { grid-template-columns: 84px minmax(0, 1fr); gap: 10px; padding: 10px; }
+  .pp-pic { width: 84px; height: 84px; }
+  .pp-slots { grid-template-columns: 1fr; }
+}
+
 .mixcol { display: inline-flex; align-items: center; gap: 6px; justify-self: start; align-self: flex-start; margin: 8px 0 2px; padding: 6px 14px 6px 10px; border: 2.5px solid var(--ink-dark); border-radius: 999px; background: linear-gradient(180deg, #C9B6FF 0%, #9C7BFF 50%, #7B4FE8 100%); color: #FFFFFF; font: 400 15px "Lilita One", sans-serif; letter-spacing: .3px; -webkit-text-stroke: 3px var(--ink-dark); paint-order: stroke fill; box-shadow: inset 0 2px 0 rgba(255,255,255,.5), 0 3px 0 var(--ink-dark); cursor: pointer; }
 .mixcol span { -webkit-text-stroke: 0; font-size: 16px; display: inline-block; }
 .mixcol:active { transform: translateY(2px); box-shadow: inset 0 2px 0 rgba(255,255,255,.5), 0 1px 0 var(--ink-dark); }
@@ -1833,11 +1887,12 @@ body.clawon .stage .clawstart, .stage:has(.sizecard:not([hidden])) .clawstart { 
     <h2 class="acttitle" id="actTitle">Ready to print</h2>
     <div id="planBody" class="planbody" hidden>
       <div class="plancfg">
-        <label class="field" for="slicerSel">Slicer</label>
+        <b class="pp-cfgtitle">Your setup</b>
+        <label class="field" for="slicerSel"><span aria-hidden="true">💻</span> Slicer</label>
         <select id="slicerSel" class="sel"></select>
-        <label class="field" for="printerSel">Printer</label>
+        <label class="field" for="printerSel"><span aria-hidden="true">🖨️</span> Printer</label>
         <select id="printerSel" class="sel"></select>
-        <label class="field">Copies on each plate</label>
+        <label class="field"><span aria-hidden="true">📋</span> Copies on each plate</label>
         <div class="stepper"><button type="button" id="copiesMinus" aria-label="Fewer copies">−</button><output id="copiesOut">1</output><button type="button" id="copiesPlus" aria-label="More copies">+</button></div>
         <button type="button" class="go plandone" id="planDone">Done</button>
       </div>
@@ -1895,7 +1950,7 @@ body.clawon .stage .clawstart, .stage:has(.sizecard:not([hidden])) .clawstart { 
         <label class="strange"><span>Space between slots</span><input type="range" id="stGap" min="2" max="12" step="0.5"><em id="stGapV"></em></label>
         <label class="strange"><span>Wall thickness</span><input type="range" id="stWall" min="1.6" max="5" step="0.2"><em id="stWallV"></em></label>
         <label class="strange"><span>Slot depth</span><input type="range" id="stDepth" min="8" max="24" step="1"><em id="stDepthV"></em></label>
-        <div class="toggle sttog"><span id="stStemL">Switch slots<small>A square hole for your own keyboard switch, so every character stays clicky</small></span><button type="button" class="switch" role="switch" id="stStem" aria-checked="true" aria-labelledby="stStemL"></button></div>
+        <div class="toggle sttog"><span id="stStemL">Switch slots<small>On: a square hole for your own keyboard switch, so characters stay clicky. Off: a printed post they press onto</small></span><button type="button" class="switch" role="switch" id="stStem" aria-checked="true" aria-labelledby="stStemL"></button></div>
         <b class="bblab">Tray color</b><div class="bbchips" id="stColTray"></div>
         <b class="bblab">Trim color <small class="stsub">(keycap rims, crate corners, side pattern)</small></b><div class="bbchips" id="stColAcc"></div><button type="button" class="mixcol" id="stMix"><span aria-hidden="true">🎲</span> Mix colors</button>
         <p class="bbhint" id="stSize"></p>
@@ -8225,6 +8280,7 @@ var DECO = (function () {
   function stSave() { try { localStorage.setItem('bx-storage', JSON.stringify(ST)); } catch (e) {} }
   var ST_SLOT = 40, ST_MOUNT = 3.647, ST_SWZ = -0.431;   // mount height and where the switch sits, as in the box   // inside of a square slot (mm): the box's inside is 37.6, so any character fits
   var ST_TPL = { classic: { ro: 1.5, rp: 1 }, rounded: { ro: 8, rp: 5 }, keycap: { ro: 5, rp: 3 }, crate: { ro: 0.6, rp: 1 }, honey: { ro: 7, rp: 0 } };
+  var ST_NOTE2 = 'Print it flat, as it is, with no supports. 15% infill is plenty. Press the switch socket under each character onto a post; if a post is too tight, file it lightly. Every slot fits any Boxedable character.';
   var ST_NOTE = 'Print it flat, as it is, with no supports. 15% infill is plenty. Press a keyboard switch (MX style, like the one in your Boxedable box) into the square hole in each slot, then set a character on top so it clicks. Every slot fits any Boxedable character.';
   function stLayout() {
     var n = ST.count, cols = n === 2 ? 2 : n / 2, rows = n === 2 ? 1 : 2, hex = ST.tpl === 'honey';
@@ -8310,6 +8366,7 @@ var DECO = (function () {
     if (ST.stem) L.cells.forEach(function (c) {   // the same switch mount as inside the box: a raised floor with a square hole for the switch
       var fr = stPocket(new THREE.Shape(), L, c, -0.02); fr.holes.push(rrPath(new THREE.Path(), c.x, c.y, 14.842, 14.833, 0)); tray.push(stExt(fr, ST_MOUNT, L.F - 0.01));
     });
+    else L.cells.forEach(function (c) { tray.push(stStem(c.x, c.y, L.F - 0.01)); });   // no switch: a printed post the character's socket presses onto
     if (ST.tpl === 'keycap') L.cells.forEach(function (c) {   // a raised rim around each slot, like a keycap's edge
       var rim = stPocket(new THREE.Shape(), L, c, 1.8); rim.holes.push(stPocket(new THREE.Path(), L, c, 0)); acc.push(stExt(rim, 1.4, L.H - 0.02));
     });
@@ -8322,7 +8379,7 @@ var DECO = (function () {
   function stPiece() {
     var G = stGeo(), parts = [{ name: 'storage tray', geom: G.tray, color: ST.color }];
     if (G.acc) parts.push({ name: 'trim', geom: G.acc, color: ST.acc });
-    var note = ST_NOTE + ' It is about ' + Math.round(G.L.W / 10) + ' cm wide, so it needs a print bed at least that wide.';
+    var note = (ST.stem ? ST_NOTE : ST_NOTE2) + ' It is about ' + Math.round(G.L.W / 10) + ' cm wide, so it needs a print bed at least that wide.';
     return { name: 'Storage box', file: 'Storage-box', box: false, planName: 'Storage box (' + ST.count + ' slots)', blindNote: note, extras: [], parts: parts };
   }
   // ---- in the preview: the tray beside the plate, with characters in their slots
@@ -8399,7 +8456,7 @@ var DECO = (function () {
     stTray.material.color.set(ST.color).convertSRGBToLinear().multiplyScalar(0.9); stAcc.material.color.set(ST.acc).convertSRGBToLinear().multiplyScalar(0.9);
     stTray.material.envMapIntensity = stAcc.material.envMapIntensity = 0.32 * light.bright;
     stClearSlots();
-    var seat = L.F + 0.2, swz = L.F + ST_SWZ;
+    var seat = L.F + 1.4, swz = L.F + ST_SWZ;
     L.cells.forEach(function (c, i) {
       var id = ST.slots[i] || null, ch = id ? stCharGroup(id) : null;
       if (ST.stem) { var swg = buildSwitch({ x: c.x, y: c.y, z: swz }); stSlotsG.add(swg); }   // a see-through switch: bring your own
@@ -8468,7 +8525,7 @@ var DECO = (function () {
     stChips(document.getElementById('stColTray'), 'color'); stChips(document.getElementById('stColAcc'), 'acc');
     var L = stGeo().L;
     document.getElementById('stSize').textContent = 'About ' + (L.W / 10).toFixed(1) + ' × ' + (L.D / 10).toFixed(1) + ' × ' + (L.H / 10).toFixed(1) + ' cm. ' + (L.W > 250 ? 'That’s wider than most print beds: try fewer slots or less space between them.' : L.W > 175 ? 'It needs a bed at least ' + Math.ceil(L.W / 10) + ' cm wide (not an A1 mini).' : 'It fits most print beds.');
-    document.getElementById('stNote').textContent = ST_NOTE;
+    document.getElementById('stNote').textContent = ST.stem ? ST_NOTE : ST_NOTE2;
     syncDownload();
   }
   function stChanged(view) { stSave(); stPaint(); stRender(); if (view && ST.on) stView(true); renderPlan(); }
@@ -8655,7 +8712,7 @@ var DECO = (function () {
   var planEl = document.getElementById('printPlan'), planT = 0, planBody = document.getElementById('planBody');
   document.getElementById('planDone').addEventListener('click', function () { closeModal(); });
   document.getElementById('planBtn').addEventListener('click', function () {
-    openModal('Print plan', function (b) { b.closest('.mpanel').classList.add('wide'); planBody.hidden = false; b.appendChild(planBody); });
+    openModal('Print plan', function (b) { b.closest('.mpanel').classList.add('wide', 'gpanel', 'pppanel'); planBody.hidden = false; b.appendChild(planBody); });
     renderPlan();
   });
   function renderPlan() {
@@ -8664,19 +8721,35 @@ var DECO = (function () {
     planT = setTimeout(function () {
       if (!S.parts.length) { planEl.textContent = ''; return; }
       var pr = printerOf(PLAN.printer), pieces = buildPieces('all'), rows = planFor(pieces), html = '';
+      // ---- the summary on top: total time, filament, colors and pieces
+      var totMin = rows.reduce(function (t, r) { return t + r.mins; }, 0), totG = rows.reduce(function (t, r) { return t + r.grams; }, 0), allCols = {};
+      rows.forEach(function (r) { r.colors.forEach(function (c) { allCols[String(c).toUpperCase()] = c; }); });
+      var nCols = Object.keys(allCols).length, swaps = rows.reduce(function (t, r) { return t + r.swaps; }, 0), slotWord = pr.single ? 'Color' : pr.neutral ? 'Tool' : 'Slot';
+      function esc(t) { return String(t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+      html += '<div class="pp-sum"><div class="pp-sumhead"><span class="pp-printer">\u{1F5A8}️ ' + esc(pr.name.replace(/ \(.*\)/, '')) + '</span><span class="pp-slicer">' + esc(slicerOf(PLAN.slicer).name) + (PLAN.copies > 1 ? ' · ' + PLAN.copies + ' copies each' : '') + '</span></div><div class="pp-stats">' +
+        '<div class="pp-stat"><i>⏱️</i><b>' + fmtTime(totMin) + '</b><small>print time</small></div>' +
+        '<div class="pp-stat"><i>⚖️</i><b>' + Math.round(totG) + ' g</b><small>filament</small></div>' +
+        '<div class="pp-stat"><i>\u{1F3A8}</i><b>' + nCols + '</b><small>' + (nCols === 1 ? 'color' : 'colors') + '</small></div>' +
+        '<div class="pp-stat"><i>\u{1F9E9}</i><b>' + rows.length + '</b><small>' + (rows.length === 1 ? 'piece' : 'pieces') + '</small></div></div>' +
+        '<div class="pp-palette">' + Object.keys(allCols).map(function (k) { return '<i title="' + esc(colorLabel(allCols[k])) + '" style="background:' + allCols[k] + '"></i>'; }).join('') + '</div></div>';
+      // ---- one card per piece
       rows.forEach(function (r, ri) {
-        var pc = pieces[ri], th = pc ? (pc._thumb || (pc._thumb = pieceThumb(pc))) : '';
-        html += '<div class="planpiece">' + (th ? '<img class="planthumb" alt="" src="' + th + '">' : '') + '<div class="planinfo"><div class="planhead"><b>' + r.name + '</b><span>About ' + fmtTime(r.mins) + ' \u00b7 ' + Math.round(r.grams) + ' g' + (PLAN.copies > 1 ? ' for ' + PLAN.copies : '') + '</span></div><ol class="slots">';
+        var pc = pieces[ri], th = pc ? (pc._thumb || (pc._thumb = pieceThumb(pc))) : '', share = totMin > 0 ? Math.max(3, Math.round(r.mins / totMin * 100)) : 0;
+        var warn = '';
+        if (pr.single) { if (r.colors.length > 1) warn = 'This printer prints one color: the ' + r.name.toLowerCase() + ' comes out in a single color of your choice. The per-color files let you print parts separately if you like.'; }
+        else if (r.colors.length > pr.slots) warn = 'Needs ' + r.colors.length + ' colors: more than one ' + pr.slotsLabel + ' (' + pr.slots + '). Swap a color by hand, or use fewer colors.';
+        html += '<article class="pp-piece"><div class="pp-pic">' + (th ? '<img alt="" src="' + th + '">' : '') + '<span class="pp-num">' + (ri + 1) + '</span></div><div class="pp-info">' +
+          '<div class="pp-head"><b>' + esc(r.name) + '</b><span class="pp-pills"><em>⏱️ ' + fmtTime(r.mins) + '</em><em>⚖️ ' + Math.round(r.grams) + ' g' + (PLAN.copies > 1 ? ' for ' + PLAN.copies : '') + '</em></span></div>' +
+          '<div class="pp-share" title="Share of the total print time"><i style="width:' + share + '%"></i></div><ul class="pp-slots">';
         r.colors.forEach(function (c, i) {
-          html += '<li><i style="background:' + c + '"></i><b>' + (pr.single ? 'Color ' : pr.neutral ? 'Tool ' : 'Slot ') + (i + 1) + '</b> ' + colorLabel(c) + '<small>' + r.uses[c].join(', ') + '</small></li>';
+          html += '<li><span class="pp-spool" style="--c:' + c + '"><b>' + (i + 1) + '</b></span><span class="pp-ctext"><b>' + esc(colorLabel(c)) + '</b><small>' + slotWord + ' ' + (i + 1) + ' · ' + esc(r.uses[c].join(', ')) + '</small></span></li>';
         });
-        html += '</ol>';
-        if (pr.single) { if (r.colors.length > 1) html += '<p class="planwarn">This printer prints one color: the ' + r.name.toLowerCase() + ' comes out in a single color of your choice. The per-color files let you print parts separately if you like.</p>'; }
-        else if (r.colors.length > pr.slots) html += '<p class="planwarn">Needs ' + r.colors.length + ' colors: more than one ' + pr.slotsLabel + ' (' + pr.slots + '). Swap a color by hand, or use fewer colors.</p>';
-        if (pc && pc.blindNote) html += '<p class="bbplan"><b>Print note:</b> ' + pc.blindNote + '</p>';
-        html += '</div></div>';
+        html += '</ul>';
+        if (warn) html += '<p class="pp-warn"><i>⚠️</i><span>' + warn + '</span></p>';
+        if (pc && pc.blindNote) html += '<p class="pp-note"><i>\u{1F4CC}</i><span><b>Print note</b>' + esc(pc.blindNote) + '</span></p>';
+        html += '</div></article>';
       });
-      html += '<p class="planest"><b>Estimate only, not exact.</b> Times and weights are a rough guide for the ' + pr.name.replace(/ \(.*\)/, '') + (pr.single ? '' : ' (about ' + rows.reduce(function (s, r) { return s + r.swaps; }, 0) + (pr.neutral ? ' tool' : ' color') + ' changes)') + '. ' + (pr.neutral ? 'Your slicer' : 'Bambu Studio') + ' shows the real numbers after slicing.</p>';
+      html += '<p class="pp-est"><i>ℹ️</i><span><b>Estimate only, not exact.</b> Times and weights are a rough guide for the ' + esc(pr.name.replace(/ \(.*\)/, '')) + (pr.single ? '' : ' (about ' + swaps + (pr.neutral ? ' tool' : ' color') + ' changes)') + '. ' + (pr.neutral ? 'Your slicer' : 'Bambu Studio') + ' shows the real numbers after slicing.</span></p>';
       var sl = slicerOf(PLAN.slicer), xo = exportOpts();
       if (xo) html += '<p class="note">' + (xo.stlOnly ? 'For ' + sl.name + ': one .stl per color. Load them together as one object and give each its own filament.' : pr.single ? 'You get one .stl per piece to print in any color, plus one .stl per color.' : 'The 3MF opens in ' + sl.name + ' with each part on its ' + (pr.unit || 'filament').toLowerCase() + ', using your own printer profile. One .stl per color is included too.') + '</p>';
       if (pr.dual) html += '<p class="note">The ' + pr.name + ' has two nozzles: the file opens set up for it, and Bambu Studio decides which nozzle prints each color.</p>';
