@@ -1155,6 +1155,7 @@ body.shelfon { overflow: hidden; }
 @keyframes shBob { 0%, 100% { transform: translateY(0); } 40% { transform: translateY(-7px); } }
 .shlist { position: absolute; z-index: 4; left: 12px; top: 12px; bottom: 12px; width: 270px; display: grid; grid-template-rows: auto auto minmax(0, 1fr); gap: 9px; padding: 12px; box-sizing: border-box; border: 4px solid var(--ink-dark); border-radius: 20px; background-color: #B9C3C6; background-image: linear-gradient(180deg, #D7DEE0 0%, #B9C3C6 45%, #9CA8AB 100%), radial-gradient(circle, rgba(255,255,255,.22) 2px, transparent 2.5px); background-size: 100% 100%, 22px 22px; background-blend-mode: normal; box-shadow: inset 0 3px 0 rgba(255,255,255,.5), 0 6px 0 var(--ink-dark), 0 22px 36px -16px rgba(0,0,0,.6); }
 .shlhead { display: flex; align-items: center; justify-content: space-between; }
+.shlhead em { font-style: normal; }
 .shlhead b { color: #FFFFFF !important; -webkit-text-stroke: 5px var(--ink-dark); paint-order: stroke fill; font-size: 21px !important; letter-spacing: .3px; }
 .shlhead span { display: inline-block; margin-left: 4px; padding: 0 8px; border: 2.5px solid var(--ink-dark); border-radius: 999px; background: linear-gradient(180deg, #FFF09A, #F7B500); color: var(--ink-dark); -webkit-text-stroke: 0; font: 700 13px/20px "Figtree", sans-serif !important; vertical-align: middle; }
 .shlist input { padding-left: 34px !important; background: #FFFFFF url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='18' height='18'%3E%3Ccircle cx='10.5' cy='10.5' r='6.5' fill='none' stroke='%230B3B38' stroke-width='3'/%3E%3Cpath d='M15.5 15.5l5 5' stroke='%230B3B38' stroke-width='3.4' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat 10px 50% !important; box-shadow: inset 0 2px 0 rgba(11,59,56,.12); }
@@ -1180,6 +1181,18 @@ body.shelfon { overflow: hidden; }
 .shcard .shcd { color: #DCEBFF; }
 .shcard .shca .ghost { background: linear-gradient(180deg, #FF8A8A 0%, #F25C5C 47%, #D63B3B 53%, #B82A2A 100%) !important; color: #FFFFFF !important; border: 3px solid var(--ink-dark) !important; box-shadow: inset 0 2px 0 rgba(255,255,255,.4), 0 3px 0 var(--ink-dark) !important; text-shadow: 0 1px 0 rgba(0,0,0,.35); }
 .shcard .shnav small { color: #FFFFFF; }
+.shlike { justify-self: start; margin-top: 4px; padding: 7px 14px; border: 3px solid var(--ink-dark); border-radius: 999px; background: linear-gradient(180deg, #FFFFFF, #E3E8EA); color: #D6336C; font: 700 15px "Figtree", sans-serif; box-shadow: inset 0 2px 0 #FFFFFF, 0 3px 0 var(--ink-dark); cursor: pointer; }
+.shlike[aria-pressed="true"] { background: linear-gradient(180deg, #FFB3CF 0%, #FF6FAE 47%, #F0458E 53%, #D6336C 100%); color: #FFFFFF; text-shadow: 0 1px 0 rgba(0,0,0,.3); }
+.shlike[hidden], .shadm[hidden], .shca .ghost[hidden] { display: none !important; }
+.shadm { display: flex; gap: 8px; margin-top: 4px; }
+.shadm .shbtn { flex: 1; justify-content: center; padding: 6px 8px; font-size: 14px; }
+.shsort { display: flex; gap: 6px; }
+.shsort[hidden] { display: none; }
+.shsort button { flex: 1; padding: 6px 8px; border: 2.5px solid var(--ink-dark); border-radius: 12px; background: linear-gradient(180deg, #FFFFFF, #E3E8EA); color: var(--ink-dark); font: 400 14px "Lilita One", "Fredoka", sans-serif; box-shadow: 0 2px 0 var(--ink-dark); cursor: pointer; }
+.shsort button[aria-pressed="true"] { background: linear-gradient(180deg, #FFF09A 0%, #FFD84A 47%, #F7B500 53%, #E99E00 100%); }
+.shelf.comm .shlist { grid-template-rows: auto auto auto minmax(0, 1fr); }
+.shlab.feat { background: linear-gradient(180deg, #FFF09A, #FFD84A); }
+.shlab em { font-style: normal; }
 .shturn { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 6px; padding: 6px; border-radius: 14px; background: rgba(0,0,0,.18); }
 .shturn span { font: 400 16px "Lilita One", "Fredoka", sans-serif; color: #FFFFFF; -webkit-text-stroke: 3px var(--ink-dark); paint-order: stroke fill; }
 .shturn .shbtn.sq { font-size: 20px; }
@@ -1318,8 +1331,8 @@ html::-webkit-scrollbar-thumb:hover { background: linear-gradient(90deg, #7CEDE3
   <div class="shelf" id="shelf" hidden role="dialog" aria-modal="true" aria-labelledby="shTitle">
     <div class="shtop">
       <button type="button" class="shbtn shback" id="shBack" aria-label="Back to the customizer"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M14.5 5.5 8 12l6.5 6.5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Back</span></button>
-      <h2 class="shtitle" id="shTitle">My shelf <small id="shCount"></small></h2>
-      <div class="shtabs" role="group" aria-label="Gallery"><button type="button" aria-pressed="true">My shelf</button><button type="button" id="shComm" aria-pressed="false">Community</button><button type="button" id="shColl" aria-pressed="false">Collection</button></div>
+      <h2 class="shtitle" id="shTitle"><span id="shTitleT">My shelf</span> <small id="shCount"></small></h2>
+      <div class="shtabs" role="group" aria-label="Gallery"><button type="button" id="shMine" aria-pressed="true">My shelf</button><button type="button" id="shComm" aria-pressed="false">Community</button></div>
       <div class="shfind"><button type="button" class="shbtn" id="shFindBtn" aria-expanded="false" aria-controls="shList"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="3"/><path d="M15.5 15.5l5 5" stroke="currentColor" stroke-width="3.4" stroke-linecap="round"/></svg><span>Designs list</span></button>
 </div>
       <div class="shtools"><button type="button" class="shbtn" id="shArrange" aria-pressed="false">Arrange</button><button type="button" class="shbtn sq" id="shOut" aria-label="Zoom out">−</button><button type="button" class="shbtn sq" id="shIn" aria-label="Zoom in">+</button></div>
@@ -1330,13 +1343,15 @@ html::-webkit-scrollbar-thumb:hover { background: linear-gradient(90deg, #7CEDE3
       <div class="shrail" id="shRail" hidden><span class="shrl">Shelves</span><div class="shtrack"><i id="shThumb"><b id="shRow"></b></i></div></div>
       <div class="shfade" aria-hidden="true"></div>
       <p class="shmsg" id="shMsg" role="status"></p>
-      <div class="shlist" id="shList"><div class="shlhead"><b>Your designs <span id="shListN"></span></b></div><input type="search" id="shQ" placeholder="Search by name or character" aria-label="Search your designs"><div class="shrows" id="shRows" role="listbox" aria-label="Your designs"></div></div>
+      <div class="shlist" id="shList"><div class="shlhead"><b><em id="shListT">Your designs</em> <span id="shListN"></span></b></div><input type="search" id="shQ" placeholder="Search by name or character" aria-label="Search the designs"><div class="shsort" id="shSort" role="group" aria-label="Sort" hidden><button type="button" data-s="new" aria-pressed="true">Newest</button><button type="button" data-s="liked" aria-pressed="false">♥ Most liked</button></div><div class="shrows" id="shRows" role="listbox" aria-label="Your designs"></div></div>
       <p class="shtip" id="shTip" hidden>Drag a Boxedable to a new spot. Tap <b>Done</b> when you’re finished.</p>
       <div class="shcard" id="shCard" hidden>
         <button type="button" class="shx" id="shCardX" aria-label="Close">✕</button>
         <b class="shct" id="shCt"></b>
         <span class="shcc" id="shCc"></span>
         <small class="shcd" id="shCd"></small>
+        <button type="button" class="shlike" id="shLike" hidden aria-pressed="false"></button>
+        <div class="shadm" id="shAdm" hidden><button type="button" class="shbtn" id="shFeat">★ Feature</button><button type="button" class="shbtn" id="shHide">Hide</button></div>
         <div class="shca"><button type="button" class="go" id="shOpen">Open design</button><button type="button" class="ghost" id="shDel">Delete</button></div>
         <div class="shturn"><button type="button" class="shbtn sq" id="shTurnL" aria-label="Turn left">⟲</button><span>Turn</span><button type="button" class="shbtn sq" id="shTurnR" aria-label="Turn right">⟳</button></div>
         <div class="shnav"><button type="button" class="shbtn" id="shPrev" aria-label="Previous design">◀ Previous</button><small id="shPos"></small><button type="button" class="shbtn" id="shNext" aria-label="Next design">Next ▶</button></div>
@@ -4052,7 +4067,7 @@ var DECO = (function () {
     if (needAccount('Gallery')) return;
     openModal('Gallery', function (host) {
       host.closest('.mpanel').classList.add('wide');
-      tabs(host, ['My designs', 'Community', 'Collection'], function (n, body) {
+      tabs(host, ['My designs', 'Community'], function (n, body) {
         if (n === 'Community') renderCommunity(body); else if (n === 'Collection') renderCollectionTab(body); else renderMine(body);
       });
       if (start) { var t = [].slice.call(host.querySelectorAll('.mtabs button')).filter(function (x) { return x.textContent.trim() === start; })[0]; if (t && t.getAttribute('aria-pressed') !== 'true') t.click(); }
@@ -4154,6 +4169,7 @@ var DECO = (function () {
     var phGeo = new THREE.BoxGeometry(40, 44, 38, 1, 1, 1); phGeo.translate(0, 22, 0);
     var phMat = new THREE.MeshStandardMaterial({ color: lin('#DCE4E6'), roughness: 0.85, transparent: true, opacity: 0.6 });
     var frameMat = new THREE.MeshBasicMaterial({ color: 0xffffff, toneMapped: false });
+    var MODE = 'mine', SORT = 'new', NAMES = {};
     var ITEMS = [], st0 = null, mood = {}, focus = null, arranging = false, drag = null, zoom = 1, viewY = 0, goalY = 0, raf = 0, baking = false, built = false, home = null, impR = null, orderDirty = false, hover = null;
     var ray = new THREE.Raycaster(), ndc = new THREE.Vector2(), tmp = new THREE.Vector3();
 
@@ -4380,8 +4396,9 @@ var DECO = (function () {
         if (!it.on || pxW < 46) { if (el) el.hidden = true; return; }
         if (!el) {
           el = it.lab = document.createElement('div'); el.className = 'shlab';
-          var b = document.createElement('b'); b.textContent = it.data.title || 'My design'; el.appendChild(b);
-          var sm = document.createElement('small'); sm.textContent = new Date(it.data.created || Date.now()).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' }); el.appendChild(sm);
+          var b = document.createElement('b'); b.textContent = (feat(it) ? '★ ' : '') + (it.data.title || 'My design') + (MODE === 'community' && IS_ADMIN && ADM.gallery.hidden[it.id] ? ' (hidden)' : ''); el.appendChild(b);
+          if (feat(it)) el.classList.add('feat');
+          var sm = document.createElement('small'); sm.textContent = MODE === 'community' ? 'by ' + byName(it) : new Date(it.data.created || Date.now()).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' }); el.appendChild(sm);
           labs.appendChild(el);
         }
         tmp.set(it.node.position.x, it.node.position.y - 3, it.node.position.z + 30).project(cam);
@@ -4399,10 +4416,11 @@ var DECO = (function () {
       ADD.btn = b; labs.appendChild(b);
     })();
     function placeAdd() {
+      if (MODE === 'community') { ADD.btn.hidden = true; return; }
       var p = slotPos(ITEMS.length); ADD.node.position.set(p.x, p.y, p.z);
       tmp.set(p.x, p.y + 30, p.z).project(cam); ADD.on = Math.abs(tmp.x) < 1.15 && Math.abs(tmp.y) < 1.3;
       var vw = view.clientWidth, vh = view.clientHeight, pxW = W * vh / (2 * cam.position.distanceTo(look) * Math.tan(THREE.MathUtils.degToRad(cam.fov / 2)));
-      ADD.btn.hidden = !ADD.on || arranging || !!focus || pxW < 46 || !SHELF.loaded;
+      ADD.btn.hidden = !ADD.on || arranging || !!focus || pxW < 46 || !SHELF.loaded || MODE === 'community';
       if (ADD.btn.hidden) return;
       var top = tmp.set(p.x, p.y + 70, p.z).project(cam).clone(), bot = tmp.set(p.x, p.y + 1, p.z + 18).project(cam);
       ADD.btn.style.width = Math.round(pxW * 0.8) + 'px'; ADD.btn.style.height = Math.round((top.y - bot.y) / 2 * vh) + 'px';
@@ -4531,8 +4549,12 @@ var DECO = (function () {
       focus = it; card.hidden = false; card.classList.toggle('mine', true);
       document.getElementById('shCt').textContent = it.data.title || 'My design';
       var cn = charName((it.data.state || {}).char); document.getElementById('shCc').textContent = cn ? cn + ' · ' + ((it.data.state || {}).boxShape || {}).shape : '';
-      document.getElementById('shCd').textContent = 'Saved ' + new Date(it.data.created || Date.now()).toLocaleDateString([], { month: 'long', day: 'numeric', year: 'numeric' });
-      var del = document.getElementById('shDel'); del.dataset.sure = ''; del.textContent = 'Delete';
+      var com = MODE === 'community', mine = !com || it.data.by === UID;
+      document.getElementById('shCd').textContent = (com ? 'by ' + byName(it) + ' · ' : 'Saved ') + new Date(it.data.created || Date.now()).toLocaleDateString([], { month: 'long', day: 'numeric', year: 'numeric' });
+      var del = document.getElementById('shDel'); del.dataset.sure = ''; del.textContent = com ? 'Remove from community' : 'Delete'; del.hidden = !(mine || (com && IS_ADMIN));
+      paintLike(); document.getElementById('shAdm').hidden = !(com && IS_ADMIN);
+      document.getElementById('shFeat').textContent = ADM.gallery.featured[it.id] ? 'Unfeature' : '★ Feature'; document.getElementById('shHide').textContent = ADM.gallery.hidden[it.id] ? 'Show' : 'Hide';
+      document.getElementById('shOpen').textContent = com ? 'Open a copy' : 'Open design';
       var i = ITEMS.indexOf(it); document.getElementById('shPos').textContent = (i + 1) + ' of ' + ITEMS.length;
       document.getElementById('shPrev').disabled = i <= 0; document.getElementById('shNext').disabled = i >= ITEMS.length - 1;
       rowsEl.querySelectorAll('.shrow.on').forEach(function (x) { x.classList.remove('on'); });
@@ -4546,16 +4568,41 @@ var DECO = (function () {
     document.getElementById('shTurnR').addEventListener('click', function () { if (focus) focus.turn = (focus.turn || 0) + Math.PI / 4; });
     document.getElementById('shNext').addEventListener('click', function () { step(1); });
     document.getElementById('shCardX').addEventListener('click', closeCard);
+    var likeBtn = document.getElementById('shLike');
+    function paintLike() {
+      if (MODE !== 'community' || !focus) { likeBtn.hidden = true; return; }
+      var likes = focus.data.likes || [], on = likes.indexOf(UID) >= 0;
+      likeBtn.hidden = false; likeBtn.textContent = (on ? '♥ Liked' : '♡ Like') + ' · ' + likes.length; likeBtn.setAttribute('aria-pressed', String(on));
+    }
+    likeBtn.addEventListener('click', function () {
+      var it = focus; if (!it) return; var likes = (it.data.likes || []).slice(), i = likes.indexOf(UID);
+      if (i >= 0) likes.splice(i, 1); else likes.push(UID);
+      it.data.likes = likes; paintLike(); if (i < 0) SFX.play('pop');
+      DBX.collection('community').doc(it.id).update({ likes: likes }).then(drawList).catch(function () { toast('Couldn’t save your like.'); });
+    });
+    function admToggle(sect) {
+      var it = focus; if (!it) return;
+      var g = { featured: Object.assign({}, ADM.gallery.featured), hidden: Object.assign({}, ADM.gallery.hidden) };
+      if (g[sect][it.id]) delete g[sect][it.id]; else g[sect][it.id] = true;
+      admSave({ gallery: g }).then(function () {
+        ADM.gallery = g; toast(sect === 'featured' ? (g.featured[it.id] ? 'Featured. It now stands at the front.' : 'No longer featured.') : (g.hidden[it.id] ? 'Hidden from members.' : 'Visible to members again.'));
+        if (it.lab) { it.lab.remove(); it.lab = null; }
+        sortCommunity(); layout(); drawList(); openCard(it);
+      }).catch(function () { toast('Couldn’t change that right now.'); });
+    }
+    document.getElementById('shFeat').addEventListener('click', function () { admToggle('featured'); });
+    document.getElementById('shHide').addEventListener('click', function () { admToggle('hidden'); });
     document.getElementById('shOpen').addEventListener('click', function () {
-      if (!focus) return; var it = focus, nm = it.data.title || 'My design';
-      closeShelf(it.data.state, function () { toast('Loaded “' + nm + '”.'); });
+      if (!focus) return; var it = focus, nm = it.data.title || 'My design', com = MODE === 'community';
+      closeShelf(it.data.state, function () { toast(com ? 'Loaded “' + nm + '”. Change it and save your own copy.' : 'Loaded “' + nm + '”.'); });
     });
     document.getElementById('shDel').addEventListener('click', function () {
       var it = focus, b = this; if (!it) return;
       if (b.dataset.sure !== '1') { b.dataset.sure = '1'; b.textContent = 'Tap again to delete'; return; }
-      DBX.collection('data/users/' + UID).doc(it.id).delete().then(function () {
-        closeCard(); removeItem(it); layout(); drawList(); countEl.textContent = '(' + ITEMS.length + ')'; toast('Design deleted.');
-        if (!ITEMS.length) msgEl.textContent = 'Your shelf is empty. Save a design and it will stand here.';
+      var com = MODE === 'community';
+      DBX.collection(com ? 'community' : 'data/users/' + UID).doc(it.id).delete().then(function () {
+        closeCard(); removeItem(it); layout(); drawList(); countEl.textContent = '(' + ITEMS.length + ')'; toast(com ? 'Removed from the community.' : 'Design deleted.');
+        if (!ITEMS.length) msgEl.textContent = com ? 'No community designs yet.' : 'Your shelf is empty. Save a design and it will stand here.';
       }).catch(function () { toast('Couldn’t delete it right now.'); });
     });
     function removeItem(it, used) {
@@ -4580,7 +4627,7 @@ var DECO = (function () {
     }
     function drawList() {
       var words = qEl.value.trim().toLowerCase(); rowsEl.textContent = '';
-      var shown = ITEMS.filter(function (it) { var cn = charName((it.data.state || {}).char); return !words || ((it.data.title || '') + ' ' + cn).toLowerCase().indexOf(words) >= 0; });
+      var shown = ITEMS.filter(function (it) { var cn = charName((it.data.state || {}).char); return !words || ((it.data.title || '') + ' ' + cn + ' ' + (MODE === 'community' ? byName(it) : '')).toLowerCase().indexOf(words) >= 0; });
       shown.forEach(function (it) {
         var b = document.createElement('button'); b.type = 'button'; b.className = 'shrow'; b.setAttribute('role', 'option');
         var src = it.impUrl || it.data.thumb; it.rowEl = b;
@@ -4588,7 +4635,7 @@ var DECO = (function () {
         if (it === focus) b.classList.add('on');
         var tx = document.createElement('span'), t = document.createElement('b'), sm = document.createElement('small');
         t.textContent = it.data.title || 'My design';
-        sm.textContent = [charName((it.data.state || {}).char), new Date(it.data.created || Date.now()).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' }), 'Spot ' + (it.i + 1)].filter(Boolean).join(' \u00b7 ');
+        sm.textContent = (MODE === 'community' ? ['by ' + byName(it), '♥ ' + (it.data.likes || []).length, charName((it.data.state || {}).char)] : [charName((it.data.state || {}).char), new Date(it.data.created || Date.now()).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' }), 'Spot ' + (it.i + 1)]).filter(Boolean).join(' · ');
         tx.appendChild(t); tx.appendChild(sm); b.appendChild(tx);
         b.addEventListener('click', function () { goTo(it); });
         rowsEl.appendChild(b);
@@ -4616,15 +4663,44 @@ var DECO = (function () {
     function saveOrder() {
       orderDirty = false;
       var jobs = [];
+      if (MODE !== 'mine') return;
       ITEMS.forEach(function (it, i) { if (it.data.pos !== i) { it.data.pos = i; var d = {}; Object.keys(it.data).forEach(function (k) { d[k] = it.data[k]; }); jobs.push(DBX.collection('data/users/' + UID).doc(it.id).set(d)); } });
       if (!jobs.length) return;
       Promise.all(jobs).then(function () { toast('Shelf order saved.'); }).catch(function () { toast('Couldn’t save the new order. Try again.'); orderDirty = true; });
     }
 
     // ----- open and close
+    function byName(it) { return (NAMES[it.data.by] && NAMES[it.data.by].name) || 'a member'; }
+    function feat(it) { return MODE === 'community' && !!ADM.gallery.featured[it.id]; }
+    function sortCommunity() {   // featured first, then newest or most liked
+      ITEMS.sort(function (a, b) {
+        return (feat(b) ? 1 : 0) - (feat(a) ? 1 : 0) || (SORT === 'liked' ? ((b.data.likes || []).length - (a.data.likes || []).length) : 0) || (b.data.created || 0) - (a.data.created || 0);
+      });
+    }
+    function setMode(m) {
+      if (m === MODE && SHELF.loaded) return;
+      if (orderDirty) saveOrder();
+      MODE = m; closeCard(); if (arranging) arrBtn.click();
+      document.getElementById('shMine').setAttribute('aria-pressed', String(m === 'mine')); document.getElementById('shComm').setAttribute('aria-pressed', String(m === 'community'));
+      document.getElementById('shTitleT').textContent = m === 'community' ? 'Community' : 'My shelf';
+      document.getElementById('shListT').textContent = m === 'community' ? 'Community designs' : 'Your designs';
+      qEl.placeholder = m === 'community' ? 'Search by name, character or maker' : 'Search by name or character';
+      arrBtn.hidden = m === 'community'; document.getElementById('shSort').hidden = m !== 'community';
+      root.classList.toggle('comm', m === 'community');
+      qEl.value = ''; zoom = 1; goalY = viewY = 0; load();
+    }
+    document.getElementById('shMine').addEventListener('click', function () { setMode('mine'); });
+    document.querySelectorAll('#shSort button').forEach(function (b) {
+      b.addEventListener('click', function () {
+        SORT = b.dataset.s; document.querySelectorAll('#shSort button').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
+        closeCard(); sortCommunity(); layout(); drawList(); goalY = 0;
+      });
+    });
     function load() {
       ITEMS.slice().forEach(function (it) { removeItem(it); });
-      SHELF.loaded = false; msgEl.textContent = 'Loading your shelf…'; countEl.textContent = '';
+      SHELF.loaded = false; countEl.textContent = '';
+      if (MODE === 'community') { loadCommunity(); return; }
+      msgEl.textContent = 'Loading your shelf…';
       DBX.collection('data/users/' + UID).orderBy('created', 'desc').limit(300).get().then(function (snap) {
         var list = []; snap.docs.forEach(function (d) { var x = d.data(); if (x && x.state) list.push({ id: d.id, data: x }); });
         // their own order first (Arrange); newer saves join at the end
@@ -4634,7 +4710,22 @@ var DECO = (function () {
         msgEl.textContent = list.length ? '' : 'Your shelf is empty. Save a design and it will stand here.';
       }).catch(function () { msgEl.textContent = 'Couldn’t load your shelf right now.'; });
     }
-    function open() {
+    function loadCommunity() {
+      msgEl.textContent = 'Loading the community shelf…';
+      DBX.collection('community').orderBy('created', 'desc').limit(300).get().then(function (snap) {
+        if (MODE !== 'community') return;
+        var list = [], ids = [];
+        snap.docs.forEach(function (d) { var x = d.data(); if (!x || !x.state || (!IS_ADMIN && ADM.gallery.hidden[d.id])) return; list.push({ id: d.id, data: x }); if (x.by && ids.indexOf(x.by) < 0) ids.push(x.by); });
+        return names(ids).then(function (ps) {
+          if (MODE !== 'community') return;
+          NAMES = ps || {};
+          list.forEach(addItem); sortCommunity(); layout(); goalY = viewY = 0; SHELF.loaded = true; drawList();
+          countEl.textContent = list.length ? '(' + list.length + ')' : '';
+          msgEl.textContent = list.length ? '' : 'No community designs yet. Tick “Also post it to the community gallery” when you save a design.';
+        });
+      }).catch(function () { msgEl.textContent = 'Couldn’t load the community shelf right now.'; });
+    }
+    function open(mode) {
       if (SHELF.open) return;
       if (SHELF.restoring) { setTimeout(open, 120); return; }   // still putting the last design back
       if (!modal.hidden) closeModal();
@@ -4649,7 +4740,7 @@ var DECO = (function () {
       SHELF.open = true; focus = null; card.hidden = true; qEl.value = ''; listEl.hidden = !listPref; findBtn.setAttribute('aria-expanded', String(listPref)); findBtn.setAttribute('aria-pressed', String(listPref)); root.classList.toggle('listoff', !listPref); arranging = false; arrBtn.setAttribute('aria-pressed', 'false'); arrBtn.textContent = 'Arrange'; tipEl.hidden = true;
       zoom = 1; goalY = viewY = 0; built = false;
       sizeView(); look.set(0, 26, 0); cam.position.copy(look).addScaledVector(DIR, dist());
-      load(); frame(); hit.focus({ preventScroll: true });
+      MODE = ''; setMode(mode === 'community' ? 'community' : 'mine'); frame(); hit.focus({ preventScroll: true });
     }
     function closeShelf(loadState, then) {
       if (!SHELF.open) return;
@@ -4674,8 +4765,7 @@ var DECO = (function () {
       frames(4, function () { placeChar(); SHELF.quiet = false; finish(); });
     }
     document.getElementById('shBack').addEventListener('click', function () { closeShelf(); });
-    document.getElementById('shComm').addEventListener('click', function () { closeShelf(null, function () { openGalleryWindow('Community'); }); });
-    document.getElementById('shColl').addEventListener('click', function () { closeShelf(null, function () { openGalleryWindow('Collection'); }); });
+    document.getElementById('shComm').addEventListener('click', function () { setMode('community'); });
     document.addEventListener('keydown', function (e) {
       if (!SHELF.open || e.key !== 'Escape') return;
       if (focus) closeCard(); else if (arranging) arrBtn.click(); else closeShelf();
@@ -4794,7 +4884,6 @@ var DECO = (function () {
     var row4 = el('div', 'acctsec'); s4.appendChild(row4);
     function openGal(tab) { closeModal(); setTimeout(function () { if (tab === 'My designs') openShelf(); else openGalleryWindow(tab); }, 60); }
     btn(row4, 'My designs', '', function () { openGal('My designs'); });
-    btn(row4, 'My collection', '', function () { openGal('Collection'); });
     // 5. sign out
     var s5 = sec('Sign out'); btn(s5, 'Sign out', '', function () { A.signOut(); });
     // 6. delete
@@ -6292,7 +6381,7 @@ var DECO = (function () {
     var act = document.createElement('div'); act.className = 'tools pill actbar'; act.setAttribute('role', 'toolbar'); act.setAttribute('aria-label', 'Your designs');
     var com = document.createElement('button'); com.type = 'button'; com.className = 'topbtn'; com.id = 'btnCommunity';
     com.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 19.5c.6-3.4 3-5.4 6-5.4s5.4 2 6 5.4"/><circle cx="17" cy="9" r="2.6"/><path d="M15.6 13.9c2.6.1 4.6 1.9 5.2 5"/></svg><span>Community</span>';
-    com.addEventListener('click', function () { openGalleryWindow('Community'); });
+    com.addEventListener('click', function () { if (!needAccount('Community')) openShelf('community'); });
     var gal = document.getElementById('btnGallery'), gs = gal && gal.querySelector('span'); if (gs) gs.textContent = 'My shelf';
     ['btnSave', 'btnGallery'].forEach(function (id) { var b = document.getElementById(id); if (b) act.appendChild(b); });
     act.appendChild(com);
