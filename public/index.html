@@ -1033,6 +1033,13 @@ body.maint-admin::before { content: "Maintenance mode is on: members see a “Ba
 .bbseg button:focus-visible, .bbsame:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
 .bbchips { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
 
+.mixcol { display: inline-flex; align-items: center; gap: 6px; justify-self: start; align-self: flex-start; margin: 8px 0 2px; padding: 6px 14px 6px 10px; border: 2.5px solid var(--ink-dark); border-radius: 999px; background: linear-gradient(180deg, #C9B6FF 0%, #9C7BFF 50%, #7B4FE8 100%); color: #FFFFFF; font: 400 15px "Lilita One", sans-serif; letter-spacing: .3px; -webkit-text-stroke: 3px var(--ink-dark); paint-order: stroke fill; box-shadow: inset 0 2px 0 rgba(255,255,255,.5), 0 3px 0 var(--ink-dark); cursor: pointer; }
+.mixcol span { -webkit-text-stroke: 0; font-size: 16px; display: inline-block; }
+.mixcol:active { transform: translateY(2px); box-shadow: inset 0 2px 0 rgba(255,255,255,.5), 0 1px 0 var(--ink-dark); }
+.mixcol.spin span { animation: mixspin .5s cubic-bezier(.2,.8,.2,1); }
+@keyframes mixspin { from { transform: rotate(-360deg) scale(.6); } }
+@media (prefers-reduced-motion: reduce) { .mixcol.spin span { animation: none; } }
+
 /* storage box card */
 .sthint { margin: 0 0 6px; font: 700 12.5px/1.35 "Figtree", sans-serif; color: #2F3B3D; }
 .stslots { display: grid; grid-template-columns: repeat(var(--cols, 2), minmax(0, 62px)); justify-content: center; gap: 6px; margin-bottom: 6px; padding: 7px; border: 3px solid var(--ink-dark); border-radius: 14px; background: linear-gradient(180deg, #0E5F5A, #0B3B38); }
@@ -1046,7 +1053,9 @@ body.maint-admin::before { content: "Maintenance mode is on: members see a “Ba
 .stslot .stx { position: absolute; right: 3px; top: 3px; display: grid; place-items: center; width: 16px; height: 16px; border-radius: 50%; background: #E5484D; color: #FFFFFF; font: 800 9px sans-serif; font-style: normal; opacity: 0; transition: opacity .12s; }
 .stslot.full:hover .stx, .stslot.full:focus-visible .stx { opacity: 1; }
 @media (hover: none) { .stslot.full .stx { opacity: .9; } }
-.sttpls button { flex: 1 1 30%; }
+.sttpls button { flex: 1 1 20%; }
+.stpats { display: grid !important; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.stpats button { padding: 6px 2px !important; font-size: 12.5px !important; }
 .strange { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 8px; margin: 4px 0; font: 700 13px "Figtree", sans-serif; color: var(--ink-dark); }
 .strange em { min-width: 52px; font: 800 12.5px "Figtree", sans-serif; font-style: normal; text-align: right; }
 @media (max-width: 420px) { .strange { grid-template-columns: 1fr auto; } .strange input { grid-column: 1 / -1; grid-row: 2; } }
@@ -1844,7 +1853,7 @@ body.clawon .stage .clawstart, .stage:has(.sizecard:not([hidden])) .clawstart { 
         <p class="bbhint" id="bbHint"></p>
         <b class="bblab">Carton color</b><div class="bbchips" id="bbColCarton"></div>
         <b class="bblab">“BOXEDABLES” on the front</b><div class="bbchips" id="bbColText"></div>
-        <b class="bblab">“?” on the back</b><div class="bbchips" id="bbColQ"></div>
+        <b class="bblab">“?” on the back</b><div class="bbchips" id="bbColQ"></div><button type="button" class="mixcol" id="bbMix"><span aria-hidden="true">🎲</span> Mix colors</button>
         <label class="check bbseal"><input type="checkbox" id="bbSeal"> Show it sealed in the preview</label>
         <p class="bbnote"><b>Print note:</b> <span id="bbNote"></span></p>
         <div class="bbtray">
@@ -1866,7 +1875,7 @@ body.clawon .stage .clawstart, .stage:has(.sizecard:not([hidden])) .clawstart { 
         <p class="bbsub">A window box that stands your Boxedable up for display, with a clear front and a lid that clicks on. It prints as its own piece.</p>
         <p class="bbhint" id="dbFit"></p>
         <b class="bblab">Box color</b><div class="bbchips" id="dbColBody"></div>
-        <b class="bblab">Lid color</b><div class="bbchips" id="dbColLid"></div>
+        <b class="bblab">Lid color</b><div class="bbchips" id="dbColLid"></div><button type="button" class="mixcol" id="dbMix"><span aria-hidden="true">🎲</span> Mix colors</button>
         <p class="bbnote"><b>Print note:</b> <span id="dbNote"></span></p>
       </div>
     </div>
@@ -1880,15 +1889,15 @@ body.clawon .stage .clawstart, .stage:has(.sizecard:not([hidden])) .clawstart { 
         <p class="sthint" id="stHint"></p>
         <div class="stslots" id="stSlots"></div>
         <b class="bblab" id="stTplL">Design</b>
-        <div class="bbseg sttpls" role="radiogroup" aria-labelledby="stTplL"><button type="button" role="radio" data-sttpl="classic">Classic</button><button type="button" role="radio" data-sttpl="rounded">Rounded</button><button type="button" role="radio" data-sttpl="keycap">Keycap</button><button type="button" role="radio" data-sttpl="crate">Crate</button><button type="button" role="radio" data-sttpl="honey">Honeycomb</button></div>
-        <b class="bblab" id="stTexL">Texture on the sides</b>
-        <div class="bbseg" role="radiogroup" aria-labelledby="stTexL"><button type="button" role="radio" data-sttex="none">None</button><button type="button" role="radio" data-sttex="ribs">Ribs</button><button type="button" role="radio" data-sttex="dots">Dots</button><button type="button" role="radio" data-sttex="stripes">Stripes</button><button type="button" role="radio" data-sttex="planks">Planks</button></div>
+        <div class="bbseg sttpls" role="radiogroup" aria-labelledby="stTplL"><button type="button" role="radio" data-sttpl="classic">Classic</button><button type="button" role="radio" data-sttpl="rounded">Rounded</button><button type="button" role="radio" data-sttpl="keycap">Keycap</button><button type="button" role="radio" data-sttpl="crate">Crate</button></div>
+        <b class="bblab" id="stTexL">Pattern on the sides</b>
+        <div class="bbseg stpats" role="radiogroup" aria-labelledby="stTexL"><button type="button" role="radio" data-sttex="none">None</button><button type="button" role="radio" data-sttex="ribs">Ribs</button><button type="button" role="radio" data-sttex="dots">Dots</button><button type="button" role="radio" data-sttex="stripes">Stripes</button><button type="button" role="radio" data-sttex="planks">Planks</button><button type="button" role="radio" data-sttex="zigzag">Zigzag</button><button type="button" role="radio" data-sttex="waves">Waves</button><button type="button" role="radio" data-sttex="diamonds">Diamonds</button><button type="button" role="radio" data-sttex="hearts">Hearts</button><button type="button" role="radio" data-sttex="stars">Stars</button><button type="button" role="radio" data-sttex="bricks">Bricks</button><button type="button" role="radio" data-sttex="checks">Checks</button></div>
         <label class="strange"><span>Space between slots</span><input type="range" id="stGap" min="2" max="12" step="0.5"><em id="stGapV"></em></label>
         <label class="strange"><span>Wall thickness</span><input type="range" id="stWall" min="1.6" max="5" step="0.2"><em id="stWallV"></em></label>
-        <label class="strange"><span>Slot depth</span><input type="range" id="stDepth" min="6" max="20" step="1"><em id="stDepthV"></em></label>
-        <div class="toggle sttog"><span id="stStemL">Switch posts<small>Characters click onto a post, like keycaps</small></span><button type="button" class="switch" role="switch" id="stStem" aria-checked="true" aria-labelledby="stStemL"></button></div>
+        <label class="strange"><span>Slot depth</span><input type="range" id="stDepth" min="8" max="24" step="1"><em id="stDepthV"></em></label>
+        <div class="toggle sttog"><span id="stStemL">Switch slots<small>A square hole for your own keyboard switch, so every character stays clicky</small></span><button type="button" class="switch" role="switch" id="stStem" aria-checked="true" aria-labelledby="stStemL"></button></div>
         <b class="bblab">Tray color</b><div class="bbchips" id="stColTray"></div>
-        <b class="bblab">Trim color <small class="stsub">(keycap rims, crate corners, side texture)</small></b><div class="bbchips" id="stColAcc"></div>
+        <b class="bblab">Trim color <small class="stsub">(keycap rims, crate corners, side pattern)</small></b><div class="bbchips" id="stColAcc"></div><button type="button" class="mixcol" id="stMix"><span aria-hidden="true">🎲</span> Mix colors</button>
         <p class="bbhint" id="stSize"></p>
         <p class="bbnote"><b>Print note:</b> <span id="stNote"></span></p>
       </div>
@@ -7929,7 +7938,7 @@ var DECO = (function () {
   var BB_LAYER = Math.ceil(BBDATA.pause / 0.2) + 1;   // the first standard 0.2 layer that starts safely above the toy
   var BB_NOTE = 'Print it standing, no supports. Add a pause at layer ' + BB_LAYER + ' (standard 0.2 layer height). When it pauses, drop in your Boxedable box first, then resume. To open, bend the top along the groove until it snaps.';
   var BB_CARD = 'Pause at layer ' + BB_LAYER + ', drop in your Boxedable, resume';
-  var BB = { on: false, size: 'auto', color: '#F4F4F2', text: null, q: null, sealed: false };
+  var BB = { rolled: false, on: false, size: 'auto', color: '#F4F4F2', text: null, q: null, sealed: false };
   try { var bbs = JSON.parse(localStorage.getItem('bx-blind') || 'null'); if (bbs) Object.keys(BB).forEach(function (k) { if (bbs[k] !== undefined) BB[k] = bbs[k]; }); } catch (e) {}
   function bbSave() { try { localStorage.setItem('bx-blind', JSON.stringify(BB)); } catch (e) {} }
   function bbSize() { return BB.size === 'auto' ? (HOOK.on ? 'hook' : 'std') : BB.size; }
@@ -8104,7 +8113,7 @@ var DECO = (function () {
   document.getElementById('dlTray').addEventListener('click', function () { runDownload('tray'); });
   trPaint(); trRender();
   // ---------- display box: a window box that stands the Boxedable up for display; it follows the box settings ----------
-  var DB = { on: false, body: '#6EC6FF', lid: '#64D6B3' };
+  var DB = { rolled: false, on: false, body: '#6EC6FF', lid: '#64D6B3' };
   try { var dbs = JSON.parse(localStorage.getItem('bx-display') || 'null'); if (dbs) Object.keys(DB).forEach(function (k) { if (dbs[k] !== undefined) DB[k] = dbs[k]; }); } catch (e) {}
   function dbSave() { try { localStorage.setItem('bx-display', JSON.stringify(DB)); } catch (e) {} }
   function dbVer() { var shp = typeof BOXSHAPE !== 'undefined' && BOXSHAPE ? BOXSHAPE.shape : 'classic'; return { depth: HOOK.on ? 'hook' : 'plain', shape: shp === 'rounded' ? 'rounded' : 'classic', tex: 'none' }; }   // tight holder: no room (snug), plus the texture depth when a texture is on
@@ -8207,13 +8216,15 @@ var DECO = (function () {
   dbPaint(); dbRender(); setTimeout(dbRefresh, 0);   // again once the box settings have loaded
 
   // ---------- storage box: an open tray with square slots that keep characters out of their boxes, like keycaps ----------
-  var ST = { on: false, count: 4, tpl: 'rounded', tex: 'none', gap: 4, wall: 2.4, depth: 8, stem: true, color: '#6EC6FF', acc: '#FFD45C', slots: ['cur'] };
+  var ST_TPL0 = { classic: 1, rounded: 1, keycap: 1, crate: 1 }, ST_PATS = ['none', 'ribs', 'dots', 'stripes', 'planks', 'zigzag', 'waves', 'diamonds', 'hearts', 'stars', 'bricks', 'checks'];
+  var ST = { rolled: false, on: false, count: 4, tpl: 'rounded', tex: 'none', gap: 4, wall: 2.4, depth: 12, stem: true, color: '#6EC6FF', acc: '#FFD45C', slots: ['cur'] };
   try { var sts = JSON.parse(localStorage.getItem('bx-storage') || 'null'); if (sts) Object.keys(ST).forEach(function (k) { if (sts[k] !== undefined) ST[k] = sts[k]; }); } catch (e) {}
+  if (!ST_TPL0[ST.tpl]) ST.tpl = 'rounded'; if (ST_PATS.indexOf(ST.tex) < 0) ST.tex = 'none';
   if (!Array.isArray(ST.slots)) ST.slots = ['cur'];
   function stSave() { try { localStorage.setItem('bx-storage', JSON.stringify(ST)); } catch (e) {} }
-  var ST_SLOT = 40;   // inside of a square slot (mm): the box's inside is 37.6, so any character fits
+  var ST_SLOT = 40, ST_MOUNT = 3.647, ST_SWZ = -0.431;   // mount height and where the switch sits, as in the box   // inside of a square slot (mm): the box's inside is 37.6, so any character fits
   var ST_TPL = { classic: { ro: 1.5, rp: 1 }, rounded: { ro: 8, rp: 5 }, keycap: { ro: 5, rp: 3 }, crate: { ro: 0.6, rp: 1 }, honey: { ro: 7, rp: 0 } };
-  var ST_NOTE = 'Print it flat, as it is, with no supports. 15% infill is plenty. With switch posts, press the switch socket under each character onto a post; if a post is too tight, file it lightly. Every slot fits any Boxedable character.';
+  var ST_NOTE = 'Print it flat, as it is, with no supports. 15% infill is plenty. Press a keyboard switch (MX style, like the one in your Boxedable box) into the square hole in each slot, then set a character on top so it clicks. Every slot fits any Boxedable character.';
   function stLayout() {
     var n = ST.count, cols = n === 2 ? 2 : n / 2, rows = n === 2 ? 1 : 2, hex = ST.tpl === 'honey';
     var cx = hex ? 47.4 : ST_SLOT, cy = hex ? 41 : ST_SLOT, g = ST.gap, w = Math.max(ST.wall, ST_TPL[ST.tpl].ro * 0.5);
@@ -8246,7 +8257,9 @@ var DECO = (function () {
     var outer = rrPath(new THREE.Shape(), 0, 0, L.W, L.D, T.ro), walls = rrPath(new THREE.Shape(), 0, 0, L.W, L.D, T.ro);
     L.cells.forEach(function (c) { walls.holes.push(stPocket(new THREE.Path(), L, c, 0)); });
     tray.push(stExt(outer, L.F, 0), stExt(walls, ST.depth + 0.02, L.F - 0.01));
-    if (ST.stem) L.cells.forEach(function (c) { tray.push(stStem(c.x, c.y, L.F - 0.01)); });
+    if (ST.stem) L.cells.forEach(function (c) {   // the same switch mount as inside the box: a raised floor with a square hole for the switch
+      var fr = stPocket(new THREE.Shape(), L, c, -0.02); fr.holes.push(rrPath(new THREE.Path(), c.x, c.y, 14.842, 14.833, 0)); tray.push(stExt(fr, ST_MOUNT, L.F - 0.01));
+    });
     if (ST.tpl === 'keycap') L.cells.forEach(function (c) {   // a raised rim around each slot, like a keycap's edge
       var rim = stPocket(new THREE.Shape(), L, c, 1.8); rim.holes.push(stPocket(new THREE.Path(), L, c, 0)); acc.push(stExt(rim, 1.4, L.H - 0.02));
     });
@@ -8264,6 +8277,34 @@ var DECO = (function () {
         if (ST.tex === 'ribs') { var nr = Math.floor(sd.len / 5); for (var i = 0; i <= nr; i++) bar(-sd.len / 2 + i * sd.len / Math.max(1, nr), L.H / 2, 1.3, L.H - 3); }
         else if (ST.tex === 'stripes') { bar(0, L.H * 0.36, sd.len, 1.6); bar(0, L.H * 0.7, sd.len, 1.6); }
         else if (ST.tex === 'planks') { var np = L.H >= 11 ? 3 : 2, ph = (L.H - 2) / np; for (var j = 0; j < np; j++) bar(0, 1 + ph * j + ph / 2, sd.len, ph - 1.1); }
+        else if (/^(zigzag|waves|diamonds|hearts|stars|bricks|checks)$/.test(ST.tex)) {
+          // flat shapes drawn on the side (t along it, z up), pushed out from the wall
+          var a = new THREE.Vector3(sd.nx ? 0 : (sd.ny < 0 ? 1 : -1), sd.nx ? (sd.nx > 0 ? 1 : -1) : 0, 0), up = new THREE.Vector3(0, 0, 1), nv = new THREE.Vector3(sd.nx, sd.ny, 0);
+          var M4 = new THREE.Matrix4().makeBasis(a, up, nv).setPosition(sd.x - sd.nx * 0.05, sd.y - sd.ny * 0.05, 0), half = sd.len / 2, Hh = L.H, zc = Hh / 2;
+          function put(pts) { var sh = new THREE.Shape(); pts.forEach(function (q, i) { sh[i ? 'lineTo' : 'moveTo'](q[0], q[1]); }); put2(sh); }
+          function put2(sh) { var g2 = new THREE.ExtrudeGeometry(sh, { depth: out + 0.05, bevelEnabled: false, curveSegments: 8 }); g2.applyMatrix4(M4); acc.push(g2); }
+          function band(f, step) {   // a thick line following z = f(t)
+            for (var t0 = -half; t0 < half - 0.01; t0 += step) { var t1 = Math.min(half, t0 + step), z0 = f(t0), z1 = f(t1), th = 0.75; put([[t0, z0 - th], [t1, z1 - th], [t1, z1 + th], [t0, z0 + th]]); }
+          }
+          var amp = Math.max(1, (Hh - 5) / 2);
+          if (ST.tex === 'zigzag') { var per = 6; band(function (t) { var u = ((t + half) / per) % 1; return zc + amp * (u < 0.5 ? -1 + 4 * u : 3 - 4 * u); }, per / 2); }
+          else if (ST.tex === 'waves') band(function (t) { return zc + amp * Math.sin((t + half) / 7 * Math.PI * 2); }, 1);
+          else {
+            var sz = Math.min(Hh - 3, 7), gapT = ST.tex === 'checks' ? 0 : sz * 0.45, n0 = Math.max(1, Math.floor((sd.len + gapT) / (sz + gapT))), span = n0 * sz + (n0 - 1) * gapT;
+            if (ST.tex === 'bricks') {
+              var bh = 2.4, bl = 6.5, rowsB = Math.max(1, Math.floor((Hh - 2 + 0.8) / (bh + 0.8)));
+              for (var rb = 0; rb < rowsB; rb++) { var zb = 1 + rb * (bh + 0.8); for (var tb = -half + (rb % 2 ? bl / 2 + 0.4 : 0); tb + bl <= half; tb += bl + 0.8) put([[tb, zb], [tb + bl, zb], [tb + bl, zb + bh], [tb, zb + bh]]); }
+            } else if (ST.tex === 'checks') {
+              var cq = 2.6, rowsC = Math.floor((Hh - 2) / cq), colsC = Math.floor(sd.len / cq), t00 = -colsC * cq / 2, z00 = (Hh - rowsC * cq) / 2;
+              for (var rc = 0; rc < rowsC; rc++) for (var cc = 0; cc < colsC; cc++) if ((rc + cc) % 2 === 0) put([[t00 + cc * cq, z00 + rc * cq], [t00 + (cc + 1) * cq, z00 + rc * cq], [t00 + (cc + 1) * cq, z00 + (rc + 1) * cq], [t00 + cc * cq, z00 + (rc + 1) * cq]]);
+            } else for (var k2 = 0; k2 < n0; k2++) {
+              var tc = -span / 2 + sz / 2 + k2 * (sz + gapT), r2 = sz / 2;
+              if (ST.tex === 'diamonds') put([[tc, zc - r2], [tc + r2 * 0.72, zc], [tc, zc + r2], [tc - r2 * 0.72, zc]]);
+              else if (ST.tex === 'stars') { var sp = []; for (var v = 0; v < 10; v++) { var ang = Math.PI / 2 + v * Math.PI / 5, rr = v % 2 ? r2 * 0.45 : r2; sp.push([tc + Math.cos(ang) * rr, zc + Math.sin(ang) * rr]); } put(sp); }
+              else { var hs = new THREE.Shape(), q2 = r2; hs.moveTo(tc, zc - q2); hs.bezierCurveTo(tc - q2 * 1.3, zc - q2 * 0.1, tc - q2 * 1.0, zc + q2 * 1.05, tc, zc + q2 * 0.45); hs.bezierCurveTo(tc + q2 * 1.0, zc + q2 * 1.05, tc + q2 * 1.3, zc - q2 * 0.1, tc, zc - q2); put2(hs); }
+            }
+          }
+        }
         else if (ST.tex === 'dots') {
           var nd = Math.floor(sd.len / 6), zs = []; for (var z = 3; z <= L.H - 2.5; z += 4.5) zs.push(z);
           zs.forEach(function (z, zi) { for (var q = 0; q <= nd; q++) {
@@ -8306,20 +8347,22 @@ var DECO = (function () {
       });
     } else {
       var e = (typeof LIB !== 'undefined' ? LIB : []).filter(function (x) { return x.id === id; })[0]; if (!e || !e.parts) return null;
-      var seen = {}, idx = 0;
+      var seen = {}, idx = 0, A = fitChar(e.parts).assemble;
       e.parts.forEach(function (p) {
         if (isSwitchPart(p)) return;
         var c = BX.classify(p.name); if (c.group === 'support' || c.optional || c.pick) return;
         if (seen[c.group] === undefined) seen[c.group] = BX.defaultColor(c.group, idx++);
         var me = new THREE.Mesh(p.geom, new THREE.MeshPhysicalMaterial({ color: softWhite(new THREE.Color(p.filColor || seen[c.group]).convertSRGBToLinear()), roughness: 0.48, clearcoat: 0.6, clearcoatRoughness: 0.25, envMapIntensity: 0.28 * light.bright }));
-        me.castShadow = true; me.userData.ownMat = true; g.add(me);
+        me.position.set(A[0], A[1], A[2]); me.castShadow = true; me.userData.ownMat = true; g.add(me);
       });
     }
     if (!g.children.length) return null;
     g.updateMatrixWorld(true);
+    var wrap = new THREE.Group(); wrap.add(g);
+    if (ST.stem) { var sw = (typeof DESIGN !== 'undefined' && DESIGN.switch) || { x: 0, y: 0.145, z: -9.47 }; g.position.set(-sw.x, -sw.y, -sw.z); wrap.userData.onSwitch = true; return wrap; }   // the switch's foot sits at the wrap's origin
     var bb = new THREE.Box3().setFromObject(g), ctr = bb.getCenter(new THREE.Vector3()), sz = bb.getSize(new THREE.Vector3());
     var k = Math.min(1, (ST_SLOT - 3) / Math.max(sz.x, sz.y, 1));   // never wider than a slot
-    var wrap = new THREE.Group(); wrap.add(g); g.position.set(-ctr.x, -ctr.y, -bb.min.z); wrap.scale.setScalar(k);
+    g.position.set(-ctr.x, -ctr.y, -bb.min.z); wrap.scale.setScalar(k);
     return wrap;
   }
   function stClearSlots() {
@@ -8329,27 +8372,37 @@ var DECO = (function () {
   function stPlace() {   // stand the tray on the floor, to the right of the plate
     if (!plate) return;
     var L = stGeo().L; model.updateMatrixWorld(true);
-    var pb = new THREE.Box3().setFromObject(plate); if (pb.isEmpty()) pb.set(new THREE.Vector3(-40, 0, -40), new THREE.Vector3(40, 0, 40));
-    stGroup.position.set(pb.max.x + 14 + L.W / 2, ground.position.y + 0.02, (pb.min.z + pb.max.z) / 2 - 4);
+    var sellerTray = typeof BB !== 'undefined' && BB.on && BB.tray && BB.tray.on;
+    plate.geometry.computeBoundingBox(); var gb = plate.geometry.boundingBox, ph = gb.max.x, py = plate.position.y;
+    if (sellerTray) {   // the seller tray already sized the plate: stand beside it
+      var pb = new THREE.Box3().setFromObject(plate); stGroup.position.set(pb.max.x + 14 + L.W / 2, ground.position.y + 0.02, (pb.min.z + pb.max.z) / 2);
+    } else {   // one bigger plate under the design and the tray
+      var x0 = -ph, x1 = ph + 14 + L.W + 12, zr = Math.max(ph, L.D / 2 + 12), half = Math.max(x1 - x0, 2 * zr) / 2;
+      plate.scale.set(half / ph, 1, half / ph); plate.position.set((x0 + x1) / 2, py, 0); stPlate = true;
+      stGroup.position.set(ph + 14 + L.W / 2, py + gb.max.y + 0.02, 0);
+    }
     // stretch the shadow so the tray casts one too
     var r = Math.max(lightR || 0, stGroup.position.x + L.W / 2 + 20, L.D + 40);
     ['left', 'right', 'top', 'bottom'].forEach(function (sd, i) { key.shadow.camera[sd] = [-r, r, r, -r][i]; }); key.shadow.camera.far = Math.max(key.shadow.camera.far, r * 5); key.shadow.camera.updateProjectionMatrix();
   }
+  var stPlate = false;
+  function stUnplate() { if (!stPlate || !plate) return; stPlate = false; plate.scale.set(1, 1, 1); plate.position.set(0, plate.position.y, 0); if (typeof BB !== 'undefined' && BB.on && BB.tray && BB.tray.on && typeof trRender === 'function') trRender(); }
   function stRender() {
     stGroup.visible = ST.on && !(CLAW && CLAW.on);
-    if (!ST.on) { stClearSlots(); return; }
+    if (!ST.on) { stClearSlots(); stUnplate(); return; }
     var G = stGeo(), L = G.L;
     stTray.geometry = G.tray; stAcc.geometry = G.acc || new THREE.BufferGeometry(); stAcc.visible = !!G.acc;
     stTray.material.color.set(ST.color).convertSRGBToLinear().multiplyScalar(0.9); stAcc.material.color.set(ST.acc).convertSRGBToLinear().multiplyScalar(0.9);
     stTray.material.envMapIntensity = stAcc.material.envMapIntensity = 0.32 * light.bright;
     stClearSlots();
-    var seat = L.F + (ST.stem ? 1.4 : 0.2);
+    var seat = L.F + 0.2, swz = L.F + ST_SWZ;
     L.cells.forEach(function (c, i) {
       var id = ST.slots[i] || null, ch = id ? stCharGroup(id) : null;
-      if (ch) { ch.position.set(c.x, c.y, seat); stSlotsG.add(ch); }
+      if (ST.stem) { var swg = buildSwitch({ x: c.x, y: c.y, z: swz }); stSlotsG.add(swg); }   // a see-through switch: bring your own
+      if (ch) { ch.position.set(c.x, c.y, ch.userData.onSwitch ? swz : seat); stSlotsG.add(ch); }
       else {
         var lab = new THREE.Mesh(new THREE.PlaneGeometry(L.cx * 0.86, L.cy * 0.86), new THREE.MeshBasicMaterial({ map: stLabelTex, transparent: true, depthWrite: false, opacity: 0.9 }));
-        lab.userData.ownMat = true; lab.position.set(c.x, c.y, L.F + (ST.stem ? 0.2 : 0.05)); lab.renderOrder = 2; stSlotsG.add(lab);
+        lab.userData.ownMat = true; lab.position.set(c.x, c.y, L.F + (ST.stem ? ST_MOUNT + 0.15 : 0.05)); lab.renderOrder = 2; stSlotsG.add(lab);
       }
       var hit = new THREE.Mesh(new THREE.PlaneGeometry(L.cx + ST.gap, L.cy + ST.gap), new THREE.MeshBasicMaterial({ visible: false, side: THREE.DoubleSide })); hit.userData.ownMat = true; hit.userData.slot = i;
       hit.position.set(c.x, c.y, L.H); stSlotsG.add(hit); stHits.push(hit);   // the slot's opening: aim at the top of the tray
@@ -8487,6 +8540,32 @@ var DECO = (function () {
   document.addEventListener('contextmenu', function (e) { if (DRAG) e.preventDefault(); }, true);
   document.addEventListener('click', function (e) { if (stEat && e.target.closest && e.target.closest('.libtile')) { e.stopPropagation(); e.preventDefault(); stEat = false; } }, true);
   stPaint(); stRender(); setTimeout(function () { stRender(); if (ST.on) stView(true); }, 1200);
+
+  // ---------- packaging colors: a random set the first time each one is turned on, and a Mix colors button ----------
+  (function () {
+    function lum(h) { var c = new THREE.Color(h); return 0.2126 * c.r + 0.7152 * c.g + 0.0722 * c.b; }
+    function pickSet(n) {   // n different swatches; every one after the first stands out from the first
+      var out = [], pool = SWATCHES.map(function (x) { return x[1]; });
+      out.push(pool[Math.floor(Math.random() * pool.length)]);
+      for (var i = 1; i < n; i++) {
+        var ok = pool.filter(function (h) { return out.indexOf(h) < 0 && Math.abs(lum(h) - lum(out[0])) > 0.12; });
+        if (!ok.length) ok = pool.filter(function (h) { return out.indexOf(h) < 0; });
+        out.push(ok[Math.floor(Math.random() * ok.length)]);
+      }
+      return out;
+    }
+    function rollBB() { var c = pickSet(3); BB.color = c[0]; BB.text = c[1]; BB.q = Math.random() < 0.5 ? c[1] : c[2]; BB.rolled = true; bbSave(); }
+    function rollDB() { var c = pickSet(2); DB.body = c[0]; DB.lid = c[1]; DB.rolled = true; dbSave(); }
+    function rollST() { var c = pickSet(2); ST.color = c[0]; ST.acc = c[1]; ST.rolled = true; stSave(); }
+    // capture listeners run before the switch's own click handler, so the first turn-on already shows the new colors
+    bbToggle.addEventListener('click', function () { if (!BB.on && !BB.rolled) rollBB(); }, true);
+    dbToggle.addEventListener('click', function () { if (!DB.on && !DB.rolled) rollDB(); }, true);
+    stToggle.addEventListener('click', function () { if (!ST.on && !ST.rolled) rollST(); }, true);
+    function spin(b) { b.classList.remove('spin'); void b.offsetWidth; b.classList.add('spin'); SFX.play('pop'); }
+    document.getElementById('bbMix').addEventListener('click', function () { rollBB(); bbPaint(); bbRender(); renderPlan(); spin(this); });
+    document.getElementById('dbMix').addEventListener('click', function () { rollDB(); dbPaint(); dbRender(); renderPlan(); spin(this); });
+    document.getElementById('stMix').addEventListener('click', function () { rollST(); stPaint(); stRender(); renderPlan(); spin(this); });
+  })();
 
   resize();
   // ---------- printers, print plan, estimates, copies ----------
