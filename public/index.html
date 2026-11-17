@@ -7420,7 +7420,7 @@ var DECO = (function () {
   var MUSIC = (function () {
     // background music: "Arcade Game" by raspberrymusic, stored next to the page and looped at background volume.
     // On by default (Admin can change that), remembered per browser, starts on the first tap (browser rule), fades when the tab is hidden.
-    var SRC = '/music/arcade-game.m4a', VOL = 0.22, on = true, el = null, fadeT = 0;
+    var SRC = '/music/arcade-game.m4a', VOL = 0.08, on = true, el = null, fadeT = 0;
     try { on = localStorage.getItem('bx-music') !== 'off'; } catch (e) {}
     function audio() {
       if (el) return el;
