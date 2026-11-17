@@ -3798,15 +3798,19 @@ var DECO = (function () {
     }
     function start() {
       var list = meshes(); if (!list.length || !ok) return;
-      ensure(list); model.updateMatrixWorld(true);
-      var box = new THREE.Box3(); list.forEach(function (m) { box.expandByObject(m); }); if (box.isEmpty()) return;
+      var maps = depthMaps(list, model, [bbGroup, trGroup, dbGroup]); if (!maps) return;
+      job = { list: list, maps: maps, mi: 0, vi: 0, sig: sig, out: list.map(function (m) { return new Float32Array(m.geometry.getAttribute('position').count); }) };
+    }
+    function depthMaps(list, root, hideThese, dirs) {
+      ensure(list); root.updateMatrixWorld(true);
+      var box = new THREE.Box3(); list.forEach(function (m) { box.expandByObject(m); }); if (box.isEmpty()) return null;
       var c = box.getCenter(new THREE.Vector3()), R = box.getSize(new THREE.Vector3()).length() / 2 + 1, range = 4 * R;
-      var hid = [bbGroup, trGroup, dbGroup].filter(function (g) { return g && g.visible; }); hid.forEach(function (g) { g.visible = false; });
-      var par = model.parent, prevRT = renderer.getRenderTarget(), prevC = renderer.getClearColor(new THREE.Color()).getHex(), prevA = renderer.getClearAlpha(), prevAuto = renderer.shadowMap.autoUpdate;
+      var hid = (hideThese || []).filter(function (g) { return g && g.visible; }); hid.forEach(function (g) { g.visible = false; });
+      var par = root.parent, prevRT = renderer.getRenderTarget(), prevC = renderer.getClearColor(new THREE.Color()).getHex(), prevA = renderer.getClearAlpha(), prevAuto = renderer.shadowMap.autoUpdate;
       var maps = [];
       try {
-        aoScene.add(model); renderer.shadowMap.autoUpdate = false;
-        UP.forEach(function (d) {
+        aoScene.add(root); renderer.shadowMap.autoUpdate = false;
+        (dirs || UP).forEach(function (d) {
           var cam = new THREE.OrthographicCamera(-R, R, R, -R, 0.1, range);
           cam.position.copy(c).addScaledVector(d, 2 * R); if (Math.abs(d.y) > 0.95) cam.up.set(1, 0, 0); else cam.up.set(0, 1, 0);
           cam.lookAt(c); cam.updateMatrixWorld(); cam.updateProjectionMatrix();
@@ -3819,10 +3823,10 @@ var DECO = (function () {
       } catch (e) { ok = false; }
       finally {
         renderer.setRenderTarget(prevRT); renderer.setClearColor(prevC, prevA); renderer.shadowMap.autoUpdate = prevAuto;
-        par.add(model); hid.forEach(function (g) { g.visible = true; });
+        if (par) par.add(root); else aoScene.remove(root);
+        hid.forEach(function (g) { g.visible = true; });
       }
-      if (!ok) return;
-      job = { list: list, maps: maps, mi: 0, vi: 0, sig: sig, out: list.map(function (m) { return new Float32Array(m.geometry.getAttribute('position').count); }) };
+      return ok ? maps : null;
     }
     var nm = new THREE.Matrix3();
     function step(budget) {
@@ -3853,7 +3857,7 @@ var DECO = (function () {
       }
     }
     function finish(J) {
-      job = null; if (J.sig !== sig) return;
+      if (J === job) job = null; if (J.own === undefined && J.sig !== sig) return;
       J.list.forEach(function (m, i) { var a = m.geometry.getAttribute('occl'); if (a && a.count === J.out[i].length) { a.array.set(J.out[i]); a.needsUpdate = true; } });
     }
     function signature(list) { return list.map(function (m) { return m.geometry.uuid; }).join(','); }
@@ -3862,6 +3866,15 @@ var DECO = (function () {
         var list = meshes(); ensure(list);
         if (++frameN % 10 === 0) { var s2 = signature(list); if (s2 !== sig) { sig = s2; job = null; clearTimeout(timer); timer = setTimeout(start, 350); } }
         if (job) step(6);
+      },
+      group: function (root) {   // any other model (thumbnails): worked out right away for all its shapes
+        var list = []; root.updateMatrixWorld(true);
+        root.traverse(function (m) { if (m.isMesh && m.visible && m.geometry && m.geometry.getAttribute('position')) list.push(m); });
+        if (!list.length || !ok) return;
+        var maps = depthMaps(list, root, [], UP.filter(function (d, i) { return i % 2 === 0; })); if (!maps) return;   // half the directions: plenty at thumbnail size
+        var saved = job; job = { list: list, maps: maps, mi: 0, vi: 0, own: true, out: list.map(function (m) { return new Float32Array(m.geometry.getAttribute('position').count); }) };
+        var J = job; while (job === J) step(1e9);
+        job = saved;
       },
       now: function () {   // the shelf asks for it straight away before copying a design
         var list = meshes(); sig = signature(list); clearTimeout(timer); job = null; start();
@@ -4197,7 +4210,7 @@ var DECO = (function () {
 
     // ----- items: stand-in, photo, picture (impostor) and real 3D
     function addItem(rec) {
-      var it = { id: rec.id, data: rec.data, key: rec.id + ':' + hashOf(JSON.stringify(rec.data.state || {})) + ':5', node: new THREE.Group(), ph: new THREE.Mesh(phGeo, phMat), pic: null, imp: null, g3: null, failed: false, wait: 0, used: 0 };
+      var it = { id: rec.id, data: rec.data, key: rec.id + ':' + hashOf(JSON.stringify(rec.data.state || {})) + ':6', node: new THREE.Group(), ph: new THREE.Mesh(phGeo, phMat), pic: null, imp: null, g3: null, failed: false, wait: 0, used: 0 };
       it.ph.userData.item = it; it.node.add(it.ph); sc.add(it.node); ITEMS.push(it);
       idbGet(it.key).then(function (v) { if (v && !it.imp && ITEMS.indexOf(it) >= 0) setImp(it, v); });
       return it;
@@ -4234,7 +4247,7 @@ var DECO = (function () {
       var outer = new THREE.Group(), inner = new THREE.Group(); outer.add(inner);
       inner.quaternion.setFromEuler(ORIENTS[S.orient]);
       var mats = new Map();
-      function mat(m) { if (Array.isArray(m)) return m.map(mat); if (!mats.has(m)) { var c = m.clone(); c.clippingPlanes = null; c.transparent = m.transparent && m.opacity < 1 ? false : m.transparent; c.opacity = 1; mats.set(m, c); } return mats.get(m); }
+      function mat(m) { if (Array.isArray(m)) return m.map(mat); if (!mats.has(m)) { var c = m.clone(); if (m.defines) c.defines = Object.assign({}, c.defines, m.defines); c.clippingPlanes = null; /* keep the crease shading switch: clone() resets it */ c.transparent = m.transparent && m.opacity < 1 ? false : m.transparent; c.opacity = 1; mats.set(m, c); } return mats.get(m); }
       (function copy(src, dst) {
         src.children.forEach(function (c) {
           if (c === bbGroup || c === trGroup || c === dbGroup || !c.visible) return;
@@ -7951,12 +7964,16 @@ var DECO = (function () {
         grp.add(new THREE.Mesh(p.geom, new THREE.MeshPhysicalMaterial({ color: softWhite(new THREE.Color(p.filColor || seen[c.group]).convertSRGBToLinear()), roughness: 0.48, clearcoat: 0.6, clearcoatRoughness: 0.25, envMapIntensity: 0.28 * L })));
       });
       grp.updateMatrixWorld(true);
+      if (AO && AO.group) try {   // soft shading in the creases, worked out on copies of the shapes
+        grp.children.forEach(function (m) { m.geometry = m.geometry.clone(); m.userData.ownGeom = true; });
+        AO.group(grp);
+      } catch (e) {}
       var bb = new THREE.Box3().setFromObject(grp), ctr = new THREE.Vector3(), sz = new THREE.Vector3(); bb.getCenter(ctr); bb.getSize(sz);
       var cam = new THREE.PerspectiveCamera(28, 1, 0.5, 2000), dist = (sz.length() / 2) / Math.sin(THREE.MathUtils.degToRad(14)) * (view ? 1.08 : 0.77);   // character selection sits about 30% closer   // fits the whole piece from any angle
       cam.position.copy(ctr).add(new THREE.Vector3(0.354, 0.707, 0.612).normalize().multiplyScalar(dist)); cam.lookAt(ctr);
       r.render(sc, cam);
       var url = r.domElement.toDataURL('image/png');
-      grp.children.forEach(function (m) { m.material.dispose(); });
+      grp.children.forEach(function (m) { m.material.dispose(); if (m.userData.ownGeom) m.geometry.dispose(); });
       r.dispose(); if (r.forceContextLoss) r.forceContextLoss();
       return url;
     } catch (e) { return ''; }
