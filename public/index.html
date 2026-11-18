@@ -1658,6 +1658,9 @@ body.clawon .stage .clawstart, .stage:has(.sizecard:not([hidden])) .clawstart { 
 .shheart.big { font-size: 96px; -webkit-text-stroke: 6px var(--ink-dark); animation: shHeartBig 1.05s ease-out both; }
 @keyframes shHeart { 0% { transform: translate(-50%, -50%) scale(.3); opacity: 1; } 100% { transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(var(--s)); opacity: 0; } }
 @keyframes shHeartBig { 0% { transform: translate(-50%, -50%) scale(.2); opacity: 0; } 25% { transform: translate(-50%, -50%) scale(1.18); opacity: 1; } 45% { transform: translate(-50%, -50%) scale(.95); opacity: 1; } 100% { transform: translate(-50%, -85%) scale(1); opacity: 0; } }
+.shmorebtn { padding: 10px; border: 3px dashed var(--ink-dark); border-radius: 14px; background: rgba(255,255,255,.7); color: var(--ink-dark); font: 400 15px "Lilita One", "Fredoka", sans-serif; cursor: pointer; }
+.shmorebtn:hover { background: #FFF6C2; }
+.shmorebtn:disabled { opacity: .6; cursor: default; }
 @media (min-width: 700px) { .shelf .shlist, .shelf.comm .shlist { grid-template-rows: auto auto auto auto minmax(0, 1fr); } .shsort button { flex: 1 1 auto; padding: 6px 6px; font-size: 12.5px; white-space: nowrap; } }
 @media (max-width: 699px) {
   #shWoodBtn, .shwood, .shchars, .shelf:not(.comm) .shsort, .shsort button[data-s="char"] { display: none !important; }
@@ -5070,6 +5073,7 @@ var DECO = (function () {
     var phMat = new THREE.MeshStandardMaterial({ color: lin('#DCE4E6'), roughness: 0.85, transparent: true, opacity: 0.6 });
     var frameMat = new THREE.MeshBasicMaterial({ color: 0xffffff, toneMapped: false });
     var MODE = 'mine', SORT = 'pos', SORTS = { mine: 'pos', community: 'new' }, NAMES = {}, ALL = [], CHAR = '', TOPW = null, MAXSPOTS = 300;
+    var PAGE = 60, PAGEN = 60, HASMORE = false, LASTC = null;   // Community loads 60 at a time; "Show more" brings the next 60
     var ITEMS = [], st0 = null, mood = {}, focus = null, arranging = false, drag = null, zoom = 1, viewY = 0, goalY = 0, raf = 0, baking = false, built = false, home = null, impR = null, orderDirty = false, hover = null;
     var ray = new THREE.Raycaster(), ndc = new THREE.Vector2(), tmp = new THREE.Vector3();
 
@@ -5322,8 +5326,24 @@ var DECO = (function () {
       b.addEventListener('click', function () { closeShelf(null, function () { document.getElementById('btnSave').click(); }); });
       ADD.btn = b; labs.appendChild(b);
     })();
+    var MORE = { busy: false };
+    (function () {
+      var b = document.createElement('button'); b.type = 'button'; b.className = 'shadd shmore3'; b.hidden = true; b.innerHTML = '<span>+</span><b>Show more designs</b>';
+      b.addEventListener('click', function () { loadMore(); });
+      MORE.btn = b; labs.appendChild(b);
+    })();
+    function placeMore() {
+      var p = slotPos(ITEMS.length); tmp.set(p.x, p.y + 30, p.z).project(cam); var on = Math.abs(tmp.x) < 1.15 && Math.abs(tmp.y) < 1.3;
+      var vw = view.clientWidth, vh = view.clientHeight, pxW = W * vh / (2 * cam.position.distanceTo(look) * Math.tan(THREE.MathUtils.degToRad(cam.fov / 2)));
+      MORE.btn.hidden = !HASMORE || !on || !!focus || pxW < 46 || !SHELF.loaded || MODE !== 'community';
+      if (MORE.btn.hidden) return;
+      var top = tmp.set(p.x, p.y + 70, p.z).project(cam).clone(), bot = tmp.set(p.x, p.y + 1, p.z + 18).project(cam);
+      MORE.btn.style.width = Math.round(pxW * 0.8) + 'px'; MORE.btn.style.height = Math.round((top.y - bot.y) / 2 * vh) + 'px';
+      MORE.btn.style.transform = 'translate(' + Math.round((top.x + 1) / 2 * vw - pxW * 0.4) + 'px,' + Math.round((1 - top.y) / 2 * vh) + 'px)';
+    }
     function placeAdd() {
-      if (MODE === 'community') { ADD.btn.hidden = true; return; }
+      if (MODE === 'community') { ADD.btn.hidden = true; placeMore(); return; }
+      MORE.btn.hidden = true;
       var p = slotPos(ITEMS.length); ADD.node.position.set(p.x, p.y, p.z);
       tmp.set(p.x, p.y + 30, p.z).project(cam); ADD.on = Math.abs(tmp.x) < 1.15 && Math.abs(tmp.y) < 1.3;
       var vw = view.clientWidth, vh = view.clientHeight, pxW = W * vh / (2 * cam.position.distanceTo(look) * Math.tan(THREE.MathUtils.degToRad(cam.fov / 2)));
@@ -5574,7 +5594,9 @@ var DECO = (function () {
         b.addEventListener('click', function () { goTo(it); });
         rowsEl.appendChild(b);
       });
-      document.getElementById('shListN').textContent = MODE === 'community' ? (ALL.length ? '(' + ALL.length + ')' : '') : ALL.length + ' / ' + MAXSPOTS + ' spots';
+      document.getElementById('shListN').textContent = MODE === 'community' ? '' : ALL.length + ' / ' + MAXSPOTS + ' spots';   // Community: the count sits in the top bar
+      if (MODE === 'community') countEl.textContent = ALL.length ? '(' + ALL.length + (HASMORE ? '+' : '') + ')' : '';
+      if (MODE === 'community' && HASMORE) { var mb = document.createElement('button'); mb.type = 'button'; mb.className = 'shmorebtn'; mb.addEventListener('click', function () { loadMore(); }); rowsEl.appendChild(mb); paintMore(); }
       if (!shown.length) { var none = document.createElement('p'); none.className = 'shnone'; none.textContent = ITEMS.length ? 'No designs match.' : MODE === 'community' ? 'No community designs yet.' : 'No saved designs yet.'; rowsEl.appendChild(none); }
     }
     function goTo(it) {
@@ -5697,7 +5719,7 @@ var DECO = (function () {
     document.getElementById('shMine').addEventListener('click', function () { setMode('mine'); });
     function load() {
       ITEMS.slice().forEach(function (it) { removeItem(it); });
-      ALL = []; TOPW = null; drawChars();
+      ALL = []; TOPW = null; HASMORE = false; drawChars();
       SHELF.loaded = false; countEl.textContent = '';
       if (MODE === 'community') { loadCommunity(); return; }
       setMsg('Loading your shelf…');
@@ -5709,17 +5731,59 @@ var DECO = (function () {
         setMsg(list.length ? '' : 'Your shelf is empty. Save a design and it will stand here.', !list.length);
       }).catch(function () { setMsg('Couldn’t load your shelf right now.'); });
     }
+    function noteC(x) { if (typeof x.created === 'number' && (LASTC === null || x.created < LASTC)) LASTC = x.created; }
+    function featuredExtra(list) {   // featured designs always come along, however old they are
+      var have = {}; list.forEach(function (r) { have[r.id] = true; });
+      var want = Object.keys((ADM.gallery && ADM.gallery.featured) || {}).filter(function (id) { return ADM.gallery.featured[id] && !have[id]; }).slice(0, 40);
+      return Promise.all(want.map(function (id) {
+        return DBX.collection('community').doc(id).get().then(function (d) { var x = d && d.exists ? d.data() : null; if (x && x.state && (IS_ADMIN || !ADM.gallery.hidden[id])) list.push({ id: id, data: x }); }).catch(function () {});
+      }));
+    }
+    function paintMore() {
+      var t = MORE.busy ? 'Loading…' : 'Show more designs';
+      MORE.btn.querySelector('b').textContent = t;
+      var lb = rowsEl.querySelector('.shmorebtn'); if (lb) { lb.textContent = t; lb.disabled = MORE.busy; }
+    }
+    function loadMore() {
+      if (!HASMORE || MORE.busy || MODE !== 'community' || LASTC === null) return;
+      MORE.busy = true; paintMore();
+      var col = DBX.collection('community');
+      col.where('created', '<', LASTC).orderBy('created', 'desc').limit(PAGE).get().then(function (snap) { return { snap: snap, full: PAGE }; })
+        .catch(function () { return col.orderBy('created', 'desc').limit(PAGEN + PAGE).get().then(function (snap) { return { snap: snap, full: PAGEN + PAGE }; }); })   // if the newer-than filter isn't available, read the longer list
+        .then(function (r) {
+          if (MODE !== 'community') return;
+          var add = [], ids = [], have = {}; ALL.forEach(function (x) { have[x.id] = true; });
+          r.snap.docs.forEach(function (d) { var x = d.data(); if (!x) return; noteC(x); if (!x.state || have[d.id] || (!IS_ADMIN && ADM.gallery.hidden[d.id])) return; add.push({ id: d.id, data: x }); if (x.by && !NAMES[x.by] && ids.indexOf(x.by) < 0) ids.push(x.by); });
+          HASMORE = r.snap.docs.length >= r.full; PAGEN += PAGE;
+          return names(ids).then(function (ps) {
+            if (MODE !== 'community') return;
+            Object.keys(ps || {}).forEach(function (k) { NAMES[k] = ps[k]; });
+            ALL = ALL.concat(add); computeTop(); drawChars();
+            add.forEach(function (rec) { if (!CHAR || (rec.data.state || {}).char === CHAR) addItem(rec); });
+            ITEMS.forEach(function (x) { if (x.lab) { x.lab.remove(); x.lab = null; } });   // the weekly top may have changed
+            sortItems(); layout(); drawList();
+            if (add.length) SFX.play('pop');
+          });
+        })
+        .catch(function () { toast('Couldn’t load more designs right now.'); })
+        .then(function () { MORE.busy = false; paintMore(); });
+    }
     function loadCommunity() {
       setMsg('Loading the community shelf…');
-      DBX.collection('community').orderBy('created', 'desc').limit(300).get().then(function (snap) {
+      LASTC = null; PAGEN = PAGE; HASMORE = false; MORE.busy = false;
+      DBX.collection('community').orderBy('created', 'desc').limit(PAGE).get().then(function (snap) {
         if (MODE !== 'community') return;
         var list = [], ids = [];
-        snap.docs.forEach(function (d) { var x = d.data(); if (!x || !x.state || (!IS_ADMIN && ADM.gallery.hidden[d.id])) return; list.push({ id: d.id, data: x }); if (x.by && ids.indexOf(x.by) < 0) ids.push(x.by); });
-        return names(ids).then(function (ps) {
+        HASMORE = snap.docs.length >= PAGE;
+        snap.docs.forEach(function (d) { var x = d.data(); if (!x) return; noteC(x); if (!x.state || (!IS_ADMIN && ADM.gallery.hidden[d.id])) return; list.push({ id: d.id, data: x }); });
+        return featuredExtra(list).then(function () {
+          if (MODE !== 'community') return;
+          list.forEach(function (r) { if (r.data.by && ids.indexOf(r.data.by) < 0) ids.push(r.data.by); });
+          return names(ids);
+        }).then(function (ps) {
           if (MODE !== 'community') return;
           NAMES = ps || {};
           ALL = list; CHAR = ''; computeTop(); drawChars(); rebuildItems(); SHELF.loaded = true; drawList();
-          countEl.textContent = list.length ? '(' + list.length + ')' : '';
           setMsg(list.length ? '' : 'No community designs yet. Tick “Also post it to the community gallery” when you save a design.');
         });
       }).catch(function () { setMsg('Couldn’t load the community shelf right now.'); });
