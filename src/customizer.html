@@ -1612,6 +1612,51 @@ body.clawon .stage .clawstart, .stage:has(.sizecard:not([hidden])) .clawstart { 
   .lb2play { width: 100%; }
 }
 @media (prefers-reduced-motion: reduce) { .lb2crown { animation: none; } }
+/* ---------- shelf: brand bar, plates, badges, wood, sort, character filter, hearts ---------- */
+.shtop { background: linear-gradient(180deg, #FCEF6E 0%, #F9E11B 40%, #F9D41B 72%, #F7BC1E 100%) !important; }
+.shlab { background: linear-gradient(180deg, #FFFFFF 0%, #E6EBED 55%, #CDD5D8 100%) !important; padding: 3px 13px 4px !important; border-radius: 9px !important; box-shadow: inset 0 1.5px 0 rgba(255,255,255,.75), 0 3px 0 var(--ink-dark) !important; overflow: visible; }
+.shlab::before, .shlab::after { content: ""; position: absolute; top: 50%; width: 4px; height: 4px; margin-top: -2px; border-radius: 50%; background: rgba(11,59,56,.5); box-shadow: inset 0 1px 0 rgba(255,255,255,.55); }
+.shlab::before { left: 4px; } .shlab::after { right: 4px; }
+.shlab small { display: inline-flex; align-items: center; justify-content: center; gap: 3px; max-width: 100%; color: #4A5B58 !important; overflow: hidden; }
+.shlab.feat { background: linear-gradient(180deg, #7CEDE3 0%, #2FC4B8 55%, #01948C 100%) !important; color: #FFFFFF; }
+.shlab.feat b { text-shadow: 0 1px 0 rgba(0,0,0,.35); }
+.shlab.feat small { color: #E6FFFB !important; }
+.shlab.hov { transform-origin: 50% 0; box-shadow: inset 0 1.5px 0 rgba(255,255,255,.75), 0 3px 0 var(--ink-dark), 0 0 0 3px #FFFFFF, 0 0 20px 6px rgba(255,225,77,.85) !important; }
+.shav { flex: none; width: 14px; height: 14px; border-radius: 50%; border: 1.5px solid var(--ink-dark); object-fit: cover; background: #FFFFFF; display: inline-grid; place-items: center; font: 800 8px/1 "Figtree", sans-serif; color: var(--ink-dark); box-sizing: border-box; }
+.shcd .shav { width: 18px; height: 18px; font-size: 10px; margin-right: 5px; vertical-align: -4px; }
+.shbadge { display: inline-flex; align-items: center; gap: 3px; padding: 1px 8px 1px 3px; border: 2px solid var(--ink-dark); border-radius: 999px; background: linear-gradient(180deg, #FFFFFF, #E3E8EA); color: var(--ink-dark); font: 400 11px/1.3 "Lilita One", "Fredoka", sans-serif; letter-spacing: .2px; white-space: nowrap; box-shadow: 0 2px 0 var(--ink-dark); }
+.shbadge img { width: 20px; height: 20px; margin: -5px 0 -5px -2px; }
+.shbadge.top { background: linear-gradient(180deg, #FFB3CF 0%, #FF6FAE 55%, #E04E8E 100%); color: #FFFFFF; text-shadow: 0 1px 0 rgba(0,0,0,.35); }
+.shlab .shbadge { position: absolute; left: 50%; top: auto; bottom: calc(100% - 2px); transform: translateX(-50%); }
+.shlab.mini .shbadge { font-size: 9.5px; padding: 0 6px 0 2px; }
+.shlab.mini .shbadge img { width: 15px; height: 15px; }
+.shbadges { display: flex; flex-wrap: wrap; gap: 6px; margin: 2px 0; }
+.shbadges[hidden] { display: none; }
+.shwsw { display: inline-block; width: 20px; height: 20px; border-radius: 50%; border: 2.5px solid var(--ink-dark); box-sizing: border-box; }
+.shwood { position: absolute; right: 16px; top: calc(100% + 8px); z-index: 12; display: grid; grid-template-columns: repeat(3, 96px); gap: 8px; padding: 10px; border: 4px solid var(--ink-dark); border-radius: 18px; background: linear-gradient(180deg, #FFFFFF, #E3E8E9); box-shadow: 0 6px 0 var(--ink-dark), 0 18px 30px -12px rgba(0,0,0,.45); }
+.shwood[hidden] { display: none; }
+.shwood button { display: grid; gap: 5px; justify-items: center; padding: 7px 6px 6px; border: 3px solid var(--ink-dark); border-radius: 12px; background: #FFFFFF; color: var(--ink-dark); font: 400 13px "Lilita One", "Fredoka", sans-serif; cursor: pointer; box-shadow: 0 2px 0 var(--ink-dark); }
+.shwood button:hover { background: #FFF6C2; }
+.shwood button[aria-pressed="true"] { background: linear-gradient(180deg, #FFF09A 0%, #FFD84A 47%, #F7B500 53%, #E99E00 100%); }
+.shwood i { display: block; width: 70px; height: 34px; border-radius: 8px; border: 2.5px solid var(--ink-dark); box-sizing: border-box; }
+.shchars { display: flex; flex-wrap: wrap; gap: 6px; max-height: 76px; overflow-y: auto; padding: 1px; }
+.shchars[hidden] { display: none; }
+.shchars button { display: inline-flex; align-items: center; gap: 5px; padding: 3px 9px 3px 3px; border: 2.5px solid var(--ink-dark); border-radius: 999px; background: linear-gradient(180deg, #FFFFFF, #E3E8EA); color: var(--ink-dark); font: 700 12.5px "Figtree", sans-serif; cursor: pointer; box-shadow: 0 2px 0 var(--ink-dark); }
+.shchars button:first-child, .shchars button.noimg { padding-left: 9px; }
+.shchars button[aria-pressed="true"] { background: linear-gradient(180deg, #FFF09A 0%, #FFD84A 47%, #F7B500 53%, #E99E00 100%); }
+.shchars img { width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid var(--ink-dark); object-fit: cover; background: #DCE4E6; }
+.shchars em { font-style: normal; font-weight: 800; opacity: .6; }
+.shmsg.empty { top: 17%; display: grid; gap: 12px; justify-items: center; padding: 16px 24px 18px; }
+.shgo { padding: 9px 20px; border: 3px solid var(--ink-dark); border-radius: 14px; background: linear-gradient(180deg, #FFF09A 0%, #FFD84A 47%, #F7B500 53%, #E99E00 100%); color: var(--ink-dark); font: 400 18px "Lilita One", "Fredoka", sans-serif; cursor: pointer; box-shadow: inset 0 2px 0 rgba(255,255,255,.6), 0 4px 0 var(--ink-dark); }
+.shgo:active { transform: translateY(3px); box-shadow: inset 0 2px 0 rgba(255,255,255,.6), 0 1px 0 var(--ink-dark); }
+.shheart { position: absolute; z-index: 30; pointer-events: none; color: #FF4D8D; font: 400 26px/1 "Lilita One", sans-serif; -webkit-text-stroke: 2px var(--ink-dark); paint-order: stroke fill; animation: shHeart .9s ease-out both; }
+.shheart.big { font-size: 96px; -webkit-text-stroke: 6px var(--ink-dark); animation: shHeartBig 1.05s ease-out both; }
+@keyframes shHeart { 0% { transform: translate(-50%, -50%) scale(.3); opacity: 1; } 100% { transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(var(--s)); opacity: 0; } }
+@keyframes shHeartBig { 0% { transform: translate(-50%, -50%) scale(.2); opacity: 0; } 25% { transform: translate(-50%, -50%) scale(1.18); opacity: 1; } 45% { transform: translate(-50%, -50%) scale(.95); opacity: 1; } 100% { transform: translate(-50%, -85%) scale(1); opacity: 0; } }
+@media (min-width: 700px) { .shelf .shlist, .shelf.comm .shlist { grid-template-rows: auto auto auto auto minmax(0, 1fr); } .shsort button { flex: 1 1 auto; padding: 6px 6px; font-size: 12.5px; white-space: nowrap; } }
+@media (max-width: 699px) {
+  #shWoodBtn, .shwood, .shchars, .shelf:not(.comm) .shsort, .shsort button[data-s="char"] { display: none !important; }
+}
 </style>
 </head>
 <body>
@@ -1643,7 +1688,8 @@ body.clawon .stage .clawstart, .stage:has(.sizecard:not([hidden])) .clawstart { 
       <div class="shtabs" role="group" aria-label="Gallery"><button type="button" id="shMine" aria-pressed="true">My shelf</button><button type="button" id="shComm" aria-pressed="false">Community</button></div>
       <div class="shfind"><button type="button" class="shbtn" id="shFindBtn" aria-expanded="false" aria-controls="shList"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="3"/><path d="M15.5 15.5l5 5" stroke="currentColor" stroke-width="3.4" stroke-linecap="round"/></svg><span>Designs list</span></button>
 </div>
-      <div class="shtools"><button type="button" class="shbtn" id="shArrange" aria-pressed="false">Arrange</button><button type="button" class="shbtn sq" id="shOut" aria-label="Zoom out">−</button><button type="button" class="shbtn sq" id="shIn" aria-label="Zoom in">+</button></div>
+      <div class="shtools"><button type="button" class="shbtn" id="shWoodBtn" aria-expanded="false" aria-controls="shWood"><i class="shwsw" aria-hidden="true"></i><span>Wood</span></button><button type="button" class="shbtn" id="shArrange" aria-pressed="false">Arrange</button><button type="button" class="shbtn sq" id="shOut" aria-label="Zoom out">−</button><button type="button" class="shbtn sq" id="shIn" aria-label="Zoom in">+</button></div>
+      <div class="shwood" id="shWood" hidden role="group" aria-label="Shelf wood"></div>
     </div>
     <div class="shview" id="shView">
       <div class="shhit" id="shHit" tabindex="0" aria-label="Your shelf of saved designs. Scroll to move along it."></div>
@@ -1651,13 +1697,14 @@ body.clawon .stage .clawstart, .stage:has(.sizecard:not([hidden])) .clawstart { 
       <div class="shrail" id="shRail" hidden><span class="shrl">Shelves</span><div class="shtrack"><i id="shThumb"><b id="shRow"></b></i></div></div>
       <div class="shfade" aria-hidden="true"></div>
       <p class="shmsg" id="shMsg" role="status"></p>
-      <div class="shlist" id="shList"><div class="shlhead"><b><em id="shListT">Your designs</em> <span id="shListN"></span></b></div><input type="search" id="shQ" placeholder="Search by name or character" aria-label="Search the designs"><div class="shsort" id="shSort" role="group" aria-label="Sort" hidden><button type="button" data-s="new" aria-pressed="true">Newest</button><button type="button" data-s="liked" aria-pressed="false">♥ Most liked</button></div><div class="shrows" id="shRows" role="listbox" aria-label="Your designs"></div></div>
+      <div class="shlist" id="shList"><div class="shlhead"><b><em id="shListT">Your designs</em> <span id="shListN"></span></b></div><input type="search" id="shQ" placeholder="Search by name or character" aria-label="Search the designs"><div class="shsort" id="shSort" role="group" aria-label="Sort"></div><div class="shchars" id="shChars" role="group" aria-label="Show one character"></div><div class="shrows" id="shRows" role="listbox" aria-label="Your designs"></div></div>
       <p class="shtip" id="shTip" hidden>Drag a Boxedable to a new spot. Tap <b>Done</b> when you’re finished.</p>
       <div class="shcard" id="shCard" hidden>
         <button type="button" class="shx" id="shCardX" aria-label="Close">✕</button>
         <b class="shct" id="shCt"></b>
         <span class="shcc" id="shCc"></span>
         <small class="shcd" id="shCd"></small>
+        <div class="shbadges" id="shBadges"></div>
         <button type="button" class="shlike" id="shLike" hidden aria-pressed="false"></button>
         <div class="shadm" id="shAdm" hidden><button type="button" class="shbtn" id="shFeat">★ Feature</button><button type="button" class="shbtn" id="shHide">Hide</button></div>
         <div class="shca"><button type="button" class="go" id="shOpen">Open design</button><button type="button" class="ghost" id="shDel">Delete</button></div>
@@ -4969,6 +5016,26 @@ var DECO = (function () {
     var lipMat = new THREE.MeshPhysicalMaterial({ color: lin('#8A5530'), map: oakTex, roughness: 0.45, clearcoat: 0.5 });
     var backMat = new THREE.MeshStandardMaterial({ map: wallTex, roughness: 0.8 });
     var postMat = new THREE.MeshPhysicalMaterial({ map: oakTex, color: lin('#E8D2B8'), roughness: 0.55, clearcoat: 0.3 });
+    // shelf wood: members pick the look; remembered in this browser
+    var WOODS = {
+      oak: { name: 'Oak', b: ['#A9713F', '#5A3216'], w: ['#6A3E22', '#2A1407'], lip: '#8A5530', post: '#E8D2B8' },
+      walnut: { name: 'Walnut', b: ['#7A4B2A', '#33190A'], w: ['#3E2516', '#140904'], lip: '#A0704C', post: '#C9A98A' },
+      maple: { name: 'Maple', b: ['#E3BC85', '#A06E38'], w: ['#B88A55', '#6A4220'], lip: '#C79C66', post: '#F6E7D2' },
+      cherry: { name: 'Cherry', b: ['#B4583A', '#5E2412'], w: ['#7A3220', '#2E0D05'], lip: '#A04A32', post: '#F0C9B5' },
+      sunny: { name: 'Boxedables', b: ['#F9E11B', '#C9A800'], w: ['#01948C', '#00605A'], lip: '#E9C80A', post: '#FFF6B0' }
+    };
+    var WOOD = 'oak'; try { var wv = localStorage.getItem('bx-shwood'); if (WOODS[wv]) WOOD = wv; } catch (e) {}
+    function setWood(k) {
+      if (!WOODS[k]) k = 'oak'; WOOD = k; var P = WOODS[k];
+      var nb = woodTex(P.b[0], P.b[1], false, 7), nw = woodTex(P.w[0], P.w[1], true, 21);
+      nb.repeat.copy(oakTex.repeat); nw.repeat.copy(wallTex.repeat);
+      [boardMat, lipMat, postMat].forEach(function (m) { m.map = nb; m.needsUpdate = true; }); backMat.map = nw; backMat.needsUpdate = true;
+      lipMat.color.copy(lin(P.lip)); postMat.color.copy(lin(P.post));
+      oakTex.dispose(); wallTex.dispose(); oakTex = nb; wallTex = nw;
+      try { localStorage.setItem('bx-shwood', k); } catch (e) {}
+    }
+    if (WOOD !== 'oak') setWood(WOOD);
+    function woodSwatch(k) { var P = WOODS[k]; return 'repeating-linear-gradient(170deg, rgba(0,0,0,0) 0 5px, rgba(0,0,0,.12) 5px 6px), linear-gradient(180deg, ' + P.b[0] + ' 0 58%, ' + P.w[0] + ' 58% 100%)'; }
     var stripMat = new THREE.MeshBasicMaterial({ color: new THREE.Color('#FFE6A8'), toneMapped: false, fog: true });
     function glowTex(radial) {
       var c = document.createElement('canvas'); c.width = c.height = 128; var x = c.getContext('2d'), g;
@@ -4991,10 +5058,13 @@ var DECO = (function () {
     var blobMat = new THREE.MeshBasicMaterial({ map: shadeTex('blob'), transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -3 });
     var edgeTex = shadeTex('edge'), edgeMat = new THREE.MeshBasicMaterial({ map: edgeTex, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2 });
     var lampMat = new THREE.MeshBasicMaterial({ color: new THREE.Color('#FFF4D6'), toneMapped: false });
+    var hovGlow = new THREE.Mesh(poolGeo, new THREE.MeshBasicMaterial({ map: glowTex(true), color: new THREE.Color('#FFE14D'), transparent: true, opacity: 0, depthWrite: false, toneMapped: false, blending: THREE.AdditiveBlending, polygonOffset: true, polygonOffsetFactor: -4 }));
+    hovGlow.scale.set(1.3, 1, 1.3); hovGlow.visible = false; sc.add(hovGlow);
+    var GOLD = new THREE.Color(1, 0.74, 0.25), WHITE = new THREE.Color(1, 1, 1);
     var phGeo = new THREE.BoxGeometry(40, 44, 38, 1, 1, 1); phGeo.translate(0, 22, 0);
     var phMat = new THREE.MeshStandardMaterial({ color: lin('#DCE4E6'), roughness: 0.85, transparent: true, opacity: 0.6 });
     var frameMat = new THREE.MeshBasicMaterial({ color: 0xffffff, toneMapped: false });
-    var MODE = 'mine', SORT = 'new', NAMES = {};
+    var MODE = 'mine', SORT = 'pos', SORTS = { mine: 'pos', community: 'new' }, NAMES = {}, ALL = [], CHAR = '', TOPW = null, MAXSPOTS = 300;
     var ITEMS = [], st0 = null, mood = {}, focus = null, arranging = false, drag = null, zoom = 1, viewY = 0, goalY = 0, raf = 0, baking = false, built = false, home = null, impR = null, orderDirty = false, hover = null;
     var ray = new THREE.Raycaster(), ndc = new THREE.Vector2(), tmp = new THREE.Vector3();
 
@@ -5036,7 +5106,7 @@ var DECO = (function () {
     }
     var SPOTS = null, m4 = new THREE.Matrix4();
     function placeSpots() {   // a spotlight over each spot that has a Boxedable; empty spots stay dark
-      if (!SPOTS) { var cap = 512; SPOTS = [new THREE.InstancedMesh(poolGeo, poolMat, cap), new THREE.InstancedMesh(beamGeo, beamMat, cap), new THREE.InstancedMesh(lampGeo, lampMat, cap), new THREE.InstancedMesh(blobGeo, blobMat, cap)]; SPOTS.forEach(function (im) { im.frustumCulled = false; sc.add(im); }); }
+      if (!SPOTS) { var cap = 512; SPOTS = [new THREE.InstancedMesh(poolGeo, poolMat, cap), new THREE.InstancedMesh(beamGeo, beamMat, cap), new THREE.InstancedMesh(lampGeo, lampMat, cap), new THREE.InstancedMesh(blobGeo, blobMat, cap)]; SPOTS.forEach(function (im) { im.frustumCulled = false; sc.add(im); }); for (var c0 = 0; c0 < cap; c0++) for (var s0 = 0; s0 < 3; s0++) SPOTS[s0].setColorAt(c0, WHITE); }
       var n = Math.min(512, ITEMS.length);
       for (var k = 0; k < n; k++) {
         var it = ITEMS[k];
@@ -5044,8 +5114,9 @@ var DECO = (function () {
         m4.makeTranslation(it.tx, it.ty + (H - 10) / 2, 4); SPOTS[1].setMatrixAt(k, m4);
         m4.makeTranslation(it.tx, it.ty + H - 7.4, 6); SPOTS[2].setMatrixAt(k, m4);
         m4.makeTranslation(it.tx, it.ty + 0.6, 0); SPOTS[3].setMatrixAt(k, m4);
+        var tint = feat(it) ? GOLD : WHITE; for (var s1 = 0; s1 < 3; s1++) SPOTS[s1].setColorAt(k, tint);
       }
-      SPOTS.forEach(function (im) { im.count = n; im.instanceMatrix.needsUpdate = true; });
+      SPOTS.forEach(function (im) { im.count = n; im.instanceMatrix.needsUpdate = true; if (im.instanceColor) im.instanceColor.needsUpdate = true; });
     }
     function layout() {
       var nc = phone() ? 2 : Math.max(3, Math.min(5, Math.floor(view.clientWidth / 280)));
@@ -5221,11 +5292,17 @@ var DECO = (function () {
         if (!it.on || pxW < 46) { if (el) el.hidden = true; return; }
         if (!el) {
           el = it.lab = document.createElement('div'); el.className = 'shlab';
-          var b = document.createElement('b'); b.textContent = (feat(it) ? '★ ' : '') + (it.data.title || 'My design') + (MODE === 'community' && IS_ADMIN && ADM.gallery.hidden[it.id] ? ' (hidden)' : ''); el.appendChild(b);
-          if (feat(it)) el.classList.add('feat');
-          var sm = document.createElement('small'); sm.textContent = MODE === 'community' ? 'by ' + byName(it) : new Date(it.data.created || Date.now()).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' }); el.appendChild(sm);
+          var com = MODE === 'community', isF = feat(it), isT = com && TOPW === it.id;
+          if (isF || isT) { var bd = document.createElement('span'); bd.className = 'shbadge' + (isF ? '' : ' top'); bd.innerHTML = badgeHTML(isF ? 'feat' : 'top'); el.appendChild(bd); }
+          var b = document.createElement('b'); b.textContent = (it.data.title || 'My design') + (com && IS_ADMIN && ADM.gallery.hidden[it.id] ? ' (hidden)' : ''); el.appendChild(b);
+          if (isF) el.classList.add('feat'); if (isT) el.classList.add('topw');
+          var sm = document.createElement('small');
+          if (com) { sm.appendChild(avatarEl(it.data.by, 'shav')); sm.appendChild(document.createTextNode('by ' + byName(it) + ' · ♥ ' + (it.data.likes || []).length)); }
+          else sm.textContent = [charName((it.data.state || {}).char), new Date(it.data.created || Date.now()).toLocaleDateString([], { month: 'short', day: 'numeric' })].filter(Boolean).join(' · ');
+          el.appendChild(sm);
           labs.appendChild(el);
         }
+        el.classList.toggle('hov', it === hover || it === focus);
         tmp.set(it.node.position.x, it.node.position.y - 3, it.node.position.z + 30).project(cam);
         var fo = Math.max(0, Math.min(1, (cam.position.distanceTo(it.node.position) - sc.fog.near) / (sc.fog.far - sc.fog.near)));
         if (fo > 0.85) { el.hidden = true; return; }
@@ -5276,7 +5353,7 @@ var DECO = (function () {
       var t = performance.now() / 1000;
       ITEMS.forEach(function (it) {
         if (it === drag) return;
-        var lift = it === hover && !focus ? 3 : 0;
+        var lift = it === hover && !focus ? 5 : 0;
         it.node.position.x += (it.tx - it.node.position.x) * 0.2; it.node.position.y += (it.ty + lift - it.node.position.y) * 0.25; it.node.position.z += (it.tz - it.node.position.z) * 0.2;
         if (it.g3) {
           if (it === focus) { if (!(pd && pd.rot)) it.g3.rotation.y += ((it.turn || 0) + TURN - it.g3.rotation.y) * (reduce ? 1 : 0.18); }   // turns only when you turn it
@@ -5284,6 +5361,9 @@ var DECO = (function () {
         }
         if (arranging) it.node.rotation.z = Math.sin(t * 9 + it.i) * 0.02; else it.node.rotation.z = 0;
       });
+      var hg = hover && !focus && !arranging && ITEMS.indexOf(hover) >= 0 ? hover : null;
+      if (hg) hovGlow.position.set(hg.tx, hg.ty + 0.6, 3);
+      hovGlow.material.opacity += ((hg ? 0.9 : 0) - hovGlow.material.opacity) * (reduce ? 1 : 0.2); hovGlow.visible = hovGlow.material.opacity > 0.02;
       tiers(); cam.updateMatrixWorld(); placeLabels(); placeAdd(); railSync();
       renderer.render(sc, cam);
     }
@@ -5375,7 +5455,12 @@ var DECO = (function () {
       document.getElementById('shCt').textContent = it.data.title || 'My design';
       var cn = charName((it.data.state || {}).char); document.getElementById('shCc').textContent = cn ? cn + ' · ' + ((it.data.state || {}).boxShape || {}).shape : '';
       var com = MODE === 'community', mine = !com || it.data.by === UID;
-      document.getElementById('shCd').textContent = (com ? 'by ' + byName(it) + ' · ' : 'Saved ') + new Date(it.data.created || Date.now()).toLocaleDateString([], { month: 'long', day: 'numeric', year: 'numeric' });
+      var cd = document.getElementById('shCd'); cd.textContent = (com ? 'by ' + byName(it) + ' · ' : 'Saved ') + new Date(it.data.created || Date.now()).toLocaleDateString([], { month: 'long', day: 'numeric', year: 'numeric' });
+      if (com) cd.insertBefore(avatarEl(it.data.by, 'shav'), cd.firstChild);
+      var bds = document.getElementById('shBadges'); bds.textContent = '';
+      if (com && feat(it)) bds.insertAdjacentHTML('beforeend', '<span class="shbadge">' + badgeHTML('feat') + '</span>');
+      if (com && TOPW === it.id) bds.insertAdjacentHTML('beforeend', '<span class="shbadge top">' + badgeHTML('top') + '</span>');
+      bds.hidden = !bds.childNodes.length;
       var del = document.getElementById('shDel'); del.dataset.sure = ''; del.textContent = com ? 'Remove from community' : 'Delete'; del.hidden = !(mine || (com && IS_ADMIN));
       paintLike(); document.getElementById('shAdm').hidden = !(com && IS_ADMIN);
       document.getElementById('shFeat').textContent = ADM.gallery.featured[it.id] ? 'Unfeature' : '★ Feature'; document.getElementById('shHide').textContent = ADM.gallery.hidden[it.id] ? 'Show' : 'Hide';
@@ -5402,9 +5487,26 @@ var DECO = (function () {
     likeBtn.addEventListener('click', function () {
       var it = focus; if (!it) return; var likes = (it.data.likes || []).slice(), i = likes.indexOf(UID);
       if (i >= 0) likes.splice(i, 1); else likes.push(UID);
-      it.data.likes = likes; paintLike(); if (i < 0) SFX.play('pop');
+      it.data.likes = likes; paintLike(); if (i < 0) { SFX.play('pop'); heartBurst(); }
+      var oldTop = TOPW; computeTop(); ITEMS.forEach(function (x) { if (x.lab && (x === it || x.id === oldTop || x.id === TOPW)) { x.lab.remove(); x.lab = null; } }); if (oldTop !== TOPW && focus === it) openCard(it);
       DBX.collection('community').doc(it.id).update({ likes: likes }).then(drawList).catch(function () { toast('Couldn’t save your like.'); });
     });
+    function heartBurst() {
+      if (reduce) return;
+      var r = likeBtn.getBoundingClientRect(), vr = view.getBoundingClientRect(), cx = r.left - vr.left + r.width / 2, cy = r.top - vr.top + r.height / 2;
+      for (var k = 0; k < 10; k++) {
+        var h = document.createElement('i'); h.className = 'shheart'; h.textContent = '♥';
+        var a = -Math.PI / 2 + (Math.random() - 0.5) * 2.4, d = 40 + Math.random() * 55;
+        h.style.left = cx + 'px'; h.style.top = cy + 'px'; h.style.setProperty('--dx', (Math.cos(a) * d).toFixed(1) + 'px'); h.style.setProperty('--dy', (Math.sin(a) * d).toFixed(1) + 'px'); h.style.setProperty('--s', (0.7 + Math.random() * 0.8).toFixed(2)); h.style.animationDelay = (k * 18) + 'ms';
+        view.appendChild(h); setTimeout(function (x) { x.remove(); }.bind(null, h), 1100);
+      }
+      if (focus) {   // and a big heart over the design itself
+        tmp.set(focus.node.position.x, focus.node.position.y + 44, focus.node.position.z).project(cam);
+        var bh = document.createElement('i'); bh.className = 'shheart big'; bh.textContent = '♥';
+        bh.style.left = Math.round((tmp.x + 1) / 2 * view.clientWidth) + 'px'; bh.style.top = Math.round((1 - tmp.y) / 2 * view.clientHeight) + 'px';
+        view.appendChild(bh); setTimeout(function () { bh.remove(); }, 1100);
+      }
+    }
     function admToggle(sect) {
       var it = focus; if (!it) return;
       var g = { featured: Object.assign({}, ADM.gallery.featured), hidden: Object.assign({}, ADM.gallery.hidden) };
@@ -5426,8 +5528,9 @@ var DECO = (function () {
       if (b.dataset.sure !== '1') { b.dataset.sure = '1'; b.textContent = 'Tap again to delete'; return; }
       var com = MODE === 'community';
       DBX.collection(com ? 'community' : 'data/users/' + UID).doc(it.id).delete().then(function () {
-        closeCard(); removeItem(it); layout(); drawList(); countEl.textContent = '(' + ITEMS.length + ')'; toast(com ? 'Removed from the community.' : 'Design deleted.');
-        if (!ITEMS.length) msgEl.textContent = com ? 'No community designs yet.' : 'Your shelf is empty. Save a design and it will stand here.';
+        closeCard(); removeItem(it); ALL = ALL.filter(function (r) { return r.id !== it.id; }); computeTop(); drawChars(); layout(); drawList(); countEl.textContent = ALL.length ? '(' + ALL.length + ')' : ''; toast(com ? 'Removed from the community.' : 'Design deleted.');
+        if (!ALL.length) setMsg(com ? 'No community designs yet.' : 'Your shelf is empty. Save a design and it will stand here.', !com);
+        else if (!ITEMS.length) { CHAR = ''; drawChars(); rebuildItems(); }
       }).catch(function () { toast('Couldn’t delete it right now.'); });
     });
     function removeItem(it, used) {
@@ -5460,13 +5563,14 @@ var DECO = (function () {
         if (it === focus) b.classList.add('on');
         var tx = document.createElement('span'), t = document.createElement('b'), sm = document.createElement('small');
         t.textContent = it.data.title || 'My design';
-        sm.textContent = (MODE === 'community' ? ['by ' + byName(it), '♥ ' + (it.data.likes || []).length, charName((it.data.state || {}).char)] : [charName((it.data.state || {}).char), new Date(it.data.created || Date.now()).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' }), 'Spot ' + (it.i + 1)]).filter(Boolean).join(' · ');
+        if (feat(it)) t.textContent = '★ ' + t.textContent;
+        sm.textContent = (MODE === 'community' ? ['by ' + byName(it), '♥ ' + (it.data.likes || []).length, TOPW === it.id ? 'Top this week' : '', charName((it.data.state || {}).char)] : [charName((it.data.state || {}).char), new Date(it.data.created || Date.now()).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' }), 'Spot ' + (it.i + 1)]).filter(Boolean).join(' · ');
         tx.appendChild(t); tx.appendChild(sm); b.appendChild(tx);
         b.addEventListener('click', function () { goTo(it); });
         rowsEl.appendChild(b);
       });
-      document.getElementById('shListN').textContent = ITEMS.length ? '(' + ITEMS.length + ')' : '';
-      if (!shown.length) { var none = document.createElement('p'); none.className = 'shnone'; none.textContent = ITEMS.length ? 'No designs match.' : 'No saved designs yet.'; rowsEl.appendChild(none); }
+      document.getElementById('shListN').textContent = MODE === 'community' ? (ALL.length ? '(' + ALL.length + ')' : '') : ALL.length + ' / ' + MAXSPOTS + ' spots';
+      if (!shown.length) { var none = document.createElement('p'); none.className = 'shnone'; none.textContent = ITEMS.length ? 'No designs match.' : MODE === 'community' ? 'No community designs yet.' : 'No saved designs yet.'; rowsEl.appendChild(none); }
     }
     function goTo(it) {
       if (arranging) arrBtn.click();
@@ -5480,6 +5584,7 @@ var DECO = (function () {
     // ----- arrange
     var arrBtn = document.getElementById('shArrange');
     arrBtn.addEventListener('click', function () {
+      if (!arranging && (SORT !== 'pos' || CHAR)) { SORTS.mine = 'pos'; CHAR = ''; drawSort(); drawChars(); rebuildItems(); toast('Showing your own order, so you can move them.'); }
       arranging = !arranging; closeCard();
       arrBtn.setAttribute('aria-pressed', String(arranging)); arrBtn.textContent = arranging ? 'Done' : 'Arrange'; tipEl.hidden = !arranging;
       if (!arranging && orderDirty) saveOrder();
@@ -5497,11 +5602,81 @@ var DECO = (function () {
     // ----- open and close
     function byName(it) { return (NAMES[it.data.by] && NAMES[it.data.by].name) || 'a member'; }
     function feat(it) { return MODE === 'community' && !!ADM.gallery.featured[it.id]; }
-    function sortCommunity() {   // featured first, then newest or most liked
+    function sortCommunity() { sortItems(); }
+    function sortItems() {   // community: featured first; then by the chosen sort
+      function cn(it) { return charName((it.data.state || {}).char) || '~'; }
       ITEMS.sort(function (a, b) {
-        return (feat(b) ? 1 : 0) - (feat(a) ? 1 : 0) || (SORT === 'liked' ? ((b.data.likes || []).length - (a.data.likes || []).length) : 0) || (b.data.created || 0) - (a.data.created || 0);
+        if (MODE === 'community') { var f = (feat(b) ? 1 : 0) - (feat(a) ? 1 : 0); if (f) return f; }
+        if (SORT === 'liked') { var l = (b.data.likes || []).length - (a.data.likes || []).length; if (l) return l; }
+        if (SORT === 'char') { var c = cn(a).localeCompare(cn(b)); if (c) return c; }
+        if (SORT === 'pos') { var pa = typeof a.data.pos === 'number' ? a.data.pos : 1e9, pb = typeof b.data.pos === 'number' ? b.data.pos : 1e9; return pa - pb || (a.data.created || 0) - (b.data.created || 0); }
+        return (b.data.created || 0) - (a.data.created || 0);
       });
     }
+    function rebuildItems() {   // the shelf shows the designs that match the character filter
+      closeCard();
+      ITEMS.slice().forEach(function (it) { removeItem(it); });
+      ALL.filter(function (r) { return !CHAR || (r.data.state || {}).char === CHAR; }).forEach(addItem);
+      sortItems(); layout(); goalY = viewY = 0; drawList();
+    }
+    var sortEl = document.getElementById('shSort'), charsEl = document.getElementById('shChars');
+    function drawSort() {
+      var opts = MODE === 'community' ? [['new', 'Newest'], ['liked', '♥ Most liked'], ['char', 'Character']] : [['pos', 'My order'], ['new', 'Newest'], ['char', 'Character']];
+      SORT = SORTS[MODE] || opts[0][0]; sortEl.textContent = '';
+      opts.forEach(function (o) {
+        var b = document.createElement('button'); b.type = 'button'; b.dataset.s = o[0]; b.textContent = o[1]; b.setAttribute('aria-pressed', String(o[0] === SORT));
+        b.addEventListener('click', function () { if (SORT === o[0]) return; if (arranging) arrBtn.click(); SORTS[MODE] = o[0]; drawSort(); closeCard(); sortItems(); layout(); drawList(); goalY = 0; });
+        sortEl.appendChild(b);
+      });
+    }
+    function drawChars() {
+      var ids = []; ALL.forEach(function (r) { var c = (r.data.state || {}).char; if (c && ids.indexOf(c) < 0) ids.push(c); });
+      if (CHAR && ids.indexOf(CHAR) < 0) CHAR = '';
+      charsEl.textContent = ''; charsEl.hidden = !ALL.length;
+      [''].concat(ids).forEach(function (c) {
+        var b = document.createElement('button'); b.type = 'button'; b.setAttribute('aria-pressed', String(c === CHAR));
+        var e = c && (LIB.filter(function (x) { return x.id === c; })[0] || PENDING.filter(function (x) { return x.id === c; })[0]);
+        if (e && e.thumb) { var im = document.createElement('img'); im.src = e.thumb; im.alt = ''; b.appendChild(im); } else if (c) b.classList.add('noimg');
+        var n = c ? ALL.filter(function (r) { return (r.data.state || {}).char === c; }).length : ALL.length;
+        b.appendChild(document.createTextNode(c ? (charName(c) || 'Other') : 'All')); var em = document.createElement('em'); em.textContent = n; b.appendChild(em);
+        b.addEventListener('click', function () { if (CHAR === c) return; if (arranging) arrBtn.click(); CHAR = c; drawChars(); rebuildItems(); });
+        charsEl.appendChild(b);
+      });
+    }
+    function computeTop() {   // the most liked design posted in the last 7 days
+      TOPW = null; if (MODE !== 'community') return;
+      var best = 0, since = Date.now() - 7 * 864e5;
+      ALL.forEach(function (r) { var n = (r.data.likes || []).length; if ((r.data.created || 0) >= since && n > best && !ADM.gallery.hidden[r.id]) { best = n; TOPW = r.id; } });
+    }
+    function badgeHTML(kind) { var u = ICON3D.url(kind === 'feat' ? 'sparkle' : 'trophy'); return (u ? '<img alt="" src="' + u + '">' : '') + (kind === 'feat' ? 'Featured' : 'Top this week'); }
+    function avatarEl(id, cls) {
+      var pr = NAMES[id] || {}, av;
+      if (pr.avatarUrl) { av = document.createElement('img'); av.src = pr.avatarUrl; av.alt = ''; }
+      else { av = document.createElement('span'); av.textContent = ((pr.name || '?').trim().charAt(0) || '?').toUpperCase(); }
+      av.className = cls; return av;
+    }
+    function setMsg(t, save) {
+      msgEl.textContent = t || ''; msgEl.classList.toggle('empty', !!save);
+      if (!save) return;
+      var b = document.createElement('button'); b.type = 'button'; b.className = 'shgo'; b.textContent = 'Save my design';
+      b.addEventListener('click', function () { closeShelf(null, function () { document.getElementById('btnSave').click(); }); });
+      msgEl.appendChild(b);
+    }
+    // wood picker
+    var woodBtn = document.getElementById('shWoodBtn'), woodEl = document.getElementById('shWood');
+    function drawWood() {
+      woodEl.textContent = ''; woodBtn.querySelector('.shwsw').style.background = woodSwatch(WOOD);
+      Object.keys(WOODS).forEach(function (k) {
+        var b = document.createElement('button'); b.type = 'button'; b.setAttribute('aria-pressed', String(k === WOOD));
+        var i = document.createElement('i'); i.style.background = woodSwatch(k); b.appendChild(i); b.appendChild(document.createTextNode(WOODS[k].name));
+        b.addEventListener('click', function () { setWood(k); drawWood(); woodOpen(false); SFX.play('pop'); });
+        woodEl.appendChild(b);
+      });
+    }
+    function woodOpen(on) { woodEl.hidden = !on; woodBtn.setAttribute('aria-expanded', String(on)); woodBtn.setAttribute('aria-pressed', String(on)); }
+    woodBtn.addEventListener('click', function () { woodOpen(woodEl.hidden); });
+    document.addEventListener('pointerdown', function (e) { if (!woodEl.hidden && !woodEl.contains(e.target) && !woodBtn.contains(e.target)) woodOpen(false); });
+    drawWood();
     function setMode(m) {
       if (m === MODE && SHELF.loaded) return;
       if (orderDirty) saveOrder();
@@ -5510,33 +5685,27 @@ var DECO = (function () {
       document.getElementById('shTitleT').textContent = m === 'community' ? 'Community' : 'My shelf';
       document.getElementById('shListT').textContent = m === 'community' ? 'Community designs' : 'Your designs';
       qEl.placeholder = m === 'community' ? 'Search by name, character or maker' : 'Search by name or character';
-      arrBtn.hidden = m === 'community'; document.getElementById('shSort').hidden = m !== 'community';
+      arrBtn.hidden = m === 'community'; sortEl.hidden = false; CHAR = ''; drawSort(); woodOpen(false);
       root.classList.toggle('comm', m === 'community');
       qEl.value = ''; zoom = 1; goalY = viewY = 0; load();
     }
     document.getElementById('shMine').addEventListener('click', function () { setMode('mine'); });
-    document.querySelectorAll('#shSort button').forEach(function (b) {
-      b.addEventListener('click', function () {
-        SORT = b.dataset.s; document.querySelectorAll('#shSort button').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
-        closeCard(); sortCommunity(); layout(); drawList(); goalY = 0;
-      });
-    });
     function load() {
       ITEMS.slice().forEach(function (it) { removeItem(it); });
+      ALL = []; TOPW = null; drawChars();
       SHELF.loaded = false; countEl.textContent = '';
       if (MODE === 'community') { loadCommunity(); return; }
-      msgEl.textContent = 'Loading your shelf…';
+      setMsg('Loading your shelf…');
       DBX.collection('data/users/' + UID).orderBy('created', 'desc').limit(300).get().then(function (snap) {
         var list = []; snap.docs.forEach(function (d) { var x = d.data(); if (x && x.state) list.push({ id: d.id, data: x }); });
-        // their own order first (Arrange); newer saves join at the end
-        list.sort(function (a, b) { var pa = typeof a.data.pos === 'number' ? a.data.pos : 1e9, pb = typeof b.data.pos === 'number' ? b.data.pos : 1e9; return pa - pb || (a.data.created || 0) - (b.data.created || 0); });
-        list.forEach(addItem); layout(); goalY = viewY = 0; SHELF.loaded = true; drawList();
+        if (MODE !== 'mine') return;
+        ALL = list; CHAR = ''; drawChars(); rebuildItems(); SHELF.loaded = true; drawList();   // their own order first (Arrange); newer saves join at the end
         countEl.textContent = list.length ? '(' + list.length + ')' : '';
-        msgEl.textContent = list.length ? '' : 'Your shelf is empty. Save a design and it will stand here.';
-      }).catch(function () { msgEl.textContent = 'Couldn’t load your shelf right now.'; });
+        setMsg(list.length ? '' : 'Your shelf is empty. Save a design and it will stand here.', !list.length);
+      }).catch(function () { setMsg('Couldn’t load your shelf right now.'); });
     }
     function loadCommunity() {
-      msgEl.textContent = 'Loading the community shelf…';
+      setMsg('Loading the community shelf…');
       DBX.collection('community').orderBy('created', 'desc').limit(300).get().then(function (snap) {
         if (MODE !== 'community') return;
         var list = [], ids = [];
@@ -5544,11 +5713,11 @@ var DECO = (function () {
         return names(ids).then(function (ps) {
           if (MODE !== 'community') return;
           NAMES = ps || {};
-          list.forEach(addItem); sortCommunity(); layout(); goalY = viewY = 0; SHELF.loaded = true; drawList();
+          ALL = list; CHAR = ''; computeTop(); drawChars(); rebuildItems(); SHELF.loaded = true; drawList();
           countEl.textContent = list.length ? '(' + list.length + ')' : '';
-          msgEl.textContent = list.length ? '' : 'No community designs yet. Tick “Also post it to the community gallery” when you save a design.';
+          setMsg(list.length ? '' : 'No community designs yet. Tick “Also post it to the community gallery” when you save a design.');
         });
-      }).catch(function () { msgEl.textContent = 'Couldn’t load the community shelf right now.'; });
+      }).catch(function () { setMsg('Couldn’t load the community shelf right now.'); });
     }
     function open(mode) {
       if (SHELF.open) return;
@@ -6991,6 +7160,15 @@ var DECO = (function () {
         [0xE53935, 0xFF8A3D, 0xFFD000, 0x34C759, 0x2FC4B8, 0x1E6FD9, 0x7B4FE8, 0xFF6FA8].forEach(function (c, i) {
           var pan = rbox(0.38, 0.1, 0.38, 0.045, M(c, { r: 0.45 })); pan.position.set(-0.69 + (i % 4) * 0.46, 0.2, i < 4 ? -0.25 : 0.25); g.add(pan);
         });
+      },
+      trophy: function (g) {   // gold cup with two handles on a dark base, white star on the front
+        var gold = M(0xFFC21A, { m: 0.55, r: 0.25 });
+        g.add(mesh(new THREE.CylinderGeometry(0.72, 0.34, 0.95, 32), gold, 0, 0.42, 0));
+        g.add(mesh(new THREE.CylinderGeometry(0.12, 0.17, 0.36, 16), gold, 0, -0.22, 0));
+        var base = rbox(1.0, 0.28, 0.62, 0.08, M(0x0B3B38)); base.position.y = -0.52; g.add(base);
+        var hr = mesh(new THREE.TorusGeometry(0.27, 0.075, 10, 20, Math.PI * 1.2), gold, 0.7, 0.5, 0); hr.rotation.z = -Math.PI * 0.6; g.add(hr);
+        var hl = mesh(new THREE.TorusGeometry(0.27, 0.075, 10, 20, Math.PI * 1.2), gold, -0.7, 0.5, 0); hl.rotation.z = Math.PI * 0.4; g.add(hl);
+        var st5 = shapeMesh(star(5, 0.24, 0.11), 0.06, 0.02, M(0xFFFFFF)); st5.position.set(0, 0.45, 0.6); g.add(st5);
       },
       sparkle: function (g) {
         g.add(shapeMesh(star(4, 1, 0.32), 0.25, 0.08, M(0xFFD000)));
