@@ -6522,7 +6522,7 @@ var DECO = (function () {
     if (!sock) setCheck('socket', 'bad', 'Socket hole under the body', 'No character body found to check.');
     else if (sock.share >= 0.6) setCheck('socket', 'ok', 'Socket hole under the body', 'Found, about ' + Math.min(sock.depth, 30).toFixed(1) + ' mm deep.');
     else setCheck('socket', 'bad', 'Socket hole under the body', 'No hole found under the middle of the body, so the switch socket won\u2019t fit. Sculpt the square hole and export again.');
-    setCheck('align', own ? 'ok' : 'warn', 'Lines up on the switch', own ? 'Uses its own part named \u201cswitch\u201d to line up.' : 'No part named \u201cswitch\u201d, so it\u2019s centered like King Kong. Check the preview.');
+    setCheck('align', own || fit.how === 'hole' ? 'ok' : 'warn', 'Lines up on the switch', own ? 'Uses its own part named \u201cswitch\u201d to line up.' : fit.how === 'hole' ? 'Lined up on its socket hole, so it sits on the switch exactly like the print.' : 'No clear socket hole and no part named \u201cswitch\u201d, so it\u2019s centered like King Kong. Check the preview.');
     setCheck('fit', facts.over > 3 ? 'warn' : facts.over > 0.4 ? 'warn' : 'ok', 'Fits the box', facts.over > 0.4 ? 'Sticks out past the box by about ' + facts.over.toFixed(1) + ' mm.' : facts.w.toFixed(0) + ' \u00d7 ' + facts.d.toFixed(0) + ' mm, inside the 42 \u00d7 42 mm box.');
     setCheck('closed', 'wait', 'Closed and printable', 'Checking every part\u2026');
     setCheck('size', b64Size > 20 * 1048576 ? 'bad' : buf.byteLength > 6 * 1048576 ? 'warn' : 'ok', 'File size',
@@ -9629,8 +9629,59 @@ var DECO = (function () {
     Object.keys(tally).forEach(function (g) { if (!best || tally[g] > tally[best]) best = g; });
     return best || 'character';
   }
+  // the middle of the square socket hole under a character (file coordinates), or null if there's no clear hole
+  var HC_CACHE = {};
+  function holeCenter(list) {
+    var key = list.map(function (p) { return p.geom.uuid; }).join(',');
+    if (key in HC_CACHE) return HC_CACHE[key];
+    return (HC_CACHE[key] = findHole(list));
+  }
+  function findHole(list) {
+    var bb = new THREE.Box3(); list.forEach(function (p) { p.geom.computeBoundingBox(); bb.union(p.geom.boundingBox); });
+    if (bb.isEmpty()) return null;
+    var c = bb.getCenter(new THREE.Vector3()), z0 = bb.min.z, T = [];
+    list.forEach(function (p) {   // only the triangles around the lower middle
+      var pos = p.geom.attributes.position, idx = p.geom.index, n = idx ? idx.count : pos.count;
+      for (var t = 0; t < n; t += 3) {
+        var a = idx ? idx.getX(t) : t, b = idx ? idx.getX(t + 1) : t + 1, d = idx ? idx.getX(t + 2) : t + 2;
+        var ax = pos.getX(a), ay = pos.getY(a), az = pos.getZ(a), bx = pos.getX(b), by = pos.getY(b), bz = pos.getZ(b), dx = pos.getX(d), dy = pos.getY(d), dz = pos.getZ(d);
+        if (Math.min(az, bz, dz) > z0 + 24 || Math.max(ax, bx, dx) < c.x - 17 || Math.min(ax, bx, dx) > c.x + 17 || Math.max(ay, by, dy) < c.y - 17 || Math.min(ay, by, dy) > c.y + 17) continue;
+        T.push(ax, ay, az, bx, by, bz, dx, dy, dz);
+      }
+    });
+    function cast(ox, oy, oz, ux, uy, uz) {   // distance to the nearest surface along a ray
+      var best = Infinity;
+      for (var i = 0; i < T.length; i += 9) {
+        var e1x = T[i + 3] - T[i], e1y = T[i + 4] - T[i + 1], e1z = T[i + 5] - T[i + 2], e2x = T[i + 6] - T[i], e2y = T[i + 7] - T[i + 1], e2z = T[i + 8] - T[i + 2];
+        var px = uy * e2z - uz * e2y, py = uz * e2x - ux * e2z, pz = ux * e2y - uy * e2x, det = e1x * px + e1y * py + e1z * pz;
+        if (det > -1e-12 && det < 1e-12) continue;
+        var inv = 1 / det, tx = ox - T[i], ty = oy - T[i + 1], tz = oz - T[i + 2], u = (tx * px + ty * py + tz * pz) * inv;
+        if (u < 0 || u > 1) continue;
+        var qx = ty * e1z - tz * e1y, qy = tz * e1x - tx * e1z, qz = tx * e1y - ty * e1x, v = (ux * qx + uy * qy + uz * qz) * inv;
+        if (v < 0 || u + v > 1) continue;
+        var dd = (e2x * qx + e2y * qy + e2z * qz) * inv; if (dd > 1e-6 && dd < best) best = dd;
+      }
+      return best;
+    }
+    // a starting point inside the hole: the grid point nearest the middle with a deep ceiling above it
+    var pts = [];
+    for (var i = -3; i <= 3; i++) for (var j = -3; j <= 3; j++) pts.push([c.x + i * 1.5, c.y + j * 1.5]);
+    pts.sort(function (a, b) { return (Math.abs(a[0] - c.x) + Math.abs(a[1] - c.y)) - (Math.abs(b[0] - c.x) + Math.abs(b[1] - c.y)); });
+    var seed = null, depth = 0;
+    for (var k = 0; k < pts.length && !seed; k++) { var h = cast(pts[k][0], pts[k][1], z0 - 1, 0, 0, 1) - 1; if (h > 6 && h < 40) { seed = pts[k]; depth = h; } }
+    if (!seed) return null;
+    // measure wall to wall at three heights in the straight part of the hole
+    var xs = [], ys = [];
+    [0.45, 0.6, 0.75].forEach(function (f) {
+      var z = z0 + depth * f, px = cast(seed[0], seed[1], z, 1, 0, 0), nx = cast(seed[0], seed[1], z, -1, 0, 0), py = cast(seed[0], seed[1], z, 0, 1, 0), ny = cast(seed[0], seed[1], z, 0, -1, 0);
+      if (px + nx > 14 && px + nx < 26 && py + ny > 14 && py + ny < 26) { xs.push(seed[0] + (px - nx) / 2); ys.push(seed[1] + (py - ny) / 2); }
+    });
+    if (!xs.length) return null;
+    var mx = xs.reduce(function (a, b) { return a + b; }, 0) / xs.length, my = ys.reduce(function (a, b) { return a + b; }, 0) / ys.length;
+    return { x: mx, y: my };
+  }
   function fitChar(parts) {
-    var own = parts.filter(isSwitchPart)[0], body = parts.filter(function (p) { return !isSwitchPart(p); }), A;
+    var own = parts.filter(isSwitchPart)[0], body = parts.filter(function (p) { return !isSwitchPart(p); }), A, how = own && SW_CENTER ? 'switch' : 'center';
     if (own && SW_CENTER) {
       own.geom.computeBoundingBox(); var c = own.geom.boundingBox.getCenter(new THREE.Vector3());
       A = [SW_CENTER.x - c.x, SW_CENTER.y - c.y, SW_CENTER.z - c.z];
@@ -9639,11 +9690,13 @@ var DECO = (function () {
       body.forEach(function (p) { var c = BX.classify(p.name); if (c.optional || c.pick) return; p.geom.computeBoundingBox(); bb.union(p.geom.boundingBox); });
       if (bb.isEmpty()) body.forEach(function (p) { bb.union(p.geom.boundingBox); });
       var R = DESIGN.rest || { y: 1.37, z: -4.35 }, ctr = bb.getCenter(new THREE.Vector3());
-      A = [-ctr.x, R.y - ctr.y, R.z - bb.min.z];
+      var hc = SW_CENTER ? holeCenter(body.filter(function (p) { var c = BX.classify(p.name); return !c.optional && !c.pick && !/^support/.test(c.group); })) : null;
+      if (hc) { A = [SW_CENTER.x - hc.x, SW_CENTER.y - hc.y, R.z - bb.min.z]; how = 'hole'; }   // the socket hole sits right on the switch
+      else A = [-ctr.x, R.y - ctr.y, R.z - bb.min.z];   // no hole found: centered like King Kong
     }
     var main = mainGroupOf(body), out = body.slice();
     if (STD_SWITCH) { var g = STD_SWITCH.geom.clone(); g.translate(-A[0], -A[1], -A[2]); g.userData.socket = true; out.push({ name: main, geom: g, isSwitch: true }); }
-    return { assemble: A, parts: out, main: main };
+    return { assemble: A, parts: out, main: main, how: how };
   }
   var libGrid = document.getElementById('libGrid'), libNote = document.getElementById('libNote');
   function pieceThumb(piece) {   // the piece as it will print, in its chosen colors
