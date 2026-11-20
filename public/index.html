@@ -1665,6 +1665,13 @@ body.clawon .stage .clawstart, .stage:has(.sizecard:not([hidden])) .clawstart { 
 @media (max-width: 699px) {
   #shWoodBtn, .shwood, .shchars, .shelf:not(.comm) .shsort, .shsort button[data-s="char"] { display: none !important; }
 }
+/* preview bar: when Save / My shelf / Community / Share / Leaderboard don't fit beside the tools, show icons only, all on one row */
+@media (min-width: 901px) {
+  .stage .toolrow.iconly { flex-wrap: nowrap; }
+  .stage .toolrow.iconly > .tools.pill.actbar { flex-wrap: nowrap !important; }
+  .toolrow.iconly .actbar .topbtn { width: 40px; padding: 0 !important; gap: 0 !important; justify-content: center; }
+  .toolrow.iconly .actbar .topbtn span { display: none !important; }
+}
 </style>
 </head>
 <body>
@@ -9936,6 +9943,32 @@ var DECO = (function () {
     };
     kongLoad();
   }, 20);
+})();
+</script>
+<script>
+(function () {   // preview bar: icons only when the buttons would otherwise wrap onto a second row
+  var small = window.matchMedia('(max-width: 900px)'), row = null;
+  function wrapped(el) { var kids = [].slice.call(el.children).filter(function (k) { return k.offsetParent !== null; }); return kids.length > 1 && kids[kids.length - 1].offsetTop > kids[0].offsetTop + 4; }
+  function fit() {
+    if (!row) return;
+    row.classList.remove('iconly');
+    if (small.matches) return;   // small screens keep their own layout
+    var act = row.querySelector('.actbar'); if (!act) return;
+    if (wrapped(row) || wrapped(act)) row.classList.add('iconly');
+  }
+  function init() {
+    row = document.querySelector('.stage .toolrow');
+    if (!row || !document.getElementById('btnLeader')) { setTimeout(init, 400); return; }
+    row.querySelectorAll('.actbar .topbtn').forEach(function (b) { var sp = b.querySelector('span'); if (sp && sp.textContent.trim()) { b.setAttribute('aria-label', sp.textContent.trim()); if (!b.title) b.title = sp.textContent.trim(); } });
+    var stage = document.getElementById('stage'), wrap = stage && stage.closest('.wrap');
+    if (stage && window.ResizeObserver) new ResizeObserver(function () { requestAnimationFrame(fit); }).observe(stage);
+    if (wrap && window.MutationObserver) new MutationObserver(function () { requestAnimationFrame(fit); }).observe(wrap, { attributes: true, attributeFilter: ['class'] });
+    window.addEventListener('resize', fit);
+    if (small.addEventListener) small.addEventListener('change', fit);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+    fit(); setTimeout(fit, 600);
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 })();
 </script>
 </body>
