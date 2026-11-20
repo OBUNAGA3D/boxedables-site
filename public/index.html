@@ -2884,9 +2884,10 @@ var DECO = (function () {
     t.anisotropy = 8; t.encoding = THREE.sRGBEncoding; return t;
   })();
   var plateMat = new THREE.MeshStandardMaterial({ map: plateTex, roughness: 0.85, metalness: 0.05 });
+  var PLATE_FOOT = null;   // the box's footprint: the plate is sized from the box, not from the character on it
   function buildPlate() {
     if (plate) { scene.remove(plate); plate.geometry.dispose(); }
-    var s = Math.max(95, Math.max(size.x, size.z) * 3.2), h = s / 2, r = s * 0.05, sh = new THREE.Shape();   // a roomier build plate
+    var s = Math.max(95, (PLATE_FOOT || Math.max(size.x, size.z)) * 3.2), h = s / 2, r = s * 0.05, sh = new THREE.Shape();   // a roomier build plate
     sh.moveTo(-h + r, -h); sh.lineTo(h - r, -h); sh.quadraticCurveTo(h, -h, h, -h + r); sh.lineTo(h, h - r);
     sh.quadraticCurveTo(h, h, h - r, h); sh.lineTo(-h + r, h); sh.quadraticCurveTo(-h, h, -h, h - r);
     sh.lineTo(-h, -h + r); sh.quadraticCurveTo(-h, -h, -h + r, -h);
@@ -3191,7 +3192,11 @@ var DECO = (function () {
   }
   function applyOrientation() {
     model.position.set(0, 0, 0); model.rotation.copy(ORIENTS[S.orient]); model.updateMatrixWorld(true);
-    var b = worldBox(S.parts), c = new THREE.Vector3(); b.getCenter(c); b.getSize(size); buildPlate(); plate.visible = true; ground.visible = true;
+    var b = worldBox(S.parts), c = new THREE.Vector3(); b.getCenter(c); b.getSize(size);
+    var boxParts = S.parts.filter(function (p) { return p.cls && p.cls.group === 'box'; }), bx = boxParts.length ? worldBox(boxParts) : null;
+    PLATE_FOOT = null;
+    if (bx && !bx.isEmpty()) { var bc = bx.getCenter(new THREE.Vector3()), bs = bx.getSize(new THREE.Vector3()); c.x = bc.x; c.z = bc.z; PLATE_FOOT = Math.max(bs.x, bs.z); }   // the box stays put; the character sits on it
+    buildPlate(); plate.visible = true; ground.visible = true;
     model.position.set(-c.x, -b.min.y, -c.z); model.updateMatrixWorld(true);
     frame();
   }
@@ -6062,7 +6067,6 @@ var DECO = (function () {
       var c = COLLECTED[id] || { n: 0, first: Date.now() }; c.n++; c.last = Date.now(); COLLECTED[id] = c;
       DBX.collection('data/users/' + UID).doc('collection').set({ chars: COLLECTED }).then(function () {
         renderLib(); var have = realChars().filter(function (e) { return COLLECTED[e.id]; }).length;
-        if (c.n === 1) toast('Added ' + S.title + ' to your collection (' + have + ' of ' + realChars().length + ').');
       }).catch(function () {});
     }
     var st = captureState();
