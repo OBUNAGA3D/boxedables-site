@@ -1667,6 +1667,21 @@ body.clawon .stage .clawstart, .stage:has(.sizecard:not([hidden])) .clawstart { 
   .toolrow.iconly .actbar .topbtn { width: 40px; padding: 0 !important; gap: 0 !important; justify-content: center; }
   .toolrow.iconly .actbar .topbtn span { display: none !important; }
 }
+/* Admin color wheel */
+.wzpal .cwbreak { flex-basis: 100%; height: 0; }
+.wzpal .cwheel { flex: 0 1 auto; display: flex; flex-wrap: wrap; align-items: center; gap: 14px; margin-top: 4px; padding: 10px 12px; width: max-content; max-width: 100%; box-sizing: border-box; background: #fff; border: 2px solid var(--ink-dark); border-radius: 14px; }
+.wzpal .cwdisc { position: relative; flex: none; width: 150px; height: 150px; border-radius: 50%; box-shadow: 0 0 0 2px var(--ink-dark); touch-action: none; cursor: crosshair; }
+.wzpal .cwdisc:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+.wzpal .cwdisc canvas { display: block; width: 100%; height: 100%; border-radius: 50%; }
+.wzpal .cwdot { position: absolute; width: 18px; height: 18px; margin: -9px 0 0 -9px; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 0 0 2px var(--ink-dark), 0 2px 5px rgba(0,0,0,.35); pointer-events: none; box-sizing: border-box; }
+.wzpal .cwside { display: grid; gap: 8px; width: 160px; }
+.wzpal .cwnow { display: block; height: 30px; border-radius: 9px; border: 2px solid var(--ink-dark); }
+.wzpal .cwlab { display: grid; gap: 4px; font: 700 12px "Figtree", sans-serif; color: var(--ink-dark); }
+.wzpal .cwlab input[type="text"] { width: 100%; box-sizing: border-box; margin: 0; padding: 6px 9px; min-height: 0; height: auto; font: 700 14px ui-monospace, Menlo, monospace; letter-spacing: .04em; text-transform: uppercase; border: 2px solid var(--ink-dark); border-radius: 9px; box-shadow: none; }
+.wzpal .cwlab input[type="range"] { margin: 2px 0; }
+.wzpal .chip.filechip { position: relative; }
+.wzpal .chip.filechip::after { content: "3MF"; position: absolute; left: 50%; bottom: -13px; transform: translateX(-50%); font: 800 8.5px "Figtree", sans-serif; color: var(--ink-dark); letter-spacing: .02em; }
+.wzpal { row-gap: 10px; }
 </style>
 </head>
 <body>
@@ -6186,7 +6201,9 @@ var DECO = (function () {
     return parts.map(function (p) {
       var e = p.filColor && isGenericName(p.name) && slots[p.slot]; if (!e) return p;
       var g = slotSlug(e.name, p.slot); BX.labels[g] = e.name;
-      var q = {}; Object.keys(p).forEach(function (k) { q[k] = p[k]; }); q.name = (e.lock ? 'fixed-' : '') + g; return q;
+      var q = {}; Object.keys(p).forEach(function (k) { q[k] = p[k]; }); q.name = (e.lock ? 'fixed-' : '') + g;
+      if (e.color && /^#[0-9A-F]{6}$/i.test(e.color)) q.filColor = e.color.toUpperCase();   // starting color picked in Admin (otherwise the 3MF file's color)
+      return q;
     });
   }
   function addPublished(id, data, buf) {
@@ -6381,6 +6398,62 @@ var DECO = (function () {
     A.ctr.copy(s.center); A.dist = s.radius / Math.sin(THREE.MathUtils.degToRad(15)) * 1.02; A.dirty = true;
   }
   function apvRest(rest) { var g = APV.charG; if (!g) return; var a = g.userData.fit.assemble; g.position.set(a[0], a[1], a[2] + (rest || 0)); APV.dirty = true; }
+  // ---------- Admin: color wheel (hue around, strength outward, brightness slider, hex box) ----------
+  function cwHexRgb(h) { h = h.replace('#', ''); return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)]; }
+  function cwRgbHex(c) { return '#' + c.map(function (x) { return ('0' + Math.round(Math.max(0, Math.min(255, x))).toString(16)).slice(-2); }).join('').toUpperCase(); }
+  function cwHsvRgb(h, s, v) { function f(n) { var k = (n + h / 60) % 6; return (v - v * s * Math.max(0, Math.min(k, 4 - k, 1))) * 255; } return [f(5), f(3), f(1)]; }
+  function cwRgbHsv(c) {
+    var r = c[0] / 255, g = c[1] / 255, b = c[2] / 255, mx = Math.max(r, g, b), mn = Math.min(r, g, b), d = mx - mn, h = 0;
+    if (d) { h = mx === r ? ((g - b) / d) % 6 : mx === g ? (b - r) / d + 2 : (r - g) / d + 4; h *= 60; if (h < 0) h += 360; }
+    return [h, mx ? d / mx : 0, mx];
+  }
+  function colorWheel(hex, onPick) {
+    var wrap = el('div', 'cwheel'), disc = el('div', 'cwdisc'), cv = document.createElement('canvas'), dot = el('span', 'cwdot');
+    cv.width = cv.height = 300; disc.appendChild(cv); disc.appendChild(dot); wrap.appendChild(disc);
+    disc.setAttribute('role', 'slider'); disc.setAttribute('aria-label', 'Color wheel'); disc.tabIndex = 0;
+    var side = el('div', 'cwside'), now = el('span', 'cwnow');
+    var vl = el('label', 'cwlab', 'Brightness'), vr = el('input'); vr.type = 'range'; vr.min = 0; vr.max = 100; vl.appendChild(vr);
+    var hl = el('label', 'cwlab', 'Hex code'), hx = el('input'); hx.type = 'text'; hx.maxLength = 7; hx.spellcheck = false; hx.autocomplete = 'off'; hl.appendChild(hx);
+    side.appendChild(now); side.appendChild(vl); side.appendChild(hl); wrap.appendChild(side);
+    var hsv = [0, 0, 1], drawnV = -1, drag = false;
+    function draw() {
+      if (drawnV === hsv[2]) return; drawnV = hsv[2];
+      var ctx = cv.getContext('2d'), N = cv.width, R = N / 2, img = ctx.createImageData(N, N), d = img.data;
+      for (var y = 0; y < N; y++) for (var x = 0; x < N; x++) {
+        var dx = x - R + 0.5, dy = y - R + 0.5, r = Math.sqrt(dx * dx + dy * dy), i = (y * N + x) * 4; if (r > R) continue;
+        var h = Math.atan2(dy, dx) * 180 / Math.PI; if (h < 0) h += 360;
+        var c = cwHsvRgb(h, Math.min(1, r / R), hsv[2]); d[i] = c[0]; d[i + 1] = c[1]; d[i + 2] = c[2]; d[i + 3] = r > R - 1.5 ? Math.max(0, (R - r) / 1.5) * 255 : 255;
+      }
+      ctx.putImageData(img, 0, 0);
+    }
+    function paint() {
+      draw();
+      var a = hsv[0] * Math.PI / 180, r = hsv[1] * 50, c = cwRgbHex(cwHsvRgb(hsv[0], hsv[1], hsv[2]));
+      dot.style.left = (50 + Math.cos(a) * r) + '%'; dot.style.top = (50 + Math.sin(a) * r) + '%'; dot.style.background = c; now.style.background = c;
+      vr.value = Math.round(hsv[2] * 100); vr.style.background = 'linear-gradient(90deg, #000, ' + cwRgbHex(cwHsvRgb(hsv[0], hsv[1], 1)) + ')';
+      return c;
+    }
+    function set(h) { if (!/^#[0-9A-F]{6}$/i.test(h)) return; hsv = cwRgbHsv(cwHexRgb(h)); paint(); if (document.activeElement !== hx) hx.value = h.toUpperCase(); }
+    function emit() { var c = paint(); hx.value = c; onPick(c); }
+    function at(e) {
+      var b = cv.getBoundingClientRect(), dx = e.clientX - b.left - b.width / 2, dy = e.clientY - b.top - b.height / 2;
+      hsv[0] = (Math.atan2(dy, dx) * 180 / Math.PI + 360) % 360; hsv[1] = Math.min(1, Math.sqrt(dx * dx + dy * dy) / (b.width / 2));
+      if (hsv[2] < 0.15) hsv[2] = 1;   // a near-black color would hide the wheel: start bright, the slider makes it dark again
+      emit();
+    }
+    disc.addEventListener('pointerdown', function (e) { drag = true; try { disc.setPointerCapture(e.pointerId); } catch (x) {} at(e); e.preventDefault(); });
+    disc.addEventListener('pointermove', function (e) { if (drag) at(e); });
+    ['pointerup', 'pointercancel'].forEach(function (t) { disc.addEventListener(t, function () { drag = false; }); });
+    disc.addEventListener('keydown', function (e) {
+      var k = { ArrowLeft: [-6, 0], ArrowRight: [6, 0], ArrowUp: [0, 0.05], ArrowDown: [0, -0.05] }[e.key]; if (!k) return;
+      hsv[0] = (hsv[0] + k[0] + 360) % 360; hsv[1] = Math.max(0, Math.min(1, hsv[1] + k[1])); emit(); e.preventDefault();
+    });
+    vr.addEventListener('input', function () { hsv[2] = vr.value / 100; emit(); });
+    hx.addEventListener('input', function () { var v = hx.value.trim(); if (v[0] !== '#') v = '#' + v; if (/^#[0-9A-F]{6}$/i.test(v)) { hsv = cwRgbHsv(cwHexRgb(v)); paint(); onPick(v.toUpperCase()); } });
+    hx.addEventListener('change', function () { hx.value = cwRgbHex(cwHsvRgb(hsv[0], hsv[1], hsv[2])); });
+    set(hex);
+    return { el: wrap, set: set };
+  }
   function apvRecolor(colorOf) { if (!APV.charG) return; APV.charG.children.forEach(function (me) { me.material.color.set(colorOf(me.userData.part)).convertSRGBToLinear(); }); APV.dirty = true; }
 
   // ---------- Admin: automatic checks on a character file ----------
@@ -6550,10 +6623,12 @@ var DECO = (function () {
     var co = secs.colors; co.appendChild(el('h4', 'wzh', 'Colors members see'));
     var slotNote = null;
     if (slotRows.length) {
-      co.appendChild(el('p', 'note', 'Every part on the same filament becomes one color. Type the name members will see. Tap a swatch to try other colors in the preview (only the preview changes).'));
+      co.appendChild(el('p', 'note', 'Every part on the same filament becomes one color. Type the name members will see. Each color starts from the 3MF file. Tap a swatch to change it with the color wheel: members see that color first.'));
       var used = {};
       slotRows.forEach(function (o) {
-        var row = el('div', 'admslot'), sw = el('button', 'sw'); sw.type = 'button'; sw.style.background = o.color; sw.setAttribute('aria-label', 'Try colors for filament ' + o.slot); sw.setAttribute('aria-expanded', 'false');
+        var saved = opts.mode !== 'new' && data.slots && data.slots[o.slot] && data.slots[o.slot].color;
+        if (saved && /^#[0-9A-F]{6}$/i.test(saved)) ovr['s' + o.slot] = saved.toUpperCase();
+        var row = el('div', 'admslot'), sw = el('button', 'sw'); sw.type = 'button'; sw.style.background = ovr['s' + o.slot] || o.color; sw.setAttribute('aria-label', 'Change the color of filament ' + o.slot); sw.setAttribute('aria-expanded', 'false');
         row.appendChild(sw);
         var fil = el('span', 'fil', 'Filament ' + o.slot); fil.appendChild(el('small', '', o.n + (o.n === 1 ? ' part' : ' parts'))); row.appendChild(fil);
         var inp = el('input'); inp.type = 'text'; inp.maxLength = 24; inp.setAttribute('aria-label', 'Name for filament ' + o.slot); inp.placeholder = 'e.g. Fur';
@@ -6564,11 +6639,14 @@ var DECO = (function () {
         l.appendChild(cb); l.appendChild(document.createTextNode(' Members can change'));
         row.appendChild(inp); row.appendChild(l); co.appendChild(row);
         var pal = el('div', 'wzpal'); pal.hidden = true; co.appendChild(pal);
+        var pick = function (c) { ovr['s' + o.slot] = c; sw.style.background = c; apvRecolor(colorOf); };
+        var wheel = colorWheel(ovr['s' + o.slot] || o.color, pick);
         SWATCHES.concat([['File color', o.color]]).forEach(function (s) {
-          var b = el('button', 'chip'); b.type = 'button'; b.style.background = s[1]; b.title = s[0]; b.setAttribute('aria-label', s[0]);
-          b.addEventListener('click', function () { ovr['s' + o.slot] = s[1]; sw.style.background = s[1]; apvRecolor(colorOf); });
+          var b = el('button', 'chip' + (s[0] === 'File color' ? ' filechip' : '')); b.type = 'button'; b.style.background = s[1]; b.title = s[0]; b.setAttribute('aria-label', s[0]);
+          b.addEventListener('click', function () { pick(s[1]); wheel.set(s[1]); });
           pal.appendChild(b);
         });
+        pal.appendChild(el('span', 'cwbreak')); pal.appendChild(wheel.el);
         sw.addEventListener('click', function () { pal.hidden = !pal.hidden; sw.setAttribute('aria-expanded', String(!pal.hidden)); });
         inp.addEventListener('input', checkNames);
         o.inp = inp; o.cb = cb;
@@ -6635,7 +6713,7 @@ var DECO = (function () {
       var rel = rdI.value ? new Date(rdI.value).toLocaleString([], { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' }) : 'Right away';
       [['Name', nmI.value.trim() || '(no name yet)'], ['Theme', themeVal()], ['Badge', bdS.value ? bdS.options[bdS.selectedIndex].text : 'None'], ['Shows up', rel], ['Rest height', restVal() + ' mm']].forEach(function (r) { dl.appendChild(el('dt', '', r[0])); dl.appendChild(el('dd', '', r[1])); });
       var cdd = el('dd', 'wzcols');
-      slotRows.forEach(function (o) { var c = el('span', 'wzcol' + (o.cb.checked ? '' : ' locked')); var d = el('i'); d.style.background = o.color; c.appendChild(d); c.appendChild(document.createTextNode(o.inp.value.trim() || colorName(o.color))); c.title = o.cb.checked ? 'Members can change' : 'Locked'; cdd.appendChild(c); });
+      slotRows.forEach(function (o) { var c = el('span', 'wzcol' + (o.cb.checked ? '' : ' locked')); var d = el('i'); d.style.background = ovr['s' + o.slot] || o.color; c.appendChild(d); c.appendChild(document.createTextNode(o.inp.value.trim() || colorName(o.color))); c.title = o.cb.checked ? 'Members can change' : 'Locked'; cdd.appendChild(c); });
       groups.forEach(function (g) { var c = el('span', 'wzcol'); c.appendChild(document.createTextNode(g.label)); cdd.appendChild(c); });
       if (cdd.childNodes.length) { dl.appendChild(el('dt', '', 'Colors')); dl.appendChild(cdd); }
       sumBox.appendChild(dl);
@@ -6656,9 +6734,10 @@ var DECO = (function () {
         out.slots = {};
         slotRows.forEach(function (o) {
           var nm = o.inp.value.trim() || colorName(o.color); out.slots[o.slot] = { name: nm, lock: !o.cb.checked };
+          var pc = ovr['s' + o.slot]; if (pc && pc.toUpperCase() !== String(o.color).toUpperCase()) out.slots[o.slot].color = pc.toUpperCase();   // changed in Admin: the starting color
           if (o.cb.checked && out.colorable.indexOf(slotSlug(nm, o.slot)) < 0) out.colorable.push(slotSlug(nm, o.slot));
         });
-        try { localStorage.setItem('bx-slotnames', JSON.stringify(out.slots)); } catch (e) {}
+        try { var memo = {}; Object.keys(out.slots).forEach(function (k) { memo[k] = { name: out.slots[k].name, lock: out.slots[k].lock }; }); localStorage.setItem('bx-slotnames', JSON.stringify(memo)); } catch (e) {}
       }
       return out;
     }
