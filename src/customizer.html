@@ -1687,21 +1687,21 @@ body.clawon .stage .clawstart, .stage:has(.sizecard:not([hidden])) .clawstart { 
 .libgrid .libtile, .brwgrid .libtile {
   position: relative; display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start;
   aspect-ratio: 4 / 5; padding: 5px !important; gap: 0 !important; overflow: hidden; box-sizing: border-box;
-  border: 2.5px solid var(--ink-dark) !important; border-radius: 14px !important;
-  background: linear-gradient(180deg, #A6E4FF 0%, #4DB6F2 42%, #1E7CCF 100%) !important;
-  box-shadow: inset 0 2px 0 rgba(255,255,255,.8), inset 0 -3px 0 rgba(0,0,0,.2), 0 4px 0 var(--ink-dark) !important;
+  border: 2.5px solid #01948C !important; border-radius: 14px !important;
+  background: linear-gradient(180deg, #86D2FA 0%, #359FE4 42%, #1665B8 100%) !important;
+  box-shadow: inset 0 2px 0 rgba(255,255,255,.8), inset 0 -3px 0 rgba(0,0,0,.2), 0 4px 0 #016E68 !important;
   transition: transform .12s ease;
 }
 .libgrid .libtile:hover, .brwgrid .libtile:hover { transform: translateY(-2px); }
 .libgrid .libtile img, .libgrid .libtile .ph, .brwgrid .libtile img, .brwgrid .libtile .ph {
   flex: 1 1 auto; width: 100% !important; height: 100% !important; min-height: 0; box-sizing: border-box;
   object-fit: contain; object-position: 50% 30%; border-radius: 9px !important;
-  border: 2px solid rgba(11,59,56,.9);
-  background: radial-gradient(circle at 50% 36%, #FFFFFF 0%, #E3F6FF 40%, #9BD7FF 100%);
+  border: 2px solid #01948C;
+  background: radial-gradient(circle at 50% 36%, #F4FBFF 0%, #C4E8FF 40%, #72BDF2 100%);
   box-shadow: inset 0 0 0 2px rgba(255,255,255,.55);
 }
 .libgrid .libtile img, .brwgrid .libtile img { padding: 3px 3px 14px; }
-.libgrid .libtile .ph, .brwgrid .libtile .ph { display: grid; place-items: center; font: 400 34px "Lilita One", sans-serif; color: #1E7CCF; }
+.libgrid .libtile .ph, .brwgrid .libtile .ph { display: grid; place-items: center; font: 400 34px "Lilita One", sans-serif; color: #1665B8; }
 /* glossy shine over the top of the card */
 .libgrid .libtile:not(.pending)::before, .brwgrid .libtile:not(.pending)::before {
   content: ""; position: absolute; z-index: 1; left: 7px; right: 7px; top: 7px; height: 40%; pointer-events: none;
@@ -1722,7 +1722,7 @@ body.clawon .stage .clawstart, .stage:has(.sizecard:not([hidden])) .clawstart { 
 .libgrid .libtile.is-featured, .brwgrid .libtile.is-featured { background: linear-gradient(180deg, #FFD08A 0%, #FF9A2E 45%, #E06A00 100%) !important; }
 .libgrid .libtile[aria-selected="true"], .brwgrid .libtile[aria-selected="true"] {
   background: linear-gradient(180deg, #FFF59A 0%, #FFD60A 45%, #F2A900 100%) !important;
-  box-shadow: inset 0 2px 0 rgba(255,255,255,.85), inset 0 -3px 0 rgba(0,0,0,.18), 0 0 0 3px #FFD000, 0 4px 0 var(--ink-dark), 0 0 16px rgba(255,208,0,.65) !important;
+  box-shadow: inset 0 2px 0 rgba(255,255,255,.85), inset 0 -3px 0 rgba(0,0,0,.18), 0 0 0 3px #FFD000, 0 4px 0 #016E68, 0 0 16px rgba(255,208,0,.65) !important;
 }
 .libgrid .libtile[aria-selected="true"]::after, .brwgrid .libtile[aria-selected="true"]::after { z-index: 3; top: 8px !important; right: 8px !important; }
 .libgrid .libbadge, .brwgrid .libbadge { z-index: 3; top: 9px; left: 9px; box-shadow: 0 2px 0 var(--ink-dark); font-size: 10px; }
