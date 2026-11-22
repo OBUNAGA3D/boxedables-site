@@ -1,6 +1,6 @@
 # Boxedables site
 
-Test site for the Boxedables customizer: https://boxedables-site.obukusb.workers.dev
+Test site for the Boxedables customizer: https://boxedables.com (also https://boxedables-site.obukusb.workers.dev). Locked with Cloudflare Access.
 
 ## How it fits together
 
