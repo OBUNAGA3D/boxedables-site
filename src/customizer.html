@@ -6222,14 +6222,65 @@ var DECO = (function () {
   // published characters from the admin page join the library for everyone
   var pubLoaded = false;
   // characters still downloading show as loading tiles; the list (names and pictures) is remembered in this browser for next time
-  var PENDING = [], pendingPick = null;
+  var PENDING = [], pendingPick = null, LOADQ = { kick: function () {} };
   function libCacheRead() { try { return (JSON.parse(localStorage.getItem('bx-libcache') || '[]') || []).filter(function (x) { return x && x.id && x.name; }); } catch (e) { return []; } }
   function libCacheSave() {
     try {
-      var list = LIB.filter(function (e) { return /^c-/.test(e.id) || e.id === 'kingkong'; }).map(function (e) { return { id: e.id, name: e.name, theme: e.theme, thumb: e.thumb, badge: e.badge || '', order: e.order }; });
+      var list = LIB.filter(function (e) { return /^c-/.test(e.id) || e.id === 'kingkong'; }).map(function (e) { return { id: e.id, name: e.name, theme: e.theme, thumb: e.thumb, badge: e.badge || '', order: e.order, asset: e.asset || '', tv: THUMB_V }; });
+      PENDING.forEach(function (p) { if (p.thumb && !list.some(function (x) { return x.id === p.id; })) list.push({ id: p.id, name: p.name, theme: p.theme, thumb: p.thumb, badge: p.badge || '', order: p.order, asset: p.asset || '', tv: p.tv }); });
       localStorage.setItem('bx-libcache', JSON.stringify(list));
     } catch (e) {}   // full or blocked storage: tiles just appear a moment later
   }
+  // character files are kept in this browser (IndexedDB) after the first download, so the next visit opens them without downloading again
+  var FCACHE = (function () {
+    var dbp = null;
+    function open() {
+      if (dbp) return dbp;
+      dbp = new Promise(function (res) {
+        try {
+          var rq = indexedDB.open('bx-files', 1);
+          rq.onupgradeneeded = function () { try { rq.result.createObjectStore('f'); } catch (e) {} };
+          rq.onsuccess = function () { res(rq.result); }; rq.onerror = rq.onblocked = function () { res(null); };
+        } catch (e) { res(null); }
+        setTimeout(function () { res(null); }, 2500);   // a stuck browser store never holds up loading
+      });
+      return dbp;
+    }
+    function run(mode, fn) {
+      return open().then(function (db) {
+        if (!db) return null;
+        return new Promise(function (res) {
+          try { var t = db.transaction('f', mode), r = fn(t.objectStore('f')); t.oncomplete = function () { res(r && r.result !== undefined ? r.result : null); }; t.onerror = t.onabort = function () { res(null); }; }
+          catch (e) { res(null); }
+        });
+      }).catch(function () { return null; });
+    }
+    return {
+      get: function (k) { return run('readonly', function (st) { return st.get(k); }); },
+      put: function (k, v) { return run('readwrite', function (st) { st.put(v, k); return null; }); },
+      keep: function (keys) {   // forget files of characters that were removed or replaced
+        run('readwrite', function (st) { var r = st.getAllKeys(); r.onsuccess = function () { (r.result || []).forEach(function (k) { if (keys.indexOf(k) < 0) st.delete(k); }); }; return null; });
+      }
+    };
+  })();
+  function assetText(id) {
+    return FCACHE.get(id).then(function (hit) {
+      if (typeof hit === 'string' && hit.length > 100) return hit;
+      return fetch('/_blob/' + id).then(function (r) { if (!r.ok) throw new Error('missing'); return r.text(); })
+        .then(function (t) { FCACHE.put(id, t); return t; });
+    });
+  }
+  var THUMB_V = 3, SEEN0 = null;
+  function seenThumb(id, sig) {   // the picture this browser made last visit for the same file and colors
+    if (!SEEN0) SEEN0 = libCacheRead();
+    var c = SEEN0.filter(function (x) { return x.id === id && x.asset === sig && x.tv === THUMB_V && x.thumb; })[0];
+    return c ? c.thumb : null;
+  }
+  function fileSig(asset, slots) {   // the file plus its color settings: a new color or name in Admin makes a new picture
+    var t = String(asset || '') + '|' + JSON.stringify(slots || {}), h = 5381;
+    for (var i = 0; i < t.length; i++) h = ((h << 5) + h + t.charCodeAt(i)) | 0;
+    return String(asset || '') + ':' + (h >>> 0).toString(36);
+  }   // raise when thumbnails change look, so remembered pictures are made again
   function pendingDone(id) { PENDING = PENDING.filter(function (p) { return p.id !== id; }); if (pendingPick === id) pendingPick = null; }
   function b64ToBuf(s) { var bin = atob(s), u = new Uint8Array(bin.length); for (var i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return u.buffer; }
   // colors by filament: every unnamed part on the same filament slot becomes one color, named in Admin
@@ -6249,7 +6300,8 @@ var DECO = (function () {
   function addPublished(id, data, buf) {
     if (LIB.some(function (e) { return e.id === 'c-' + id; })) return;
     var parts = applySlotNames(BX.parse3MF(buf), data.slots); if (!parts.length) return;
-    LIB.push({ id: 'c-' + id, name: data.name, theme: data.theme || 'Animals', colorable: data.colorable && data.colorable.length ? data.colorable : undefined, parts: parts, thumb: makeThumb(parts), note: data.note || '', rest: typeof data.rest === 'number' ? data.rest : undefined, badge: data.badge || '', created: data.created || 0, order: typeof data.order === 'number' ? data.order : 1e6 + (1e13 - (data.created || 0)) / 1e13 });
+    var sig = fileSig(data.asset, data.slots), seen = data.asset ? seenThumb('c-' + id, sig) : null;   // same file as last visit: reuse its picture (making one is the slow part on phones)
+    LIB.push({ id: 'c-' + id, name: data.name, theme: data.theme || 'Animals', colorable: data.colorable && data.colorable.length ? data.colorable : undefined, parts: parts, asset: sig, thumb: seen || makeThumb(parts), note: data.note || '', rest: typeof data.rest === 'number' ? data.rest : undefined, badge: data.badge || '', created: data.created || 0, order: typeof data.order === 'number' ? data.order : 1e6 + (1e13 - (data.created || 0)) / 1e13 });
     LIB.sort(function (a, b) { return a.id === 'kingkong' ? -1 : b.id === 'kingkong' ? 1 : (a.order || 0) - (b.order || 0); });
     if (THEMES.indexOf(data.theme) < 0 && data.theme) THEMES.push(data.theme);
     var wanted = pendingPick === 'c-' + id; pendingDone('c-' + id);
@@ -6263,7 +6315,7 @@ var DECO = (function () {
     var kong = BX.decodeEmbedded(pack.meta, pack.data);
     var KC = pack.colors || {}; kong.forEach(function (p) { var g = BX.classify(p.name).group; if (KC[g]) p.filColor = KC[g]; });   // his colors from the file
     Object.keys(pack.labels || {}).forEach(function (g) { BX.labels[g] = pack.labels[g]; });
-    LIB.unshift({ id: 'kingkong', name: 'King Kong', num: 1, theme: 'Animals', colorable: ['fur', 'skin', 'eyes'], parts: kong, thumb: makeThumb(kong), enforcers: pack.enforcers || [], note: pack.note || 'Turn on auto support: critical regions only', order: -1 });
+    LIB.unshift({ id: 'kingkong', name: 'King Kong', num: 1, theme: 'Animals', colorable: ['fur', 'skin', 'eyes'], parts: kong, asset: fileSig(KONG.asset, null), thumb: (KONG.asset && seenThumb('kingkong', fileSig(KONG.asset, null))) || makeThumb(kong), enforcers: pack.enforcers || [], note: pack.note || 'Turn on auto support: critical regions only', order: -1 });
     pendingDone('kingkong'); renderLib(); libCacheSave();
   }
   // the test site's first admin visit moves King Kong into its database from a one-time seed file
@@ -6280,7 +6332,7 @@ var DECO = (function () {
     var o = {};
     DBX.collection('characters').doc('_kingkong').get().then(function (d) {
       o = d.exists ? d.data() : {}; if (o.asset) KONG.asset = o.asset;
-      if (o.asset) return fetch('/_blob/' + o.asset).then(function (r) { if (!r.ok) throw new Error('missing'); return r.text(); });
+      if (o.asset) return assetText(o.asset);
       return kongSeed(o);
     }).then(function (txt) {
       kongBuild(JSON.parse(txt)); builtInSet(o); KONG.state = 'ready';
@@ -6312,15 +6364,24 @@ var DECO = (function () {
       var known = {}; PENDING.forEach(function (p) { known[p.id] = p; });
       PENDING = docs.filter(function (d) { return !LIB.some(function (e) { return e.id === 'c-' + d.id; }); }).map(function (d) {
         var data = d.data(), id = 'c-' + d.id, old = known[id] || {};
-        return { id: id, name: data.name, theme: data.theme || 'Animals', thumb: old.thumb || null, badge: data.badge || '', created: data.created || 0, order: typeof data.order === 'number' ? data.order : 1e6 + (1e13 - (data.created || 0)) / 1e7 };
+        return { id: id, name: data.name, theme: data.theme || 'Animals', thumb: old.thumb || null, asset: old.asset || '', tv: old.tv, badge: data.badge || '', created: data.created || 0, order: typeof data.order === 'number' ? data.order : 1e6 + (1e13 - (data.created || 0)) / 1e7 };
       });
       renderLib();
       if (!docs.length) libCacheSave();
-      docs.forEach(function (d) {
-        var data = d.data();
-        fetch('/_blob/' + data.asset).then(function (r) { return r.text(); }).then(function (txt) { addPublished(d.id, data, b64ToBuf(txt.trim())); })
-          .catch(function () { pendingDone('c-' + d.id); renderLib(); });
-      });
+      FCACHE.keep(docs.map(function (d) { return d.data().asset; }).concat(KONG.asset ? [KONG.asset] : []));
+      var queue = docs.slice().sort(function (a, b) { var x = a.data(), y = b.data(); return (typeof x.order === 'number' ? x.order : 1e9) - (typeof y.order === 'number' ? y.order : 1e9); }), busy = 0;
+      var next = function () {
+        while (busy < 2 && queue.length) {
+          var k = pendingPick ? queue.findIndex(function (d) { return 'c-' + d.id === pendingPick; }) : -1;
+          var d = queue.splice(k > 0 ? k : 0, 1)[0], data = d.data(); busy++;
+          (function (d, data) {
+            assetText(data.asset).then(function (txt) { addPublished(d.id, data, b64ToBuf(txt.trim())); })
+              .catch(function () { pendingDone('c-' + d.id); renderLib(); })
+              .then(function () { busy--; setTimeout(next, 0); });
+          })(d, data);
+        }
+      };
+      LOADQ.kick = next; next();
     }).catch(function () {});
   }
   // admin
@@ -6361,7 +6422,7 @@ var DECO = (function () {
       return assets.upload(new Blob([btoa(s)], { type: 'text/plain' }));
     });
   }
-  function fetchAsset(id) { return fetch('/_blob/' + id).then(function (r) { if (!r.ok) throw new Error('missing'); return r.text(); }).then(function (t) { return b64ToBuf(t.trim()); }); }
+  function fetchAsset(id) { return assetText(id).then(function (t) { return b64ToBuf(t.trim()); }); }
   // put a saved character back in the library with its new file or settings
   function refreshChar(id, data, buf) {
     for (var i = LIB.length - 1; i >= 0; i--) if (LIB[i].id === 'c-' + id) LIB.splice(i, 1);
@@ -6425,7 +6486,7 @@ var DECO = (function () {
       var keep = { shape: BOXSHAPE.shape, tag: BOXSHAPE.tag }, bg; BOXSHAPE.shape = 'classic'; BOXSHAPE.tag = false;
       try { bg = makeBoxGeom(); } finally { BOXSHAPE.shape = keep.shape; BOXSHAPE.tag = keep.tag; }
       A.boxG.add(new THREE.Mesh(bg, apvMat('#6EC6FF')));
-      var lp = BOX_PARTS.filter(function (p) { return /^latch$/i.test(p.name); })[0]; if (lp) A.boxG.add(new THREE.Mesh(lp.geom.clone(), apvMat('#2A2A2E')));   // its own copy: the preview's soft shading must not land on the main box   // its own copy: the preview's soft shading must not land on the main box
+      var lp = BOX_PARTS.filter(function (p) { return /^latch$/i.test(p.name); })[0]; if (lp) { var lme = new THREE.Mesh(lp.geom.clone(), apvMat('#2A2A2E')); lme.position.y = -0.4; A.boxG.add(lme); }   // its own copy (the preview's soft shading must not land on the main box), nudged 0.4 mm forward so the plain preview box never covers it
       A.holder.add(A.boxG);
     }
     var g = new THREE.Group(); A.charG = g; g.userData.fit = fit;
@@ -9745,7 +9806,7 @@ var DECO = (function () {
   }
   // ---------- character library ----------
   var LIB = [], libSel = null, libTheme = 'All', BOX_PARTS = [], THEMES = ['All', 'Animals'];
-  PENDING = libCacheRead();   // tiles from the last visit, shown right away
+  PENDING = libCacheRead(); SEEN0 = PENDING.slice();   // tiles from the last visit, shown right away (and their pictures, reused when the file is the same)
   PENDING.forEach(function (p) { if (p.theme && THEMES.indexOf(p.theme) < 0) THEMES.push(p.theme); });
   // ---------- the standard switch: every character sits on the same keyboard switch ----------
   // A part named "switch" (or "switchslot") only lines a character up; the standard switch then replaces it.
@@ -9891,7 +9952,7 @@ var DECO = (function () {
       else { var pph = document.createElement('span'); pph.className = 'ph'; pph.textContent = e.name.charAt(0); pb.appendChild(pph); }
       var pnm = document.createElement('span'); pnm.textContent = e.name; pb.appendChild(pnm);
       var pth = document.createElement('small'); pth.textContent = 'Loading…'; pb.appendChild(pth);
-      pb.addEventListener('click', function () { pendingPick = e.id; renderLib(); if (after) after(); });   // opens as soon as it's ready
+      pb.addEventListener('click', function () { pendingPick = e.id; renderLib(); LOADQ.kick(); if (after) after(); });   // opens as soon as it's ready
       return pb;
     }
     var b = document.createElement('button'); b.type = 'button'; b.className = 'libtile'; b.setAttribute('role', 'option');
