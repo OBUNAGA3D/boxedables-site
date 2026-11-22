@@ -1682,6 +1682,59 @@ body.clawon .stage .clawstart, .stage:has(.sizecard:not([hidden])) .clawstart { 
 .wzpal .chip.filechip { position: relative; }
 .wzpal .chip.filechip::after { content: "3MF"; position: absolute; left: 50%; bottom: -13px; transform: translateX(-50%); font: 800 8.5px "Figtree", sans-serif; color: var(--ink-dark); letter-spacing: .02em; }
 .wzpal { row-gap: 10px; }
+/* ---------- character cards (game-card style, November 22) ---------- */
+@media (min-width: 700px) { .libgrid { grid-auto-columns: 100px; gap: 10px; padding: 4px 4px 12px; } }
+.libgrid .libtile, .brwgrid .libtile {
+  position: relative; display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start;
+  aspect-ratio: 4 / 5; padding: 5px !important; gap: 0 !important; overflow: hidden; box-sizing: border-box;
+  border: 2.5px solid var(--ink-dark) !important; border-radius: 14px !important;
+  background: linear-gradient(180deg, #A6E4FF 0%, #4DB6F2 42%, #1E7CCF 100%) !important;
+  box-shadow: inset 0 2px 0 rgba(255,255,255,.8), inset 0 -3px 0 rgba(0,0,0,.2), 0 4px 0 var(--ink-dark) !important;
+  transition: transform .12s ease;
+}
+.libgrid .libtile:hover, .brwgrid .libtile:hover { transform: translateY(-2px); }
+.libgrid .libtile img, .libgrid .libtile .ph, .brwgrid .libtile img, .brwgrid .libtile .ph {
+  flex: 1 1 auto; width: 100% !important; height: 100% !important; min-height: 0; box-sizing: border-box;
+  object-fit: contain; object-position: 50% 30%; border-radius: 9px !important;
+  border: 2px solid rgba(11,59,56,.9);
+  background: radial-gradient(circle at 50% 36%, #FFFFFF 0%, #E3F6FF 40%, #9BD7FF 100%);
+  box-shadow: inset 0 0 0 2px rgba(255,255,255,.55);
+}
+.libgrid .libtile img, .brwgrid .libtile img { padding: 3px 3px 14px; }
+.libgrid .libtile .ph, .brwgrid .libtile .ph { display: grid; place-items: center; font: 400 34px "Lilita One", sans-serif; color: #1E7CCF; }
+/* glossy shine over the top of the card */
+.libgrid .libtile:not(.pending)::before, .brwgrid .libtile:not(.pending)::before {
+  content: ""; position: absolute; z-index: 1; left: 7px; right: 7px; top: 7px; height: 40%; pointer-events: none;
+  border-radius: 8px 8px 50% 50% / 8px 8px 16px 16px; background: linear-gradient(180deg, rgba(255,255,255,.42), rgba(255,255,255,0));
+}
+/* name banner along the bottom of the picture */
+.libgrid .libtile > span:not(.ph), .brwgrid .libtile > span:not(.ph) {
+  position: absolute; z-index: 2; left: 7px; right: 7px; bottom: 7px; padding: 14px 3px 3px; border-radius: 0 0 8px 8px;
+  background: linear-gradient(180deg, rgba(11,59,56,0) 0%, rgba(11,59,56,.72) 55%, rgba(11,59,56,.9) 100%);
+  font: 400 13.5px/1.1 "Lilita One", sans-serif; letter-spacing: .02em; color: #FFFFFF; text-align: center;
+  text-shadow: -1px -1px 0 #0B3B38, 1px -1px 0 #0B3B38, -1px 1px 0 #0B3B38, 1px 1px 0 #0B3B38, 0 2px 0 #0B3B38;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.brwgrid .libtile > span:not(.ph) { font-size: 15px; }
+.libgrid .libtile > small, .brwgrid .libtile > small { display: none; }
+.libgrid .libtile.pending > small, .brwgrid .libtile.pending > small { display: block; position: absolute; z-index: 2; top: 9px; left: 0; right: 0; text-align: center; font: 800 10px "Figtree", sans-serif; color: var(--ink-dark); opacity: 1 !important; }
+/* featured: orange frame; selected: gold frame with a glow */
+.libgrid .libtile.is-featured, .brwgrid .libtile.is-featured { background: linear-gradient(180deg, #FFD08A 0%, #FF9A2E 45%, #E06A00 100%) !important; }
+.libgrid .libtile[aria-selected="true"], .brwgrid .libtile[aria-selected="true"] {
+  background: linear-gradient(180deg, #FFF59A 0%, #FFD60A 45%, #F2A900 100%) !important;
+  box-shadow: inset 0 2px 0 rgba(255,255,255,.85), inset 0 -3px 0 rgba(0,0,0,.18), 0 0 0 3px #FFD000, 0 4px 0 var(--ink-dark), 0 0 16px rgba(255,208,0,.65) !important;
+}
+.libgrid .libtile[aria-selected="true"]::after, .brwgrid .libtile[aria-selected="true"]::after { z-index: 3; top: 8px !important; right: 8px !important; }
+.libgrid .libbadge, .brwgrid .libbadge { z-index: 3; top: 9px; left: 9px; box-shadow: 0 2px 0 var(--ink-dark); font-size: 10px; }
+/* "More soon" and "Add yours" cards */
+.libgrid .libtile.soon, .brwgrid .libtile.soon { background: rgba(255,255,255,.45) !important; border: 2.5px dashed rgba(11,59,56,.5) !important; box-shadow: none !important; }
+.libgrid .libtile.soon .ph { background: transparent; border-color: transparent; box-shadow: none; color: #5B6B6E; }
+.libgrid .libtile.soon > span:not(.ph) { background: none; color: #3A4648; text-shadow: none; font-family: "Figtree", sans-serif; font-weight: 800; font-size: 12px; }
+.libgrid .libtile.add, .brwgrid .libtile.add { background: linear-gradient(180deg, #A8F5B8 0%, #4FD86E 45%, #23A045 100%) !important; }
+.libgrid .libtile.add .ph { color: #1F9A41; font-size: 40px; }
+.libgrid .libtile.soon::before, .libgrid .libtile.soon:hover { transform: none; }
+.libgrid .libtile.soon::before { display: none; }
+@media (prefers-reduced-motion: reduce) { .libgrid .libtile, .brwgrid .libtile { transition: none; } .libgrid .libtile:hover, .brwgrid .libtile:hover { transform: none; } }
 </style>
 </head>
 <body>
@@ -4262,10 +4315,11 @@ var DECO = (function () {
       var box = new THREE.Box3(); list.forEach(function (m) { box.expandByObject(m); }); if (box.isEmpty()) return null;
       var c = box.getCenter(new THREE.Vector3()), R = box.getSize(new THREE.Vector3()).length() / 2 + 1, range = 4 * R;
       var hid = (hideThese || []).filter(function (g) { return g && g.visible; }); hid.forEach(function (g) { g.visible = false; });
-      var par = root.parent, prevRT = renderer.getRenderTarget(), prevC = renderer.getClearColor(new THREE.Color()).getHex(), prevA = renderer.getClearAlpha(), prevAuto = renderer.shadowMap.autoUpdate;
+      var wrap = null, par = root.parent, prevRT = renderer.getRenderTarget(), prevC = renderer.getClearColor(new THREE.Color()).getHex(), prevA = renderer.getClearAlpha(), prevAuto = renderer.shadowMap.autoUpdate;
       var maps = [];
       try {
-        aoScene.add(root); renderer.shadowMap.autoUpdate = false;
+        var wrap = new THREE.Group(); wrap.matrixAutoUpdate = false; if (par) { par.updateMatrixWorld(true); wrap.matrix.copy(par.matrixWorld); }
+        aoScene.add(wrap); wrap.add(root); wrap.updateMatrixWorld(true); renderer.shadowMap.autoUpdate = false;
         (dirs || UP).forEach(function (d) {
           var cam = new THREE.OrthographicCamera(-R, R, R, -R, 0.1, range);
           cam.position.copy(c).addScaledVector(d, 2 * R); if (Math.abs(d.y) > 0.95) cam.up.set(1, 0, 0); else cam.up.set(0, 1, 0);
@@ -4279,14 +4333,15 @@ var DECO = (function () {
       } catch (e) { ok = false; }
       finally {
         renderer.setRenderTarget(prevRT); renderer.setClearColor(prevC, prevA); renderer.shadowMap.autoUpdate = prevAuto;
-        if (par) par.add(root); else aoScene.remove(root);
+        if (par) par.add(root); else if (wrap) wrap.remove(root);
+        if (wrap) aoScene.remove(wrap);
         hid.forEach(function (g) { g.visible = true; });
       }
       return ok ? maps : null;
     }
     var nm = new THREE.Matrix3();
-    function step(budget) {
-      var t0 = performance.now(), J = job;
+    function step(budget, Jx) {
+      var t0 = performance.now(), J = Jx || job;
       while (performance.now() - t0 < budget) {
         if (J.mi >= J.list.length) { finish(J); return; }
         var m = J.list[J.mi], g = m.geometry, pos = g.getAttribute('position'), nor = g.getAttribute('normal'), out = J.out[J.mi];
@@ -4307,22 +4362,54 @@ var DECO = (function () {
             if (u < 0 || v < 0 || u >= RES || v >= RES || pz * 0.5 + 0.5 <= mp.dm[v * RES + u] + mp.bias) vis += w;
           }
           var ao = tot > 0 ? vis / tot : 1;
-          out[i] = Math.min(0.6, Math.pow(1 - ao, 1.15) * 0.95);
+          out[i] = Math.min(0.45, Math.pow(1 - ao, 1.15) * 0.72);   // softened November 22 (was 0.95, cap 0.6)
         }
         J.vi = end; if (end >= pos.count) { J.mi++; J.vi = 0; }
       }
     }
     function finish(J) {
-      if (J === job) job = null; if (J.own === undefined && J.sig !== sig) return;
+      J.done = true; if (J === job) job = null; if (J.own === undefined && J.sig !== sig) return;
       J.list.forEach(function (m, i) { var a = m.geometry.getAttribute('occl'); if (a && a.count === J.out[i].length) { a.array.set(J.out[i]); a.needsUpdate = true; } });
     }
     function signature(list) { return list.map(function (m) { return m.geometry.uuid; }).join(','); }
+    // other pieces that get their own soft shading (packaging, storage box, Admin preview): redone a moment after they change
+    var EXTRA = [];
+    function xList(x) {
+      var list = [], stop = x.root.parent;
+      x.root.traverse(function (m) {
+        if (!m.isMesh || m.isInstancedMesh || !m.geometry || !m.geometry.getAttribute('position') || m.isSprite) return;
+        for (var o = m; o && o !== stop; o = o.parent) if (!o.visible || x.hide.indexOf(o) >= 0) return;
+        var mt = Array.isArray(m.material) ? m.material[0] : m.material; if (!mt || mt.isShadowMaterial || (mt.transparent && mt.opacity < 0.05)) return;
+        list.push(m);
+      });
+      return list;
+    }
+    function xSig(list) {
+      return list.map(function (m) { var e = m.matrixWorld.elements; return m.geometry.uuid + '@' + Math.round(e[12] * 10) + ',' + Math.round(e[13] * 10) + ',' + Math.round(e[14] * 10); }).join('|');
+    }
+    function xStart(x) {
+      x.job = null; if (!ok || (x.active && !x.active()) || !x.root.visible) return;
+      var list = xList(x); if (!list.length) return;
+      var maps = depthMaps(list, x.root, x.hide); if (!maps) return;
+      x.job = { list: list, maps: maps, mi: 0, vi: 0, own: true, out: list.map(function (m) { return new Float32Array(m.geometry.getAttribute('position').count); }) };
+    }
+    function xTick(x) {
+      if ((x.active && !x.active()) || !x.root.visible) return;
+      if (frameN % 10 === 0) {
+        x.root.updateMatrixWorld(true);
+        var list = xList(x), s2 = xSig(list); ensure(list);
+        if (s2 !== x.sig) { x.sig = s2; x.job = null; clearTimeout(x.timer); x.timer = setTimeout(function () { xStart(x); }, 400); }
+      }
+      if (x.job) { step(4, x.job); if (x.job.done) { x.job = null; if (x.onDone) x.onDone(); } }
+    }
     return {
       tick: function () {
         var list = meshes(); ensure(list);
         if (++frameN % 10 === 0) { var s2 = signature(list); if (s2 !== sig) { sig = s2; job = null; clearTimeout(timer); timer = setTimeout(start, 350); } }
         if (job) step(6);
+        for (var xi = 0; xi < EXTRA.length; xi++) try { xTick(EXTRA[xi]); } catch (e) { EXTRA[xi].job = null; }
       },
+      watch: function (root, o) { o = o || {}; EXTRA.push({ root: root, hide: o.hide || [], active: o.active, onDone: o.onDone, sig: '', timer: 0, job: null }); },
       group: function (root) {   // any other model (thumbnails): worked out right away for all its shapes
         var list = []; root.updateMatrixWorld(true);
         root.traverse(function (m) { if (m.isMesh && m.visible && m.geometry && m.geometry.getAttribute('position')) list.push(m); });
@@ -6341,6 +6428,7 @@ var DECO = (function () {
     var f = new THREE.DirectionalLight(0xfff4e6, 0.26); f.position.set(-120, 40, 60); sc.add(f);
     var b = new THREE.DirectionalLight(0xdff6ff, 0.34); b.position.set(-30, 80, -140); sc.add(b);
     var holder = new THREE.Group(); holder.rotation.x = -Math.PI / 2; sc.add(holder);   // files are Z-up
+    if (AO && AO.watch) AO.watch(holder, { active: function () { return APV.r && APV.r.domElement.isConnected && !modal.hidden; }, onDone: function () { APV.dirty = true; } });
     APV = { r: r, sc: sc, holder: holder, cam: new THREE.PerspectiveCamera(30, 1, 1, 3000), yaw: 0.6, pitch: 0.42, dist: 220, ctr: new THREE.Vector3(), charG: null, boxG: null, mats: [], dirty: true, w: 0 };
     var cv = r.domElement; cv.className = 'wzcanvas'; cv.tabIndex = 0;
     cv.setAttribute('aria-label', 'Preview of the character on the box. Drag or use the arrow keys to turn it.');
@@ -6384,7 +6472,7 @@ var DECO = (function () {
       var keep = { shape: BOXSHAPE.shape, tag: BOXSHAPE.tag }, bg; BOXSHAPE.shape = 'classic'; BOXSHAPE.tag = false;
       try { bg = makeBoxGeom(); } finally { BOXSHAPE.shape = keep.shape; BOXSHAPE.tag = keep.tag; }
       A.boxG.add(new THREE.Mesh(bg, apvMat('#6EC6FF')));
-      var lp = BOX_PARTS.filter(function (p) { return /^latch$/i.test(p.name); })[0]; if (lp) A.boxG.add(new THREE.Mesh(lp.geom, apvMat('#2A2A2E')));
+      var lp = BOX_PARTS.filter(function (p) { return /^latch$/i.test(p.name); })[0]; if (lp) A.boxG.add(new THREE.Mesh(lp.geom.clone(), apvMat('#2A2A2E')));   // its own copy: the preview's soft shading must not land on the main box   // its own copy: the preview's soft shading must not land on the main box
       A.holder.add(A.boxG);
     }
     var g = new THREE.Group(); A.charG = g; g.userData.fit = fit;
@@ -8500,7 +8588,8 @@ var DECO = (function () {
       parts: [{ name: 'carton', geom: bbGeo('body-' + v), color: c }, { name: 'lettering', geom: bbGeo('text'), color: tc }, { name: 'question mark', geom: bbGeo('q-' + v), color: qc }] };
   }
   // in the preview: the carton around the design, see-through unless "Show it sealed" is on
-  var bbGroup = new THREE.Group(), bbMats = [0, 1, 2].map(function () { return new THREE.MeshPhysicalMaterial({ roughness: 0.6, metalness: 0, clearcoat: 0.45, clearcoatRoughness: 0.35, envMapIntensity: 0.32 * light.bright }); });   // same finish as the box and character
+  var bbGroup = new THREE.Group(); if (AO && AO.watch) AO.watch(bbGroup);
+  var bbMats = [0, 1, 2].map(function () { return new THREE.MeshPhysicalMaterial({ roughness: 0.6, metalness: 0, clearcoat: 0.45, clearcoatRoughness: 0.35, envMapIntensity: 0.32 * light.bright }); });   // same finish as the box and character
   var bbMeshes = bbMats.map(function (m) { var me = new THREE.Mesh(new THREE.BufferGeometry(), m); me.renderOrder = 3; bbGroup.add(me); return me; });
   bbGroup.visible = false; model.add(bbGroup);
   // these simple shapes share vertices across sharp edges; the preview shows them with crisp flat faces instead of smeared shading
@@ -8582,7 +8671,7 @@ var DECO = (function () {
     ];
   }
   // in the preview: the tray around this blind box, copies of the carton in the other pockets, the empty shelf and the header
-  var trGroup = new THREE.Group(); trGroup.visible = false; model.add(trGroup);
+  var trGroup = new THREE.Group(); trGroup.visible = false; model.add(trGroup); if (AO && AO.watch) AO.watch(trGroup);
   function trMat(hex) { var m = new THREE.MeshPhysicalMaterial({ roughness: 0.6, metalness: 0, clearcoat: 0.45, clearcoatRoughness: 0.35, envMapIntensity: 0.32 * light.bright }); m.color.set(hex).convertSRGBToLinear().multiplyScalar(0.9); return m; }
   var trLabel = (function () {
     var c = document.createElement('canvas'); c.width = 1024; c.height = 128; var x = c.getContext('2d');
@@ -8686,7 +8775,7 @@ var DECO = (function () {
   var dbSheet = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshPhysicalMaterial({ color: 0xE8F4FF, transparent: true, opacity: 0.18, roughness: 0.05, clearcoat: 1, side: THREE.DoubleSide, depthWrite: false }));
   dbSheet.rotation.x = Math.PI / 2; dbSheet.renderOrder = 3;
   [dbBody, dbCradle, dbLid, dbSheet].forEach(function (m) { dbGroup.add(m); });
-  dbGroup.visible = false; model.add(dbGroup);
+  dbGroup.visible = false; model.add(dbGroup); if (AO && AO.watch) AO.watch(dbGroup, { hide: [dbSheet] });
   function dbRender() {
     var v = dbVer(), dm = DBDATA.dims[v.depth];
     dbBody.geometry = flatG(dbGeo('body-' + v.depth)); dbCradle.geometry = flatG(dbGeo('cradle-' + v.shape + '_' + v.tex)); dbLid.geometry = flatG(dbGeo('lid-' + v.depth));
@@ -8879,6 +8968,7 @@ var DECO = (function () {
     [['DRAG A', 70], ['CHARACTER', 214]].forEach(function (t) { x.strokeText(t[0], 128, t[1]); x.fillText(t[0], 128, t[1]); });
     var t = new THREE.CanvasTexture(c); t.encoding = THREE.sRGBEncoding; return t;
   })();
+  if (AO && AO.watch) AO.watch(stGroup, { hide: [stSlotsG] });
   var stGlow = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ color: 0xFFD84A, transparent: true, opacity: 0.55, depthWrite: false })); stGlow.visible = false; stGlow.renderOrder = 4; stInner.add(stGlow);
   var stHits = [], stLibCache = {};
   function stCharGroup(id) {   // a copy of a character, standing upright (Z up), in its own colors
@@ -9851,8 +9941,8 @@ var DECO = (function () {
       pb.addEventListener('click', function () { pendingPick = e.id; renderLib(); if (after) after(); });   // opens as soon as it's ready
       return pb;
     }
-    var b = document.createElement('button'); b.type = 'button'; b.className = 'libtile'; b.setAttribute('role', 'option');
-    b.setAttribute('aria-selected', String(e.id === libSel && !pendingPick)); b.title = e.name; b.dataset.id = e.id;
+    var b = document.createElement('button'); b.type = 'button'; b.className = 'libtile' + (e.badge ? ' is-' + e.badge : ''); b.setAttribute('role', 'option');
+    b.setAttribute('aria-selected', String(e.id === libSel && !pendingPick)); b.title = e.name + (e.theme ? ' (' + e.theme + ')' : ''); b.dataset.id = e.id;
     if (e.thumb) { var im = document.createElement('img'); im.src = e.thumb; im.alt = ''; b.appendChild(im); }
     else { var ph = document.createElement('span'); ph.className = 'ph'; ph.textContent = e.name.charAt(0); b.appendChild(ph); }
     if (e.badge) { var bd = document.createElement('i'); bd.className = 'libbadge ' + e.badge; bd.textContent = e.badge === 'new' ? 'NEW' : '★'; bd.title = e.badge === 'new' ? 'New' : 'Featured'; b.appendChild(bd); }
