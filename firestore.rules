@@ -69,6 +69,17 @@ service cloud.firestore {
       allow read: if isAdmin() || (signedIn() && uid == me());
       allow write: if isAdmin() || (signedIn() && uid == me());
     }
+    // download log: one record per download, for refund requests and card disputes.
+    // Members can only add their own records with the current time; nobody can change or delete them; only admins read them.
+    match /dlog/{id} {
+      allow create: if signedIn() && request.resource.data.uid == me()
+        && request.resource.data.keys().hasOnly(['uid', 't', 'char', 'charId', 'which'])
+        && request.resource.data.t is int
+        && request.resource.data.t > request.time.toMillis() - 300000
+        && request.resource.data.t < request.time.toMillis() + 300000;
+      allow read: if isAdmin();
+      allow update, delete: if false;
+    }
     match /feedback/{uid} {
       allow read: if isAdmin() || (signedIn() && uid == me());
       allow write: if isAdmin() || (signedIn() && uid == me());

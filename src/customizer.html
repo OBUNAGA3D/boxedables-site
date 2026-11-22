@@ -1688,6 +1688,15 @@ body.clawon .stage .clawstart, .stage:has(.sizecard:not([hidden])) .clawstart { 
 .libtile:not(.soon) { box-shadow: inset 0 0 0 2px rgba(255,255,255,.85), 0 4px 0 var(--ink-dark) !important; }   /* thin white line inside the dark outline */
 .libtile[aria-selected="true"] { box-shadow: inset 0 0 0 2px rgba(255,255,255,.85), 0 0 0 3px #FFD000, 0 4px 0 var(--ink-dark) !important; }
 .libtile > span:not(.ph) { font-weight: 800 !important; font-size: 12.5px; }
+/* Admin: download log */
+.memlogbtn { display: inline-block; margin-left: 8px; padding: 1px 8px; border: 1.5px solid var(--ink-dark); border-radius: 999px; background: #FFF; font: 700 11px "Figtree", sans-serif; color: var(--ink-dark); cursor: pointer; }
+.memlogbtn[aria-expanded="true"] { background: var(--sun, #F9E11B); }
+.memlog { margin: -2px 0 10px 44px; padding: 10px 12px; border: 2px solid var(--parch-d); border-radius: 12px; background: #FAFBF7; }
+.memloghead { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.memlogrows { max-height: 260px; overflow: auto; margin-top: 6px; }
+.memlogrow { display: grid; grid-template-columns: 170px 1fr auto; gap: 10px; padding: 4px 2px; border-bottom: 1px solid #E6E9E2; font-size: 13px; }
+.memlogrow small { color: #5B6B6E; }
+@media (max-width: 760px) { .memlog { margin-left: 0; } .memlogrow { grid-template-columns: 1fr auto; } .memlogrow small { display: none; } }
 </style>
 </head>
 <body>
@@ -6131,6 +6140,10 @@ var DECO = (function () {
     var ev = { t: Date.now(), char: S.title, which: which, printer: PLAN.printer, slicer: PLAN.slicer, copies: PLAN.copies, shape: BOXSHAPE.shape,
       pattern: st.pattern.kind, icon: st.icon.kind || 'none', texture: TX.on ? TX.kind : 'none', boxColor: S.groups.box ? colorLabel(S.groups.box.color) : '' };
     appendMine('stats', 'events', ev, 200);
+    try {   // download log for refunds and disputes: who, what and when; only Admin can read it
+      var lid = UID + '_' + ev.t + '_' + Math.random().toString(36).slice(2, 8);
+      DBX.collection('dlog').doc(lid).set({ uid: UID, t: ev.t, char: S.title || '', charId: String(id || ''), which: which || 'all' }).catch(function () {});
+    } catch (e) {}
   }
   // tabs inside a modal
   function tabs(host, names, render) {
@@ -7193,6 +7206,8 @@ var DECO = (function () {
         var who = el('div'); who.appendChild(el('b', '', nm(r))); who.title = 'User ID: ' + r.uid;
         if (banned) who.appendChild(el('small', 'ban', 'Banned')); else if (muted) who.appendChild(el('small', 'mute', 'Muted until ' + new Date(ADM.mod.muted[r.uid]).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })));
         else if (r.first && now - r.first < wk) who.appendChild(el('small', 'newm', 'New'));
+        var lb = el('button', 'memlogbtn', 'Download log'); lb.type = 'button'; lb.setAttribute('aria-expanded', 'false');
+        lb.addEventListener('click', function () { toggleDlLog(row, lb, r, nm(r)); }); who.appendChild(lb);
         row.appendChild(who);
         row.appendChild(el('span', 'memx', when(r.first))); row.appendChild(el('span', 'memx', when(r.last)));
         row.appendChild(el('span', 'memx', String(r.visits || '\u2014'))); row.appendChild(el('span', 'memx', String(r.dl))); row.appendChild(el('span', 'memx', String(r.msgs)));
@@ -7213,6 +7228,49 @@ var DECO = (function () {
       var q = el('input', 'inboxq'); q.type = 'search'; q.placeholder = 'Search by name'; q.setAttribute('aria-label', 'Search members'); q.addEventListener('input', function () { view.q = q.value; draw(); }); bar.appendChild(q);
       body.appendChild(bar); body.appendChild(count); body.appendChild(list); draw();
     }).catch(function () { done('Couldn\u2019t load the members.'); });
+  }
+  // ---------- Admin: one member's download log (proof for refund requests and card disputes) ----------
+  var DL_WHAT = { all: 'Everything', char: 'Character only', box: 'Box only', blind: 'Blind box', display: 'Display box', tray: 'Seller tray', storage: 'Storage box' };
+  function toggleDlLog(row, btn, r, name) {
+    var open = row.nextSibling && row.nextSibling.classList && row.nextSibling.classList.contains('memlog');
+    if (open) { row.parentNode.removeChild(row.nextSibling); btn.setAttribute('aria-expanded', 'false'); return; }
+    btn.setAttribute('aria-expanded', 'true');
+    var box = el('div', 'memlog'); row.parentNode.insertBefore(box, row.nextSibling);
+    var note = el('p', 'note', 'Loading the download log…'); box.appendChild(note);
+    var fromLog = DBX.collection('dlog').where('uid', '==', r.uid).get().then(function (snap) { return snap.docs.map(function (d) { return d.data(); }); });
+    fromLog.catch(function () { return null; }).then(function (rows) {
+      var sure = !!(rows && rows.length);
+      if (sure) return { rows: rows, sure: true };
+      return DBX.collection('stats').doc(r.uid).get().then(function (d) { return { rows: ((d.exists ? d.data() : {}).events || []).map(function (e) { return { t: e.t, char: e.char, which: e.which }; }), sure: false }; }, function () { return { rows: [], sure: false }; });
+    }).then(function (res) {
+      box.textContent = '';
+      var list = res.rows.filter(function (x) { return x && x.t; }).sort(function (a, b) { return b.t - a.t; });
+      var head = el('div', 'memloghead');
+      head.appendChild(el('b', '', name + ': ' + list.length + ' download' + (list.length === 1 ? '' : 's')));
+      if (list.length) {
+        var cp = el('button', 'galdel', 'Copy as text'); cp.type = 'button';
+        cp.addEventListener('click', function () {
+          var txt = 'Boxedables download log\nMember: ' + name + ' (user ID ' + r.uid + ')\n' + list.length + ' downloads, times in UTC\n\n' +
+            list.slice().reverse().map(function (x) { return new Date(x.t).toISOString().replace('T', ' ').slice(0, 19) + '  ' + (x.char || '?') + '  (' + (DL_WHAT[x.which] || x.which || 'download') + ')'; }).join('\n');
+          var done = function () { cp.textContent = 'Copied'; setTimeout(function () { cp.textContent = 'Copy as text'; }, 1500); };
+          try { navigator.clipboard.writeText(txt).then(done, function () { window.prompt('Copy the log:', txt); }); } catch (e) { window.prompt('Copy the log:', txt); }
+        });
+        head.appendChild(cp);
+      }
+      box.appendChild(head);
+      box.appendChild(el('p', 'note', res.sure ? 'Saved at the moment of each download. Members can’t change or delete these records.'
+        : 'From the member’s own activity record (the last 200 downloads). The protected download log starts with downloads made from now on.'));
+      if (!list.length) { box.appendChild(el('p', 'note', 'No downloads yet.')); return; }
+      var tb = el('div', 'memlogrows');
+      list.slice(0, 500).forEach(function (x) {
+        var line = el('div', 'memlogrow');
+        line.appendChild(el('span', '', new Date(x.t).toLocaleString([], { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })));
+        line.appendChild(el('b', '', x.char || '?'));
+        line.appendChild(el('small', '', DL_WHAT[x.which] || x.which || 'Download'));
+        tb.appendChild(line);
+      });
+      box.appendChild(tb);
+    });
   }
   // ---------- Admin: inbox (feedback and chat reports) ----------
   function adminInbox(body) {
