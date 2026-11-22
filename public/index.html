@@ -1690,6 +1690,9 @@ body.clawon .stage .clawstart, .stage:has(.sizecard:not([hidden])) .clawstart { 
 /* ---------- character tiles: a little darker background, a shadow under the character (November 22) ---------- */
 .libtile { background: radial-gradient(circle at 50% 30%, #EAF6FF 0%, #74C2F5 55%, #2A82D0 100%) !important; }
 .libtile img { filter: saturate(1.12) contrast(1.07) drop-shadow(0 3px 3px rgba(8,40,72,.45)) drop-shadow(0 0 1.5px rgba(11,59,56,.5)); }
+.libtile:not(.soon) { box-shadow: inset 0 0 0 2px rgba(255,255,255,.85), 0 4px 0 var(--ink-dark) !important; }   /* thin white line inside the dark outline */
+.libtile[aria-selected="true"] { box-shadow: inset 0 0 0 2px rgba(255,255,255,.85), 0 0 0 3px #FFD000, 0 4px 0 var(--ink-dark) !important; }
+.libtile > span:not(.ph) { font-weight: 800 !important; font-size: 12.5px; }
 </style>
 </head>
 <body>
