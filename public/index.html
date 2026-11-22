@@ -1687,65 +1687,9 @@ body.clawon .stage .clawstart, .stage:has(.sizecard:not([hidden])) .clawstart { 
 .wzpal .chip.filechip { position: relative; }
 .wzpal .chip.filechip::after { content: "3MF"; position: absolute; left: 50%; bottom: -13px; transform: translateX(-50%); font: 800 8.5px "Figtree", sans-serif; color: var(--ink-dark); letter-spacing: .02em; }
 .wzpal { row-gap: 10px; }
-/* ---------- character cards (game-card style, November 22, v3) ---------- */
-@media (min-width: 700px) { .libgrid { grid-auto-columns: 100px; gap: 10px; padding: 4px 4px 12px; } }
-.libgrid .libtile, .brwgrid .libtile {
-  --fr1: #7CC6FF; --fr2: #3A8EE6; --fr3: #1E5FB8;            /* frame: light top, deep bottom */
-  --art1: #4FA8F0; --art2: #1C64C4; --art3: #0B347A;          /* picture background: deep game blue */
-  --line: #0A2240;                                             /* dark navy outline */
-  position: relative; display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start;
-  aspect-ratio: 4 / 5; padding: 4px !important; gap: 0 !important; overflow: hidden; box-sizing: border-box;
-  border: 2px solid var(--line) !important; border-radius: 12px !important;
-  background: linear-gradient(180deg, var(--fr1) 0%, var(--fr2) 45%, var(--fr3) 100%) !important;
-  box-shadow: inset 0 1.5px 0 rgba(255,255,255,.85), inset 0 -2px 0 rgba(0,0,0,.25), 0 3px 0 var(--line), 0 5px 6px rgba(10,34,64,.28) !important;
-  transition: transform .12s ease;
-}
-.libgrid .libtile:hover, .brwgrid .libtile:hover { transform: translateY(-2px); }
-.libgrid .libtile img, .libgrid .libtile .ph, .brwgrid .libtile img, .brwgrid .libtile .ph {
-  flex: 1 1 auto; width: 100% !important; height: 100% !important; min-height: 0; box-sizing: border-box;
-  object-fit: contain; object-position: 50% 30%; border-radius: 8px !important;
-  border: 2px solid var(--line);
-  background: radial-gradient(120% 90% at 50% 30%, var(--art1) 0%, var(--art2) 55%, var(--art3) 100%);
-  box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.22), inset 0 -10px 16px rgba(0,0,0,.25);
-  filter: none !important;
-}
-.libgrid .libtile img, .brwgrid .libtile img { padding: 3px 3px 14px; filter: drop-shadow(0 3px 2px rgba(5,20,50,.45)) !important; }
-.libgrid .libtile .ph, .brwgrid .libtile .ph { display: grid; place-items: center; font: 400 34px "Lilita One", sans-serif; color: #FFFFFF; text-shadow: 0 2px 0 var(--line); }
-/* glossy shine across the top of the picture */
-.libgrid .libtile:not(.pending)::before, .brwgrid .libtile:not(.pending)::before {
-  content: ""; position: absolute; z-index: 1; left: 6px; right: 6px; top: 6px; height: 34%; pointer-events: none;
-  border-radius: 7px 7px 50% 50% / 7px 7px 14px 14px; background: linear-gradient(180deg, rgba(255,255,255,.28), rgba(255,255,255,0));
-}
-/* name along the bottom of the picture */
-.libgrid .libtile > span:not(.ph), .brwgrid .libtile > span:not(.ph) {
-  position: absolute; z-index: 2; left: 6px; right: 6px; bottom: 6px; padding: 12px 3px 3px; border-radius: 0 0 7px 7px;
-  background: linear-gradient(180deg, rgba(10,34,64,0) 0%, rgba(10,34,64,.75) 60%, rgba(10,34,64,.92) 100%);
-  font: 400 13.5px/1.1 "Lilita One", sans-serif; letter-spacing: .02em; color: #FFFFFF; text-align: center;
-  text-shadow: -1px -1px 0 var(--line), 1px -1px 0 var(--line), -1px 1px 0 var(--line), 1px 1px 0 var(--line), 0 2px 0 var(--line);
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-.brwgrid .libtile > span:not(.ph) { font-size: 15px; }
-.libgrid .libtile > small, .brwgrid .libtile > small { display: none; }
-.libgrid .libtile.pending > small, .brwgrid .libtile.pending > small { display: block; position: absolute; z-index: 2; top: 8px; left: 0; right: 0; text-align: center; font: 800 10px "Figtree", sans-serif; color: #FFFFFF; text-shadow: 0 1px 0 var(--line); opacity: 1 !important; }
-/* featured: orange frame */
-.libgrid .libtile.is-featured, .brwgrid .libtile.is-featured { --fr1: #FFD27A; --fr2: #FF9A2E; --fr3: #D45F00; }
-/* picked: gold frame and a yellow-to-orange picture background */
-.libgrid .libtile[aria-selected="true"], .brwgrid .libtile[aria-selected="true"] {
-  --fr1: #FFF59A; --fr2: #FFD60A; --fr3: #E79A00; --art1: #FFE45C; --art2: #FFB21E; --art3: #E06A00;
-  box-shadow: inset 0 1.5px 0 rgba(255,255,255,.9), inset 0 -2px 0 rgba(0,0,0,.2), 0 0 0 3px #FFD000, 0 3px 0 var(--line), 0 0 16px rgba(255,208,0,.7) !important;
-}
-.libgrid .libtile[aria-selected="true"] > span:not(.ph), .brwgrid .libtile[aria-selected="true"] > span:not(.ph) { background: linear-gradient(180deg, rgba(120,50,0,0) 0%, rgba(120,50,0,.6) 60%, rgba(100,40,0,.85) 100%); }
-.libgrid .libtile[aria-selected="true"]::after, .brwgrid .libtile[aria-selected="true"]::after { z-index: 3; top: 7px !important; right: 7px !important; }
-.libgrid .libbadge, .brwgrid .libbadge { z-index: 3; top: 8px; left: 8px; border-color: var(--line); box-shadow: 0 2px 0 var(--line); font-size: 10px; }
-/* "More soon" and "Add yours" cards */
-.libgrid .libtile.soon, .brwgrid .libtile.soon { background: rgba(10,34,64,.12) !important; border: 2px dashed rgba(10,34,64,.45) !important; box-shadow: none !important; }
-.libgrid .libtile.soon .ph { background: transparent; border-color: transparent; box-shadow: none; color: #4A5A66; text-shadow: none; }
-.libgrid .libtile.soon > span:not(.ph) { background: none; color: #33424D; text-shadow: none; font-family: "Figtree", sans-serif; font-weight: 800; font-size: 12px; }
-.libgrid .libtile.soon::before { display: none; }
-.libgrid .libtile.soon:hover { transform: none; }
-.libgrid .libtile.add, .brwgrid .libtile.add { --fr1: #9AF0AE; --fr2: #3FCB63; --fr3: #1A8C3A; --art1: #5BD97B; --art2: #23A045; --art3: #0F6A2A; }
-.libgrid .libtile.add .ph { font-size: 42px; }
-@media (prefers-reduced-motion: reduce) { .libgrid .libtile, .brwgrid .libtile { transition: none; } .libgrid .libtile:hover, .brwgrid .libtile:hover { transform: none; } }
+/* ---------- character tiles: a little darker background, a shadow under the character (November 22) ---------- */
+.libtile { background: radial-gradient(circle at 50% 30%, #EAF6FF 0%, #74C2F5 55%, #2A82D0 100%) !important; }
+.libtile img { filter: saturate(1.12) contrast(1.07) drop-shadow(0 3px 3px rgba(8,40,72,.45)) drop-shadow(0 0 1.5px rgba(11,59,56,.5)); }
 </style>
 </head>
 <body>
@@ -9952,8 +9896,8 @@ var DECO = (function () {
       pb.addEventListener('click', function () { pendingPick = e.id; renderLib(); if (after) after(); });   // opens as soon as it's ready
       return pb;
     }
-    var b = document.createElement('button'); b.type = 'button'; b.className = 'libtile' + (e.badge ? ' is-' + e.badge : ''); b.setAttribute('role', 'option');
-    b.setAttribute('aria-selected', String(e.id === libSel && !pendingPick)); b.title = e.name + (e.theme ? ' (' + e.theme + ')' : ''); b.dataset.id = e.id;
+    var b = document.createElement('button'); b.type = 'button'; b.className = 'libtile'; b.setAttribute('role', 'option');
+    b.setAttribute('aria-selected', String(e.id === libSel && !pendingPick)); b.title = e.name; b.dataset.id = e.id;
     if (e.thumb) { var im = document.createElement('img'); im.src = e.thumb; im.alt = ''; b.appendChild(im); }
     else { var ph = document.createElement('span'); ph.className = 'ph'; ph.textContent = e.name.charAt(0); b.appendChild(ph); }
     if (e.badge) { var bd = document.createElement('i'); bd.className = 'libbadge ' + e.badge; bd.textContent = e.badge === 'new' ? 'NEW' : '★'; bd.title = e.badge === 'new' ? 'New' : 'Featured'; b.appendChild(bd); }
