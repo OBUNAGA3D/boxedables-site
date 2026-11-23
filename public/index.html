@@ -9092,8 +9092,8 @@ var DECO = (function () {
   var BB = { rolled: false, on: false, size: 'auto', color: '#F4F4F2', text: null, q: null, sealed: false };
   try { var bbs = JSON.parse(localStorage.getItem('bx-blind') || 'null'); if (bbs) Object.keys(BB).forEach(function (k) { if (bbs[k] !== undefined) BB[k] = bbs[k]; }); } catch (e) {}
   // The blind box (and its seller tray) is the $10,000 stretch goal: members don't see it until then; admins still can, to film it.
-  // To unlock it for everyone, set BB_LOCKED to false.
-  var BB_LOCKED = true;
+  // Set BB_LOCKED to true to hide it from members (owner's call, not yet: November 23).
+  var BB_LOCKED = false;
   if (BB_LOCKED) BB.on = false;   // starts off on every visit, so nobody gets a carton in their files by accident
   document.getElementById('bbCard').classList.toggle('bblocked', BB_LOCKED);
   function bbSave() { try { localStorage.setItem('bx-blind', JSON.stringify(BB)); } catch (e) {} }
