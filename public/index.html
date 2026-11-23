@@ -356,6 +356,7 @@ header p { color: #3B2A00 !important; }
 .libtile[aria-selected="true"]::after { content: "✓"; position: absolute; top: 4px; right: 4px; width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-weight: 900; font-size: 13px; color: #FFFFFF; background: linear-gradient(180deg, #6BEA7F, #34C759 50%, #1E8E3E); border: 2px solid var(--ink-dark); box-shadow: 0 2px 0 var(--ink-dark); }
 .fbtext { width: 100%; border: 3px solid var(--ink-dark); border-radius: 12px; padding: 9px; font: 500 14px "Figtree", sans-serif; resize: vertical; box-sizing: border-box; }
 .topbtn[hidden] { display: none; }
+@media (max-width: 640px) { #btnLicense { display: none !important; } }   /* phones keep their top bar; the check stays in Account there */
 .admbox { border: 3px solid var(--parch-d); border-radius: 14px; padding: 12px; background: #FFFFFF; margin-bottom: 14px; display: grid; gap: 6px; }
 .admbox input[type="file"] { position: absolute; width: 1px; height: 1px; opacity: 0; }
 .admfile { display: inline-block; padding: 9px 14px; border: 3px dashed var(--teal); border-radius: 12px; text-align: center; font-weight: 700; color: var(--teal-dark); }
@@ -1817,6 +1818,7 @@ body.clawon .stage .clawstart, .stage:has(.sizecard:not([hidden])) .clawstart { 
       <button type="button" class="topbtn" id="btnShare"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><path d="M13 4.5l8 7-8 7v-4.2c-5.5 0-8.8 1.6-11 5.2.6-6 4.2-10.4 11-11.2V4.5z"/></svg><span>Share</span></button>
       <button type="button" class="topbtn" id="btnGallery"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg><span>Gallery</span></button>
       <button type="button" class="topbtn adm" id="btnAdmin" hidden><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6z"/></svg><span>Admin</span></button>
+      <button type="button" class="topbtn lic" id="btnLicense" title="Check a seller’s license" aria-label="Check a license"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M8 12l2.6 2.6L16 9.2"/></svg><span>Check license</span></button>
       <button type="button" class="topbtn fb" id="feedbackBtn"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="currentColor"><path d="M4 4h16v12H8l-4 4z"/></svg><span>Feedback</span></button>
       <button type="button" class="topbtn snd" id="btnMusic" aria-pressed="false"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M9 17V5l10-2v12" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="7" cy="17" r="2.5" fill="currentColor"/><circle cx="17" cy="15" r="2.5" fill="currentColor"/></svg></button>
       <button type="button" class="topbtn snd" id="btnSound" aria-pressed="false"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/></svg></button>
@@ -1908,7 +1910,7 @@ body.clawon .stage .clawstart, .stage:has(.sizecard:not([hidden])) .clawstart { 
       <div class="styles" id="charStyles" hidden><label class="field">Color style</label><div class="seg" role="group" aria-label="Color style" id="styleSeg"></div></div>
       <div class="colors" id="colors"></div>
       <div class="colfoot"><button type="button" class="colreset" id="colReset">↺ Reset colors</button></div>
-      <p class="note colmerge" id="colMergeNote">Parts with exactly the same color print with one filament (one AMS slot). The character's original colors can look alike but are slightly different, so they stay separate. Pick the same swatch for both if you want them on one filament.</p>
+      <p class="note colmerge" id="colMergeNote">Parts with the same color, or colors so close you can't tell them apart, print with one filament (one AMS slot). Colors that look different stay separate. Pick the same swatch for both if you want them on one filament.</p>
       <p class="note" id="lockNote" hidden></p>
     </div>
     </details>
@@ -7363,7 +7365,7 @@ var DECO = (function () {
       return dbWrite(ops).then(function () { PASS.d = p; PASS.loaded = true; FOUNDERS[UID] = p.founder; return { p: p, same: same }; });
     });
   }
-  // the Membership card (Account window, and the "Get a pass" window), plus "Check a license"
+  // the Membership card (Account window, and the "Get a pass" window); on phones also "Check a license"
   function membershipCards(b, opt) {
     opt = opt || {};
     function say(m, t, bad) { m.textContent = t; m.classList.toggle('bad', !!bad); }
@@ -7436,7 +7438,11 @@ var DECO = (function () {
     });
     inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') go.click(); });
     paint(); passLoad().then(paint);
-    if (opt.noCheck) return;
+    if (opt.noCheck || !(window.matchMedia && matchMedia('(max-width: 640px)').matches)) return;   // bigger screens have it on the top bar
+    licenseCheck(b);
+  }
+  // "Check a license": type the BXC- number from a seller's license card and see whether it's valid (no sign-in needed)
+  function licenseCheck(b) {
     var ck = el('div', 'accard'); ck.appendChild(el('b', 'actitle', 'Check a license'));
     ck.appendChild(el('small', '', 'Buying Boxedables prints? Type the number from the seller’s license card.'));
     var r3 = el('div', 'acctsec'), ci = el('input'), cgo = el('button', 'acbtn', 'Check'), res = el('div', 'licres'); res.hidden = true;
@@ -7454,7 +7460,14 @@ var DECO = (function () {
       }, function () { out('Couldn’t check right now. Try again.', false); }).then(function () { cgo.disabled = false; });
     });
     ci.addEventListener('keydown', function (e) { if (e.key === 'Enter') cgo.click(); });
+    setTimeout(function () { try { ci.focus(); } catch (e) {} }, 60);
   }
+  document.getElementById('btnLicense').addEventListener('click', function () {
+    openModal('Check a license', function (b) {
+      b.closest('.mpanel').classList.add('gpanel');
+      if (DBX) licenseCheck(b); else b.appendChild(el('p', 'memlead', 'Couldn’t reach Boxedables right now. Try again in a moment.'));
+    });
+  });
   // Admin > Codes > "Downloads need a pass": members without an active pass get this window instead of a download
   function passBlock(which) {
     if (!(ADM.settings && ADM.settings.needPass) || IS_ADMIN) return false;
@@ -8159,7 +8172,7 @@ var DECO = (function () {
     }
     var MAP = { logoSec: 'logoPlate', charColSec: 'palette', extrasSec: 'sparkle', boxColSec: 'bucket', shapeSec: 'shape', hookSec: 'ring', latchSec: 'lock', nameSec: 'letters',
       texSec: 'bumps', patternSec: 'dots', emojiSec: 'smile', partsBox: 'clipboard', loadBox: 'upArrow' };
-    var TOP = { clawBtn: 'clawToy', btnCommunity: 'commShelf', btnSave: 'floppy', btnShare: 'share', btnGallery: 'woodShelf', btnAdmin: 'shield', planBtn: 'printer', feedbackBtn: 'bubble',
+    var TOP = { clawBtn: 'clawToy', btnCommunity: 'commShelf', btnSave: 'floppy', btnShare: 'share', btnGallery: 'woodShelf', btnAdmin: 'shield', planBtn: 'printer', feedbackBtn: 'bubble', btnLicense: 'clipboard',
       lightBtn: 'sun', measure: 'ruler', expand: 'liftOut', seeInside: 'eye', hideChar: 'hideHead', hideBox: 'hideBox',
       btnLeader: 'trophy', tabChar: 'charHead', tabBox: 'cube', dlChar: 'charHead', dlBox: 'cube', resetView: 'resetCam', btnSound: 'speaker', btnMusic: 'notes', bbL: 'carton', dlBlind: 'carton', dbL: 'showcase', dlDisplay: 'showcase' };
     function apply() {
@@ -9013,20 +9026,28 @@ var DECO = (function () {
       }
       if (o.socketPiece) o.extras = (o.extras || []).concat([o.socketPiece]);
     });
-    // Colors with the same name that look nearly alike (the file's #23221F fur and the Black swatch) are one spool in real life,
-    // so each piece prints them from one filament slot instead of two.
+    // Colors that look the same (the file's #23221F fur and the Black swatch, 6 apart) are one spool in real life,
+    // so each piece prints them from one filament slot instead of two. Colors you can tell apart stay separate:
+    // a pale blue fur and the white eye shine are about 15 or more apart. Distance = CIE Lab, 8 or less merges.
     parts.forEach(function (o) {
       var used = [];
       o.parts.concat(o.extras ? o.extras.reduce(function (a, x) { return a.concat(x.parts); }, []) : []).forEach(function (p) {
         if (!p.color || p.enforcer || /^note /.test(p.name)) return;   // the print note keeps its own white and black
-        var c = new THREE.Color(p.color), nm = colorName(p.color), sw = swatchOf(p.color), hit = used.filter(function (u) {
+        var sw = swatchOf(p.color), lab = labOf(p.color), hit = used.filter(function (u) {
           if (sw && u.sw && sw !== u.sw) return false;   // two different swatches the member picked (like Sky and Mint) stay two filaments
-          return u.name === nm && Math.hypot(u.c.r - c.r, u.c.g - c.g, u.c.b - c.b) * 255 <= 80;
+          return Math.hypot(u.lab[0] - lab[0], u.lab[1] - lab[1], u.lab[2] - lab[2]) <= 8;
         })[0];
-        if (hit) p.color = hit.hex; else used.push({ hex: p.color, c: c, name: nm, sw: sw });
+        if (hit) p.color = hit.hex; else used.push({ hex: p.color, lab: lab, sw: sw });
       });
     });
     return parts;
+  }
+  // a color as CIE Lab, where distance matches how different two colors look (about 2 is barely visible)
+  function labOf(hex) {
+    var n = new THREE.Color(hex).getHex(), v = [(n >> 16) & 255, (n >> 8) & 255, n & 255].map(function (x) { x /= 255; return x <= 0.04045 ? x / 12.92 : Math.pow((x + 0.055) / 1.055, 2.4); });
+    function f(t) { return t > 0.008856 ? Math.cbrt(t) : 7.787 * t + 16 / 116; }
+    var X = f((0.4124 * v[0] + 0.3576 * v[1] + 0.1805 * v[2]) / 0.95047), Y = f(0.2126 * v[0] + 0.7152 * v[1] + 0.0722 * v[2]), Z = f((0.0193 * v[0] + 0.1192 * v[1] + 0.9505 * v[2]) / 1.08883);
+    return [116 * Y - 16, 500 * (X - Y), 200 * (Y - Z)];
   }
   function runDownload(which) {
     if (!downloads || !S.parts.length || busy) return;
