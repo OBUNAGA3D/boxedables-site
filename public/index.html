@@ -1910,7 +1910,7 @@ body.clawon .stage .clawstart, .stage:has(.sizecard:not([hidden])) .clawstart { 
       <div class="styles" id="charStyles" hidden><label class="field">Color style</label><div class="seg" role="group" aria-label="Color style" id="styleSeg"></div></div>
       <div class="colors" id="colors"></div>
       <div class="colfoot"><button type="button" class="colreset" id="colReset">↺ Reset colors</button></div>
-      <p class="note colmerge" id="colMergeNote">Parts with the same color, or colors so close you can't tell them apart, print with one filament (one AMS slot). Colors that look different stay separate. Pick the same swatch for both if you want them on one filament.</p>
+      <p class="note colmerge" id="colMergeNote">Parts with the same or a very similar color (just a bit lighter or darker) print with one filament (one AMS slot). Colors with a different tint, like pale blue and white, stay separate. Pick the same swatch for both if you want them on one filament.</p>
       <p class="note" id="lockNote" hidden></p>
     </div>
     </details>
@@ -9026,16 +9026,17 @@ var DECO = (function () {
       }
       if (o.socketPiece) o.extras = (o.extras || []).concat([o.socketPiece]);
     });
-    // Colors that look the same (the file's #23221F fur and the Black swatch, 6 apart) are one spool in real life,
-    // so each piece prints them from one filament slot instead of two. Colors you can tell apart stay separate:
-    // a pale blue fur and the white eye shine are about 15 or more apart. Distance = CIE Lab, 8 or less merges.
+    // Similar colors are one spool in real life (Bambu Studio can't copy a color exactly, so a 3MF often has near-twins),
+    // so each piece prints them from one filament slot instead of two. In CIE Lab: a bit lighter or darker is fine
+    // (lightness up to 20 apart: #000000 and #222222 merge), but a different tint is not (tint up to 7 apart):
+    // a pale blue fur next to white eye shine (tint 8 to 20 apart) stays two filaments, warm white and white merge.
     parts.forEach(function (o) {
       var used = [];
       o.parts.concat(o.extras ? o.extras.reduce(function (a, x) { return a.concat(x.parts); }, []) : []).forEach(function (p) {
         if (!p.color || p.enforcer || /^note /.test(p.name)) return;   // the print note keeps its own white and black
         var sw = swatchOf(p.color), lab = labOf(p.color), hit = used.filter(function (u) {
           if (sw && u.sw && sw !== u.sw) return false;   // two different swatches the member picked (like Sky and Mint) stay two filaments
-          return Math.hypot(u.lab[0] - lab[0], u.lab[1] - lab[1], u.lab[2] - lab[2]) <= 8;
+          return Math.abs(u.lab[0] - lab[0]) <= 20 && Math.hypot(u.lab[1] - lab[1], u.lab[2] - lab[2]) <= 7;
         })[0];
         if (hit) p.color = hit.hex; else used.push({ hex: p.color, lab: lab, sw: sw });
       });
