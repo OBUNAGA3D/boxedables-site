@@ -2089,7 +2089,7 @@ body.clawon .stage .clawstart, .stage:has(.sizecard:not([hidden])) .clawstart { 
         <label class="strange"><span>Slot depth</span><input type="range" id="stDepth" min="8" max="24" step="1"><em id="stDepthV"></em></label>
         <div class="toggle sttog"><span id="stStemL">Switch slots<small>On: a square hole for your own keyboard switch, so characters stay clicky. Off: a printed post they press onto</small></span><button type="button" class="switch" role="switch" id="stStem" aria-checked="true" aria-labelledby="stStemL"></button></div>
         <b class="bblab">Tray color</b><div class="bbchips" id="stColTray"></div>
-        <b class="bblab">Trim color <small class="stsub">(keycap rims, crate corners, fence, egg cracks, side pattern)</small></b><div class="bbchips" id="stColAcc"></div><button type="button" class="mixcol" id="stMix"><span aria-hidden="true">🎲</span> Mix colors</button>
+        <b class="bblab">Trim color <small class="stsub">(keycap rims, crate corners, fence, side pattern)</small></b><div class="bbchips" id="stColAcc"></div><button type="button" class="mixcol" id="stMix"><span aria-hidden="true">🎲</span> Mix colors</button>
         <p class="bbhint" id="stSize"></p>
         <p class="bbnote"><b>Print note:</b> <span id="stNote"></span></p>
       </div>
@@ -9008,7 +9008,7 @@ var DECO = (function () {
       });
       return;
     }
-    if (ST.tpl === 'egg') {   // a cracked eggshell: a jagged top edge (part of the shell itself) and a few hairline cracks running down the sides
+    if (ST.tpl === 'egg') {   // a cracked eggshell: a jagged top edge, part of the shell itself
       var ew = Math.max(1.2, L.w - 0.15), pts = [[0, H + 0.6]], tt = 0, k2 = 0, vall = [];
       while (tt < P - 0.5) {
         var stepE = 3.2 + rnd(k2) * 4.2; tt = Math.min(P, tt + stepE); k2++;
@@ -9029,17 +9029,6 @@ var DECO = (function () {
         }
         var g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(V, 3)); g.computeVertexNormals(); wrapTo(g, tray, -ew);   // full wall thickness, so the points are as strong as the wall
       })();
-      var nc = Math.max(3, Math.min(8, Math.round(P / 55)));
-      for (var ci = 0; ci < nc; ci++) {
-        var v0 = vall[Math.floor((ci + 0.5) * vall.length / nc)] || [ci * P / nc, H]; var line = [[v0[0], H]], tz = H, tc2 = v0[0], depthC = H * (0.4 + rnd(ci + 7) * 0.3);
-        while (tz > H - depthC) { tz -= 1.6 + rnd(ci * 13 + tz) * 1.8; tc2 += (rnd(ci * 31 + tz) - 0.5) * 3.2; line.push([tc2, Math.max(H - depthC, tz)]); }
-        var L2 = [], R2 = []; line.forEach(function (q, j) { var wdt = 0.5 * (1 - j / (line.length + 1)) + 0.2; L2.push([q[0] - wdt, q[1]]); R2.unshift([q[0] + wdt, q[1]]); });
-        polyTo(L2.concat(R2), acc, -0.05, 0.6);
-        if (line.length > 3) {   // one small branch
-          var b0 = line[Math.floor(line.length / 2)], dir = rnd(ci + 3) > 0.5 ? 1 : -1;
-          polyTo([[b0[0] - 0.3, b0[1] + 0.3], [b0[0] + dir * 3.2, b0[1] - 2.6], [b0[0] + dir * 3.4, b0[1] - 2.9], [b0[0] + 0.3, b0[1] - 0.3]], acc, -0.05, 0.6);
-        }
-      }
       return;
     }
     var tex = ST.tex, n, i, step;
