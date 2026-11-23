@@ -9087,12 +9087,18 @@ var DECO = (function () {
   function bbSave() { try { localStorage.setItem('bx-blind', JSON.stringify(BB)); } catch (e) {} }
   function bbSize() { return BB.size === 'auto' ? (HOOK.on ? 'hook' : 'std') : BB.size; }
   var bbCache = {};
+  var BB_WIDEN = 1;   // mm of extra room on the left and the right inside the carton, so wide characters (the Elephant's ears) don't rub
   function bbGeo(key) {
     if (bbCache[key]) return bbCache[key];
     var d = { 'body-std': BBDATA.std.body, 'body-hook': BBDATA.hook.body, 'q-std': BBDATA.q, 'q-hook': BBDATA.hook.q, text: BBDATA.text }[key];
     var bin = atob(d.b), u = new Uint8Array(bin.length); for (var i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i);
     var raw = fflate.inflateSync(u), buf = raw.buffer.slice(raw.byteOffset, raw.byteOffset + raw.byteLength), g = new THREE.BufferGeometry();
-    g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(buf, 0, d.nv * 3), 3)); g.setIndex(new THREE.BufferAttribute(new Uint32Array(buf, d.nv * 12, d.nt * 3), 1)); g.computeVertexNormals();
+    g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(buf, 0, d.nv * 3), 3)); g.setIndex(new THREE.BufferAttribute(new Uint32Array(buf, d.nv * 12, d.nt * 3), 1));
+    if (/^body-/.test(key)) {   // the side walls (and their rounded corners) move out; the front, back, lettering and "?" stay where they are
+      var pa = g.attributes.position;
+      for (var i2 = 0; i2 < pa.count; i2++) { var x2 = pa.getX(i2); if (Math.abs(x2) > 20.2) pa.setX(i2, x2 + (x2 > 0 ? BB_WIDEN : -BB_WIDEN)); }
+    }
+    g.computeVertexNormals();
     return (bbCache[key] = g);
   }
   // the carton as a piece for the print plan and the files: carton, lettering and "?" (one color unless picked), plus its print note card
@@ -9134,7 +9140,7 @@ var DECO = (function () {
     var v = bbSize(), d = v === 'hook' ? BBDATA.hook : BBDATA.std;
     document.querySelectorAll('[data-bbsize]').forEach(function (b) { b.setAttribute('aria-checked', String(b.dataset.bbsize === BB.size)); });
     bbHint.textContent = (BB.size === 'auto' ? (HOOK.on ? 'Automatic: the deeper carton, because the keychain hook is on. ' : 'Automatic: the standard carton (the deeper one is picked when the keychain hook is on). ') : '')
-      + 'About ' + Math.round(d.W) + ' \u00d7 ' + Math.round(d.D) + ' \u00d7 ' + Math.round(d.H) + ' mm.';
+      + 'About ' + Math.round(d.W + 2 * BB_WIDEN) + ' \u00d7 ' + Math.round(d.D) + ' \u00d7 ' + Math.round(d.H) + ' mm.';
     bbChips(document.getElementById('bbColCarton'), 'color', false); bbChips(document.getElementById('bbColText'), 'text', true); bbChips(document.getElementById('bbColQ'), 'q', true);
     document.getElementById('bbSeal').checked = BB.sealed;
     document.getElementById('bbNote').textContent = BB_NOTE;
@@ -9151,13 +9157,21 @@ var DECO = (function () {
   var TR_DEF = { on: false, count: 12, color: '#64D6B3', logo: '#F4F4F2' };
   BB.tray = Object.assign({}, TR_DEF); try { var bbs0 = JSON.parse(localStorage.getItem('bx-blind') || 'null'); if (bbs0 && bbs0.tray) BB.tray = Object.assign({}, TR_DEF, bbs0.tray); } catch (e) {}
   function trKey() { return (BB.tray.count === 9 ? 9 : 12) + '_' + bbSize(); }
-  function trInfo() { return TRDATA[trKey()].info; }
+  // the pockets grow with the wider carton (BB_WIDEN): every tray piece stretches left to right by the same factor, so the joints still match
+  function trSX() { var p = TRDATA[trKey()].info.pockets, pitch = p[1][0] - p[0][0]; return (pitch + 2 * BB_WIDEN) / pitch; }
+  var trInfoCache = {};
+  function trInfo() {
+    var k = trKey(); if (trInfoCache[k]) return trInfoCache[k];
+    var o = JSON.parse(JSON.stringify(TRDATA[k].info)), sx = trSX(); o.W *= sx; o.pockets = o.pockets.map(function (p) { return [p[0] * sx, p[1]]; });
+    return (trInfoCache[k] = o);
+  }
   var trCache = {};
   function trGeo(part) {
     var key = trKey() + '-' + part; if (trCache[key]) return trCache[key];
     var d = TRDATA[trKey()][part], bin = atob(d.b), u = new Uint8Array(bin.length); for (var i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i);
     var raw = fflate.inflateSync(u), buf = raw.buffer.slice(raw.byteOffset, raw.byteOffset + raw.byteLength), g = new THREE.BufferGeometry();
-    g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(buf, 0, d.nv * 3), 3)); g.setIndex(new THREE.BufferAttribute(new Uint32Array(buf, d.nv * 12, d.nt * 3), 1)); g.computeVertexNormals();
+    g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(buf, 0, d.nv * 3), 3)); g.setIndex(new THREE.BufferAttribute(new Uint32Array(buf, d.nv * 12, d.nt * 3), 1));
+    g.scale(trSX(), 1, 1); g.computeVertexNormals();
     return (trCache[key] = g);
   }
   function trPrintGeo(part) {   // the pieces as they lie on the print bed
