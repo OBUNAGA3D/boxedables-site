@@ -351,6 +351,7 @@ header p { color: #3B2A00 !important; }
 .libtile[aria-selected="true"]::after { content: "✓"; position: absolute; top: 4px; right: 4px; width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-weight: 900; font-size: 13px; color: #FFFFFF; background: linear-gradient(180deg, #6BEA7F, #34C759 50%, #1E8E3E); border: 2px solid var(--ink-dark); box-shadow: 0 2px 0 var(--ink-dark); }
 .fbtext { width: 100%; border: 3px solid var(--ink-dark); border-radius: 12px; padding: 9px; font: 500 14px "Figtree", sans-serif; resize: vertical; box-sizing: border-box; }
 .topbtn[hidden] { display: none; }
+@media (min-width: 641px) { #feedbackBtn { display: none !important; } }   /* bigger screens send feedback from the Account window; phones keep their top bar */
 @media (max-width: 640px) { #btnLicense { display: none !important; } }   /* phones keep their top bar; the check stays in Account there */
 .admbox { border: 3px solid var(--parch-d); border-radius: 14px; padding: 12px; background: #FFFFFF; margin-bottom: 14px; display: grid; gap: 6px; }
 .admbox input[type="file"] { position: absolute; width: 1px; height: 1px; opacity: 0; }
@@ -5971,6 +5972,8 @@ var DECO = (function () {
         : 'You\u2019re not signed in here. On the real website this button becomes \u201cLog in with Patreon\u201d.';
       b.appendChild(p);
       if (DBX && UID) membershipCards(b);
+      var fb = document.createElement('button'); fb.type = 'button'; fb.className = 'go'; fb.textContent = 'Send feedback'; fb.style.marginTop = '10px'; fb.style.marginRight = '8px';
+      fb.addEventListener('click', function () { closeModal(); setTimeout(function () { document.getElementById('feedbackBtn').click(); }, 60); }); b.appendChild(fb);
       if (IS_ADMIN) { var ab = document.createElement('button'); ab.type = 'button'; ab.className = 'go'; ab.textContent = 'Open the admin page'; ab.style.marginTop = '10px'; ab.addEventListener('click', function () { closeModal(); setTimeout(function () { document.getElementById('btnAdmin').click(); }, 50); }); b.appendChild(ab); }
     });
   });
@@ -6073,6 +6076,11 @@ var DECO = (function () {
     var row4 = el('div', 'acctsec'); s4.appendChild(row4);
     function openGal(tab) { closeModal(); setTimeout(function () { if (tab === 'My designs') openShelf(); else openGalleryWindow(tab); }, 60); }
     btn(row4, 'My designs', '', function () { openGal('My designs'); });
+    // feedback (moved here from the top bar; phones still have the top bar button)
+    var sfb = sec('Feedback'); sfb.style.display = 'block';
+    sfb.appendChild(el('small', '', 'Found a bug or have an idea? Tell me, I read every message.'));
+    var rfb = el('div', 'acctsec'); sfb.appendChild(rfb);
+    btn(rfb, 'Send feedback', 'pri', function () { closeModal(); setTimeout(function () { document.getElementById('feedbackBtn').click(); }, 60); });
     // 5. sign out
     var s5 = sec('Sign out'); btn(s5, 'Sign out', '', function () { A.signOut(); });
     // 6. delete
