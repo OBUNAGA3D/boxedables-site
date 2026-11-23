@@ -26,7 +26,7 @@
       ADMIN = fs.collection('admins').doc(u.uid).get().then(function (d) { debug(u, d.exists ? 'yes' : 'no (no admins document with this user ID)'); return d.exists; },
         function (e) { debug(u, 'no (database refused: ' + ((e && e.code) || e) + ')'); return false; });
       fs.collection('characters').doc('_admin').get().then(function () { debugDb('ok'); }, function (e) { debugDb('refused: ' + ((e && e.code) || e)); });
-      if (/[?&]check\b/.test(location.search)) {   // where King Kong comes from, checked a few times while the page starts
+      if (/[?&]check\b/.test(location.search)) {   // where Gorilla comes from, checked a few times while the page starts
         var kTries = 0, kTick = setInterval(function () {
           fs.collection('characters').doc('_kingkong').get().then(function (d) {
             var inDb = d.exists && d.data().asset;
@@ -84,7 +84,7 @@
     if (!/[?&]check\b/.test(location.search) || !document.body) return;
     var b = document.getElementById('bxdebug');
     if (!b) { b = document.createElement('pre'); b.id = 'bxdebug'; b.style.cssText = 'position:fixed;left:10px;top:10px;z-index:100000;background:#fff;color:#10302D;border:3px solid #10302D;border-radius:12px;padding:10px 12px;font:13px/1.5 monospace;white-space:pre-wrap;max-width:min(92vw,520px);user-select:all'; document.body.appendChild(b); }
-    b.textContent = 'Signed in as ' + DBG.user + '\nAdmin: ' + DBG.admin + '\nDatabase rules: ' + DBG.db + '\nKing Kong: ' + DBG.kong;
+    b.textContent = 'Signed in as ' + DBG.user + '\nAdmin: ' + DBG.admin + '\nDatabase rules: ' + DBG.db + '\nGorilla: ' + DBG.kong;
   }
 
   // ---------- Firestore doesn't allow arrays inside arrays: wrap them on write, unwrap on read ----------
