@@ -1152,7 +1152,7 @@ body.maint-admin::before { content: "Maintenance mode is on: members see a “Ba
 .stslot .stx { position: absolute; right: 3px; top: 3px; display: grid; place-items: center; width: 16px; height: 16px; border-radius: 50%; background: #E5484D; color: #FFFFFF; font: 800 9px sans-serif; font-style: normal; opacity: 0; transition: opacity .12s; }
 .stslot.full:hover .stx, .stslot.full:focus-visible .stx { opacity: 1; }
 @media (hover: none) { .stslot.full .stx { opacity: .9; } }
-.sttpls button { flex: 1 1 20%; }
+.sttpls button { flex: 1 1 30%; }   /* 6 designs: two rows of 3 */
 .stpats { display: grid !important; grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .stpats button { padding: 6px 2px !important; font-size: 12.5px !important; }
 .strange { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 8px; margin: 4px 0; font: 700 13px "Figtree", sans-serif; color: var(--ink-dark); }
@@ -1697,6 +1697,7 @@ body.clawon .stage .clawstart, .stage:has(.sizecard:not([hidden])) .clawstart { 
 .memlogrow { display: grid; grid-template-columns: 170px 1fr auto; gap: 10px; padding: 4px 2px; border-bottom: 1px solid #E6E9E2; font-size: 13px; }
 .memlogrow small { color: #5B6B6E; }
 @media (max-width: 760px) { .memlog { margin-left: 0; } .memlogrow { grid-template-columns: 1fr auto; } .memlogrow small { display: none; } }
+.stpats button:disabled { opacity: .45; cursor: not-allowed; }
 </style>
 </head>
 <body>
@@ -2080,7 +2081,7 @@ body.clawon .stage .clawstart, .stage:has(.sizecard:not([hidden])) .clawstart { 
         <p class="sthint" id="stHint"></p>
         <div class="stslots" id="stSlots"></div>
         <b class="bblab" id="stTplL">Design</b>
-        <div class="bbseg sttpls" role="radiogroup" aria-labelledby="stTplL"><button type="button" role="radio" data-sttpl="classic">Classic</button><button type="button" role="radio" data-sttpl="rounded">Rounded</button><button type="button" role="radio" data-sttpl="keycap">Keycap</button><button type="button" role="radio" data-sttpl="crate">Crate</button></div>
+        <div class="bbseg sttpls" role="radiogroup" aria-labelledby="stTplL"><button type="button" role="radio" data-sttpl="classic">Classic</button><button type="button" role="radio" data-sttpl="rounded">Rounded</button><button type="button" role="radio" data-sttpl="keycap">Keycap</button><button type="button" role="radio" data-sttpl="crate">Crate</button><button type="button" role="radio" data-sttpl="fence">Fence</button><button type="button" role="radio" data-sttpl="egg">Egg</button></div>
         <b class="bblab" id="stTexL">Pattern on the sides</b>
         <div class="bbseg stpats" role="radiogroup" aria-labelledby="stTexL"><button type="button" role="radio" data-sttex="none">None</button><button type="button" role="radio" data-sttex="ribs">Ribs</button><button type="button" role="radio" data-sttex="dots">Dots</button><button type="button" role="radio" data-sttex="stripes">Stripes</button><button type="button" role="radio" data-sttex="planks">Planks</button><button type="button" role="radio" data-sttex="zigzag">Zigzag</button><button type="button" role="radio" data-sttex="waves">Waves</button><button type="button" role="radio" data-sttex="diamonds">Diamonds</button><button type="button" role="radio" data-sttex="hearts">Hearts</button><button type="button" role="radio" data-sttex="stars">Stars</button><button type="button" role="radio" data-sttex="bricks">Bricks</button><button type="button" role="radio" data-sttex="checks">Checks</button></div>
         <label class="strange"><span>Space between slots</span><input type="range" id="stGap" min="2" max="12" step="0.5"><em id="stGapV"></em></label>
@@ -2088,7 +2089,7 @@ body.clawon .stage .clawstart, .stage:has(.sizecard:not([hidden])) .clawstart { 
         <label class="strange"><span>Slot depth</span><input type="range" id="stDepth" min="8" max="24" step="1"><em id="stDepthV"></em></label>
         <div class="toggle sttog"><span id="stStemL">Switch slots<small>On: a square hole for your own keyboard switch, so characters stay clicky. Off: a printed post they press onto</small></span><button type="button" class="switch" role="switch" id="stStem" aria-checked="true" aria-labelledby="stStemL"></button></div>
         <b class="bblab">Tray color</b><div class="bbchips" id="stColTray"></div>
-        <b class="bblab">Trim color <small class="stsub">(keycap rims, crate corners, side pattern)</small></b><div class="bbchips" id="stColAcc"></div><button type="button" class="mixcol" id="stMix"><span aria-hidden="true">🎲</span> Mix colors</button>
+        <b class="bblab">Trim color <small class="stsub">(keycap rims, crate corners, fence, egg cracks, side pattern)</small></b><div class="bbchips" id="stColAcc"></div><button type="button" class="mixcol" id="stMix"><span aria-hidden="true">🎲</span> Mix colors</button>
         <p class="bbhint" id="stSize"></p>
         <p class="bbnote"><b>Print note:</b> <span id="stNote"></span></p>
       </div>
@@ -8918,14 +8919,14 @@ var DECO = (function () {
   dbPaint(); dbRender(); setTimeout(dbRefresh, 0);   // again once the box settings have loaded
 
   // ---------- storage box: an open tray with square slots that keep characters out of their boxes, like keycaps ----------
-  var ST_TPL0 = { classic: 1, rounded: 1, keycap: 1, crate: 1 }, ST_PATS = ['none', 'ribs', 'dots', 'stripes', 'planks', 'zigzag', 'waves', 'diamonds', 'hearts', 'stars', 'bricks', 'checks'];
+  var ST_TPL0 = { classic: 1, rounded: 1, keycap: 1, crate: 1, fence: 1, egg: 1 }, ST_PATS = ['none', 'ribs', 'dots', 'stripes', 'planks', 'zigzag', 'waves', 'diamonds', 'hearts', 'stars', 'bricks', 'checks'];
   var ST = { rolled: false, on: false, count: 4, tpl: 'rounded', tex: 'none', gap: 4, wall: 2.4, depth: 20, stem: true, color: '#6EC6FF', acc: '#FFD45C', slots: ['cur'] };
   try { var sts = JSON.parse(localStorage.getItem('bx-storage') || 'null'); if (sts) Object.keys(ST).forEach(function (k) { if (sts[k] !== undefined) ST[k] = sts[k]; }); } catch (e) {}
   if (!ST_TPL0[ST.tpl]) ST.tpl = 'rounded'; if (ST_PATS.indexOf(ST.tex) < 0) ST.tex = 'none';
   if (!Array.isArray(ST.slots)) ST.slots = ['cur'];
   function stSave() { try { localStorage.setItem('bx-storage', JSON.stringify(ST)); } catch (e) {} }
   var ST_SLOT = 40, ST_MOUNT = 3.647, ST_SWZ = -0.431;   // mount height and where the switch sits, as in the box   // inside of a square slot (mm): the box's inside is 37.6, so any character fits
-  var ST_TPL = { classic: { ro: 1.5, rp: 1 }, rounded: { ro: 8, rp: 5 }, keycap: { ro: 5, rp: 3 }, crate: { ro: 0.6, rp: 1 }, honey: { ro: 7, rp: 0 } };
+  var ST_TPL = { classic: { ro: 1.5, rp: 1 }, rounded: { ro: 8, rp: 5 }, keycap: { ro: 5, rp: 3 }, crate: { ro: 0.6, rp: 1 }, fence: { ro: 1.5, rp: 1 }, egg: { ro: 10, rp: 6 }, honey: { ro: 7, rp: 0 } };
   var ST_NOTE2 = 'Print it flat, as it is, with no supports. 15% infill is plenty. Press the switch socket under each character onto a post; if a post is too tight, file it lightly. Every slot fits any Boxedable character.';
   var ST_NOTE = 'Print it flat, as it is, with no supports. 15% infill is plenty. Press a keyboard switch (MX style, like the one in your Boxedable box) into the square hole in each slot, then set a character on top so it clicks. Every slot fits any Boxedable character.';
   function stLayout() {
@@ -8954,7 +8955,7 @@ var DECO = (function () {
     return concat([base, stBox(x, y, z0 + 1.38 + 1.9, 4.05, 1.25, 3.8), stBox(x, y, z0 + 1.38 + 1.9, 1.25, 4.05, 3.8)]);
   }
   // ---- side patterns: drawn on a flat strip (t along the outside, z up), then wrapped around the tray, round corners included
-  function stPattern(L, T, acc) {
+  function stPattern(L, T, acc, tray) {
     var r = Math.max(0, Math.min(T.ro, L.W / 2 - 0.01, L.D / 2 - 0.01)), sx = L.W - 2 * r, sy = L.D - 2 * r, q = Math.PI / 2 * r;
     var segs = [[sx / 2, 'L', 0, -L.D / 2, 1, 0], [q, 'A', L.W / 2 - r, -L.D / 2 + r, -Math.PI / 2], [sy, 'L', L.W / 2, -L.D / 2 + r, 0, 1], [q, 'A', L.W / 2 - r, L.D / 2 - r, 0],
       [sx, 'L', L.W / 2 - r, L.D / 2, -1, 0], [q, 'A', -L.W / 2 + r, L.D / 2 - r, Math.PI / 2], [sy, 'L', -L.W / 2, L.D / 2 - r, 0, -1], [q, 'A', -L.W / 2 + r, -L.D / 2 + r, Math.PI], [sx / 2, 'L', -L.W / 2 + r, -L.D / 2, 1, 0]];
@@ -8976,13 +8977,71 @@ var DECO = (function () {
     function poly(pts) { var sh = new THREE.Shape(); dense(pts).forEach(function (v, i) { sh[i ? 'lineTo' : 'moveTo'](v[0], v[1]); }); wrap(new THREE.ExtrudeGeometry(sh, { depth: out + 0.05, bevelEnabled: false })); }
     function shape(sh) { poly(sh.getPoints(10).map(function (v) { return [v.x, v.y]; })); }
     function rect(t0, z0, w, h) { poly([[t0, z0], [t0 + w, z0], [t0 + w, z0 + h], [t0, z0 + h]]); }
-    function band(f, th) {   // a strip of thickness th following z = f(t) all the way round
-      var n = Math.ceil(P / 0.8), pts = [], i;
-      for (i = 0; i <= n; i++) pts.push([i * P / n, f(i * P / n) - th / 2]);
-      for (i = n; i >= 0; i--) pts.push([i * P / n, f(i * P / n) + th / 2]);
-      var sh = new THREE.Shape(); pts.forEach(function (v, k) { sh[k ? 'lineTo' : 'moveTo'](v[0], v[1]); }); wrap(new THREE.ExtrudeGeometry(sh, { depth: out + 0.05, bevelEnabled: false }));
+    function band(f, th) {   // a strip of thickness th following z = f(t) all the way round (built column by column: a flat-shape fill of a long straight strip can leave slivers across the tray)
+      stripTo(Math.ceil(P / 0.8), function (t) { return f(t) - th / 2; }, function (t) { return f(t) + th / 2; }, out + 0.05, acc, -0.05);
     }
     function count(pitch) { return Math.max(4, Math.round(P / pitch)); }
+    function wrapTo(g, arr, d0) { var a = g.getAttribute('position'); for (var i = 0; i < a.count; i++) { var w = at(a.getX(i)), d = a.getZ(i) + d0; a.setXYZ(i, w.x + w.nx * d, w.y + w.ny * d, a.getY(i)); } arr.push(g); }
+    function polyTo(pts, arr, d0, depth) { var sh = new THREE.Shape(); dense(pts).forEach(function (v, i) { sh[i ? 'lineTo' : 'moveTo'](v[0], v[1]); }); wrapTo(new THREE.ExtrudeGeometry(sh, { depth: depth, bevelEnabled: false }), arr, d0); }
+    function stripTo(n, f0, f1, depth, arr, d0) {   // columns t = 0..P (n steps), bottom f0(t), top f1(t), depth outward
+      var V = [], ts = [], i;
+      for (i = 0; i <= n; i++) ts.push(i * P / n);
+      function q(a, b, c, d) { V.push(a[0], a[1], a[2], b[0], b[1], b[2], c[0], c[1], c[2], a[0], a[1], a[2], c[0], c[1], c[2], d[0], d[1], d[2]); }
+      for (i = 0; i < n; i++) {
+        var t0 = ts[i], t1 = ts[i + 1], b0 = f0(t0), b1 = f0(t1), u0 = f1(t0), u1 = f1(t1);
+        q([t0, b0, depth], [t1, b1, depth], [t1, u1, depth], [t0, u0, depth]);   // outside
+        q([t1, b1, 0], [t0, b0, 0], [t0, u0, 0], [t1, u1, 0]);                   // inside
+        q([t0, u0, 0], [t0, u0, depth], [t1, u1, depth], [t1, u1, 0]);           // top
+        q([t1, b1, 0], [t1, b1, depth], [t0, b0, depth], [t0, b0, 0]);           // bottom
+      }
+      var g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(V, 3)); g.computeVertexNormals(); wrapTo(g, arr, d0);
+    }
+    function rnd(k) { var x = Math.sin(k * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); }   // the same "random" every time, so the file never changes by itself
+    if (ST.tpl === 'fence') {   // a picket fence round the tray: pointed boards with two rails behind them, posts at the corners
+      var fn = count(7), fp = P / fn, fw = Math.min(5, fp - 1.6), top = H + 1.8, tip = H + 5.2;
+      [H * 0.28, H * 0.72].forEach(function (zz) { stripTo(Math.ceil(P / 0.8), function () { return zz - 1.1; }, function () { return zz + 1.1; }, 0.85, acc, -0.05); });
+      for (var fi = 0; fi < fn; fi++) { var ft = fi * fp + fp / 2; polyTo([[ft - fw / 2, 0], [ft + fw / 2, 0], [ft + fw / 2, top], [ft, tip], [ft - fw / 2, top]], acc, -0.05, 1.65); }
+      var pz = H + 3.4; [[-1, -1], [1, -1], [1, 1], [-1, 1]].forEach(function (k) {
+        var ps = 6, pg = stBox(k[0] * (L.W / 2 - ps / 2 + 1.6), k[1] * (L.D / 2 - ps / 2 + 1.6), pz / 2, ps, ps, pz);
+        var cap = new THREE.ConeGeometry(ps * 0.72, 3, 4); cap.rotateX(Math.PI / 2); cap.rotateZ(Math.PI / 4); cap.translate(k[0] * (L.W / 2 - ps / 2 + 1.6), k[1] * (L.D / 2 - ps / 2 + 1.6), pz + 1.5);
+        acc.push(pg, cap);
+      });
+      return;
+    }
+    if (ST.tpl === 'egg') {   // a cracked eggshell: a jagged top edge (part of the shell itself) and a few hairline cracks running down the sides
+      var ew = Math.max(1.2, L.w - 0.15), pts = [[0, H + 0.6]], tt = 0, k2 = 0, vall = [];
+      while (tt < P - 0.5) {
+        var stepE = 3.2 + rnd(k2) * 4.2; tt = Math.min(P, tt + stepE); k2++;
+        var up = k2 % 2 === 1, hz = up ? H + 2.2 + rnd(k2 + 50) * 3.6 : H + rnd(k2 + 90) * 1.1;
+        pts.push([tt, hz]); if (!up) vall.push([tt, hz]);
+      }
+      pts.push([P, H + 0.6]);
+      var edge = function (t) { for (var j = 1; j < pts.length; j++) if (t <= pts[j][0]) { var a = pts[j - 1], b = pts[j], u = b[0] > a[0] ? (t - a[0]) / (b[0] - a[0]) : 0; return a[1] + (b[1] - a[1]) * u; } return H + 0.6; };
+      var cols = [], tcol; pts.forEach(function (q) { cols.push(q[0]); }); for (tcol = 0; tcol < P; tcol += 0.6) cols.push(tcol); cols.sort(function (a, b) { return a - b; });
+      (function () {   // columns at every corner of the jagged edge, so the points stay sharp
+        var V = [], i;
+        function q(a, b, c, d) { V.push(a[0], a[1], a[2], b[0], b[1], b[2], c[0], c[1], c[2], a[0], a[1], a[2], c[0], c[1], c[2], d[0], d[1], d[2]); }
+        for (i = 0; i < cols.length - 1; i++) {
+          var t0 = cols[i], t1 = cols[i + 1]; if (t1 - t0 < 1e-4) continue;
+          var b = H - 0.02, u0 = edge(t0), u1 = edge(t1);
+          q([t0, b, ew], [t1, b, ew], [t1, u1, ew], [t0, u0, ew]); q([t1, b, 0], [t0, b, 0], [t0, u0, 0], [t1, u1, 0]);
+          q([t0, u0, 0], [t0, u0, ew], [t1, u1, ew], [t1, u1, 0]); q([t1, b, 0], [t1, b, ew], [t0, b, ew], [t0, b, 0]);
+        }
+        var g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(V, 3)); g.computeVertexNormals(); wrapTo(g, tray, -ew);   // full wall thickness, so the points are as strong as the wall
+      })();
+      var nc = Math.max(3, Math.min(8, Math.round(P / 55)));
+      for (var ci = 0; ci < nc; ci++) {
+        var v0 = vall[Math.floor((ci + 0.5) * vall.length / nc)] || [ci * P / nc, H]; var line = [[v0[0], H]], tz = H, tc2 = v0[0], depthC = H * (0.4 + rnd(ci + 7) * 0.3);
+        while (tz > H - depthC) { tz -= 1.6 + rnd(ci * 13 + tz) * 1.8; tc2 += (rnd(ci * 31 + tz) - 0.5) * 3.2; line.push([tc2, Math.max(H - depthC, tz)]); }
+        var L2 = [], R2 = []; line.forEach(function (q, j) { var wdt = 0.5 * (1 - j / (line.length + 1)) + 0.2; L2.push([q[0] - wdt, q[1]]); R2.unshift([q[0] + wdt, q[1]]); });
+        polyTo(L2.concat(R2), acc, -0.05, 0.6);
+        if (line.length > 3) {   // one small branch
+          var b0 = line[Math.floor(line.length / 2)], dir = rnd(ci + 3) > 0.5 ? 1 : -1;
+          polyTo([[b0[0] - 0.3, b0[1] + 0.3], [b0[0] + dir * 3.2, b0[1] - 2.6], [b0[0] + dir * 3.4, b0[1] - 2.9], [b0[0] + 0.3, b0[1] - 0.3]], acc, -0.05, 0.6);
+        }
+      }
+      return;
+    }
     var tex = ST.tex, n, i, step;
     if (tex === 'ribs') { n = count(5); step = P / n; for (i = 0; i < n; i++) rect(i * step - 0.65, 1.5, 1.3, H - 3); }
     else if (tex === 'stripes') { band(function () { return H * 0.36; }, 1.6); band(function () { return H * 0.7; }, 1.6); }
@@ -9019,7 +9078,7 @@ var DECO = (function () {
     if (ST.tpl === 'crate') [[-1, -1], [1, -1], [1, 1], [-1, 1]].forEach(function (k) {   // corner posts standing a little proud
       var p = Math.max(6, L.w + 3.5); acc.push(stBox(k[0] * (L.W / 2 - p / 2 + 1), k[1] * (L.D / 2 - p / 2 + 1), (L.H + 1.6) / 2, p, p, L.H + 1.6));
     });
-    if (ST.tex !== 'none') stPattern(L, T, acc);
+    if (ST.tpl === 'fence' || ST.tpl === 'egg' || ST.tex !== 'none') stPattern(L, T, acc, tray);   // fence and egg draw their own sides
     return (stCache[key] = { tray: concat(tray), acc: acc.length ? concat(acc) : null, L: L });
   }
   function stPiece() {
@@ -9163,7 +9222,9 @@ var DECO = (function () {
     stToggle.setAttribute('aria-checked', String(ST.on)); document.getElementById('stBody').hidden = !ST.on;
     document.querySelectorAll('[data-stcount]').forEach(function (b) { b.setAttribute('aria-checked', String(+b.dataset.stcount === ST.count)); });
     document.querySelectorAll('[data-sttpl]').forEach(function (b) { b.setAttribute('aria-checked', String(b.dataset.sttpl === ST.tpl)); });
-    document.querySelectorAll('[data-sttex]').forEach(function (b) { b.setAttribute('aria-checked', String(b.dataset.sttex === ST.tex)); });
+    var ownSides = ST.tpl === 'fence' || ST.tpl === 'egg';
+    document.querySelectorAll('[data-sttex]').forEach(function (b) { b.setAttribute('aria-checked', String(!ownSides && b.dataset.sttex === ST.tex)); b.disabled = ownSides; });
+    var tl = document.getElementById('stTexL'); if (tl) tl.textContent = ownSides ? 'Pattern on the sides (the ' + (ST.tpl === 'fence' ? 'fence' : 'egg') + ' design has its own)' : 'Pattern on the sides';
     [['stGap', 'gap'], ['stWall', 'wall'], ['stDepth', 'depth']].forEach(function (r) { var inp = document.getElementById(r[0]); inp.value = ST[r[1]]; document.getElementById(r[0] + 'V').textContent = (+ST[r[1]]).toFixed(r[1] === 'depth' ? 0 : 1) + ' mm'; });
     document.getElementById('stStem').setAttribute('aria-checked', String(!!ST.stem));
     var touch = matchMedia('(hover: none)').matches;
