@@ -14,6 +14,47 @@ service cloud.firestore {
     function blocked() { return banned() || muted(); }
     function msgCount(d) { return d.get('msgs', []).size(); }
 
+    // ---------- member access: license codes, passes, licenses and the Founder badge ----------
+    function nowMs() { return request.time.toMillis(); }
+    function fresh(t) { return t is int && t > nowMs() - 300000 && t < nowMs() + 300000; }
+    function codePath(c) { return /databases/$(database)/documents/codes/$(c); }
+    function passPath(u) { return /databases/$(database)/documents/passes/$(u); }
+    function licPath(l) { return /databases/$(database)/documents/licenses/$(l); }
+    function passKeys(d) { return d.keys().hasOnly(['type', 'start', 'end', 'code', 'codes', 'founder', 'consent', 'redeemed', 'lic']); }
+    // the code this pass uses was unused before this write, and this same write marks it as used by me
+    function codeTaken(d) {
+      let c = get(codePath(d.code)).data;
+      return c.by == null && c.get('off', false) == false && getAfter(codePath(d.code)).data.by == me()
+        && d.type == c.type && fresh(d.redeemed) && fresh(d.consent);
+    }
+    // Commercial passes carry a license written in the same go; Maker passes carry none
+    function licOk(d) {
+      return (d.type == 'maker' && !('lic' in d))
+        || (d.type == 'commercial' && d.lic is string && existsAfter(licPath(d.lic))
+            && getAfter(licPath(d.lic)).data.uid == me() && getAfter(licPath(d.lic)).data.end == d.end);
+    }
+    function passNew(d) {
+      let c = get(codePath(d.code)).data;
+      return passKeys(d) && codeTaken(d) && d.founder == c.get('founder', false)
+        && d.start == d.redeemed && d.end == d.redeemed + c.days * 86400000 && d.codes == [d.code] && licOk(d);
+    }
+    function passMore(o, d) {
+      let c = get(codePath(d.code)).data;
+      let live = o.end > d.redeemed && o.get('cancelled', false) == false;
+      let same = live && o.type == d.type;
+      return passKeys(d) && codeTaken(d) && d.code != o.code
+        && !(live && o.type == 'commercial' && c.type == 'maker')
+        && d.founder == (o.get('founder', false) || c.get('founder', false))
+        && ((same && d.start == o.start && d.end == o.end + c.days * 86400000)
+            || (!same && d.start == d.redeemed && d.end == d.redeemed + c.days * 86400000))
+        && d.codes == o.get('codes', []).concat([d.code]) && licOk(d);
+    }
+    function licData(id, d) {
+      let p = getAfter(passPath(me())).data;
+      return d.keys().hasOnly(['uid', 'type', 'start', 'end', 'shop']) && d.uid == me() && d.type == 'commercial'
+        && d.shop is string && d.shop.size() <= 40 && p.get('lic', '') == id && p.end == d.end && p.start == d.start;
+    }
+
     // admin list: only readable by that person, changed only in the Firebase console
     match /admins/{uid} {
       allow read: if signedIn() && (uid == me() || isAdmin());
@@ -79,6 +120,41 @@ service cloud.firestore {
         && request.resource.data.t < request.time.toMillis() + 300000;
       allow read: if isAdmin();
       allow update, delete: if false;
+    }
+    // license codes: made in Admin > Codes. Anyone signed in can look up a code by its exact text (to redeem it),
+    // only admins can list them. Redeeming marks the code as mine together with my pass.
+    match /codes/{code} {
+      allow get: if signedIn();
+      allow list, create, delete: if isAdmin();
+      allow update: if isAdmin() || (signedIn() && resource.data.by == null && resource.data.get('off', false) == false
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['by', 'used'])
+        && request.resource.data.by == me() && fresh(request.resource.data.used)
+        && existsAfter(passPath(me())) && getAfter(passPath(me())).data.code == code);
+    }
+    // each member's pass: only written by redeeming a code (or by an admin, to cancel it)
+    match /passes/{uid} {
+      allow read: if isAdmin() || (signedIn() && uid == me());
+      allow create: if isAdmin() || (signedIn() && uid == me() && passNew(request.resource.data));
+      allow update: if isAdmin() || (signedIn() && uid == me() && passMore(resource.data, request.resource.data));
+      allow delete: if isAdmin();
+    }
+    // Commercial licenses: anyone can check a license number; the owner can rename their shop
+    match /licenses/{id} {
+      allow get: if true;
+      allow list, delete: if isAdmin();
+      allow create: if signedIn() && licData(id, request.resource.data);
+      allow update: if isAdmin() || (signedIn() && resource.data.uid == me() && (
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['shop']) && request.resource.data.shop is string
+          && request.resource.data.shop.size() >= 1 && request.resource.data.shop.size() <= 40)
+        || licData(id, request.resource.data)));
+    }
+    // the Founder badge: members can only turn it on when their pass says they are a Founder
+    match /badges/{uid} {
+      allow read: if signedIn();
+      allow create, update: if isAdmin() || (signedIn() && uid == me() && request.resource.data.keys().hasOnly(['founder'])
+        && (request.resource.data.founder == false
+            || (existsAfter(passPath(me())) && getAfter(passPath(me())).data.get('founder', false) == true)));
+      allow delete: if isAdmin() || (signedIn() && uid == me());
     }
     match /feedback/{uid} {
       allow read: if isAdmin() || (signedIn() && uid == me());

@@ -71,7 +71,7 @@
           delAll(fs.collection('shares').where('by', '==', id))
         ]);
       }).then(function () {
-        return Promise.all(['chat', 'stats', 'feedback', 'profiles'].map(function (c) { return fs.collection(c).doc(id).delete().catch(function () {}); }));
+        return Promise.all(['chat', 'stats', 'feedback', 'profiles', 'badges'].map(function (c) { return fs.collection(c).doc(id).delete().catch(function () {}); }));
       }).then(function () { return u.delete(); }).then(function () { setTimeout(function () { location.reload(); }, 1500); });
     }
   };
@@ -115,7 +115,7 @@
   }
   function wrapDoc(r) {
     return {
-      id: r.id,
+      id: r.id, _r: r,
       get: function () { return r.get().then(docSnap); },
       set: function (d, o) { return r.set(enc(d), o || {}); },
       update: function (d) { return r.update(enc(d)); },
@@ -137,6 +137,16 @@
       var c = fs.collection(path), w = wrapQuery(c);
       w.doc = function (id) { return wrapDoc(id ? c.doc(id) : c.doc()); };
       return w;
+    },
+    // several writes that succeed or fail together (redeeming a code writes the code, the pass and the badge at once)
+    batch: function () {
+      var b = fs.batch();
+      return {
+        set: function (d, data, o) { b.set(d._r, enc(data), o || {}); },
+        update: function (d, data) { b.update(d._r, enc(data)); },
+        delete: function (d) { b.delete(d._r); },
+        commit: function () { return b.commit(); }
+      };
     }
   };
 

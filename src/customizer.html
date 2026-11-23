@@ -1700,6 +1700,47 @@ body.clawon .stage .clawstart, .stage:has(.sizecard:not([hidden])) .clawstart { 
 .memlogrow small { color: #5B6B6E; }
 @media (max-width: 760px) { .memlog { margin-left: 0; } .memlogrow { grid-template-columns: 1fr auto; } .memlogrow small { display: none; } }
 .stpats button:disabled { opacity: .45; cursor: not-allowed; }
+
+/* member access: Founder badge, Membership card, license card, Admin > Codes */
+.fbadge { display: inline-flex; align-items: center; gap: 2px; margin-left: 4px; border: 1.5px solid var(--ink-dark); border-radius: 999px; padding: 0 7px; background: linear-gradient(180deg, #FFF6C2 0%, #FFD84A 50%, #E9A400 100%); color: var(--ink-dark); font: 800 10px/14px "Figtree", sans-serif; white-space: nowrap; vertical-align: middle; text-shadow: none; -webkit-text-stroke: 0; }
+.acctop .fbadge { align-self: flex-start; margin: 3px 0 1px; font-size: 12px; line-height: 18px; border-width: 2px; }
+.acctop > div { display: flex; flex-direction: column; align-items: flex-start; }
+.fbadge.shf { margin: 0; font-size: 11px; line-height: 18px; border-width: 2px; }
+.memlead { margin: 0 0 4px; font: 600 15px "Figtree", sans-serif; color: var(--ink-dark); }
+.memchips { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin: 0 0 6px; }
+.memchip { border: 2.5px solid var(--ink-dark); border-radius: 999px; padding: 1px 12px; font: 400 16px "Lilita One", sans-serif; letter-spacing: .3px; color: #FFFFFF; -webkit-text-stroke: 3px var(--ink-dark); paint-order: stroke fill; background: linear-gradient(180deg, #5EE0D4 0%, #2FC4B8 47%, #01A096 53%, #017E77 100%); box-shadow: 0 2px 0 var(--ink-dark); }
+.memchip.commercial { background: linear-gradient(180deg, #C9B8FF 0%, #9C84FF 47%, #7A5CFA 53%, #5F43D8 100%); }
+.memchips .fbadge { margin: 0; font-size: 12px; line-height: 21px; padding: 0 10px; border-width: 2.5px; box-shadow: 0 2px 0 var(--ink-dark); }
+.accard .memhint { margin-top: 10px; }
+.check.memok { white-space: normal; flex: initial; align-items: flex-start; margin-top: 8px; font: 600 13px/1.35 "Figtree", sans-serif; }
+.check.memok input { flex: none; margin-top: 0; }
+.memlic { margin: 10px 0 4px; padding: 10px 12px; border: 3px dashed #7A5CFA; border-radius: 14px; background: #F4F0FF; }
+.memlic[hidden], .licbox[hidden], .licres[hidden] { display: none; }
+.memlicno { display: block; margin: 0 0 4px; font: 800 16px "Figtree", sans-serif; letter-spacing: .5px; color: var(--ink-dark); }
+.licprev { display: block; width: 100%; max-width: 440px; height: auto; margin: 10px 0 6px; border-radius: 14px; box-shadow: 0 4px 0 rgba(16,48,45,.35); }
+.licres { margin-top: 8px; padding: 8px 12px; border: 3px solid var(--ink-dark); border-radius: 12px; font: 700 14px "Figtree", sans-serif; color: var(--ink-dark); }
+.licres.ok { background: #E5F7E8; }
+.licres.bad { background: #FDECEA; }
+.badge.founder.got { background: linear-gradient(180deg, #FFF6C2, #FFD84A 55%, #F2B300); }
+.check.wrapcheck { white-space: normal; flex: initial; font-size: 14px; }
+.codeform { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px 12px; align-items: end; }
+.codefield { display: flex; flex-direction: column; gap: 4px; margin: 0; }
+.codefield > span { font: 700 13px "Figtree", sans-serif; color: var(--ink-dark); }
+.codeform .codefield input, .codeform .codefield select { width: 100%; height: 44px; box-sizing: border-box; margin: 0; padding: 6px 10px; font: 600 15px "Figtree", sans-serif; color: var(--ink-dark); background: #FFFFFF; border: 3px solid var(--ink-dark); border-radius: 12px; box-shadow: inset 0 3px 0 rgba(16,48,45,.08); }
+.codeout { display: block; width: 100%; box-sizing: border-box; margin-top: 10px; padding: 8px 10px; font: 600 13px/1.5 ui-monospace, Menlo, Consolas, monospace; color: var(--ink-dark); border: 3px solid var(--ink-dark); border-radius: 12px; background: #FFFFFF; resize: vertical; }
+.coderow { display: grid; grid-template-columns: 150px 1fr auto; gap: 6px 12px; align-items: center; padding: 8px 4px; border-top: 2px solid #E3E8E9; }
+.coderow code { font: 800 14px ui-monospace, Menlo, Consolas, monospace; color: var(--ink-dark); user-select: all; }
+.cdinfo { display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: center; font: 600 12.5px "Figtree", sans-serif; color: #2F3B3D; }
+.cdinfo .fbadge { margin: 0; }
+.cdinfo small { color: #4A6B86; }
+.cdtype, .mempass { display: inline-block; border: 1.5px solid var(--ink-dark); border-radius: 999px; padding: 0 7px; font: 800 10.5px/16px "Figtree", sans-serif; color: var(--ink-dark); background: #E3F4F2; }
+.cdtype.commercial, .mempass.commercial { background: #EFEDFF; }
+.mempass { margin: 2px 4px 0 0; }
+.mempass.ended { background: #EEEEEE; color: #666666; }
+.cdstat { font-weight: 800; }
+.cdstat.used { color: #1E8C3A; }
+.cdstat.off { color: #B3261E; }
+@media (max-width: 560px) { .coderow { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
@@ -5560,6 +5601,10 @@ var DECO = (function () {
       var bds = document.getElementById('shBadges'); bds.textContent = '';
       if (com && feat(it)) bds.insertAdjacentHTML('beforeend', '<span class="shbadge">' + badgeHTML('feat') + '</span>');
       if (com && TOPW === it.id) bds.insertAdjacentHTML('beforeend', '<span class="shbadge top">' + badgeHTML('top') + '</span>');
+      if (com && it.data.by) {
+        var addF = function () { if (focus === it && FOUNDERS[it.data.by] && !bds.querySelector('.fbadge')) { bds.appendChild(founderTag('shf')); bds.hidden = false; } };
+        if (it.data.by in FOUNDERS) addF(); else loadFounders([it.data.by]).then(addF);
+      }
       bds.hidden = !bds.childNodes.length;
       var del = document.getElementById('shDel'); del.dataset.sure = ''; del.textContent = com ? 'Remove from community' : 'Delete'; del.hidden = !(mine || (com && IS_ADMIN));
       paintLike(); document.getElementById('shAdm').hidden = !(com && IS_ADMIN);
@@ -5921,6 +5966,7 @@ var DECO = (function () {
       p.textContent = UID ? 'You\u2019re signed in for this test, so Save, Share and My gallery work. On the real website this becomes \u201cLog in with Patreon\u201d, and your tier decides which characters you can download.'
         : 'You\u2019re not signed in here. On the real website this button becomes \u201cLog in with Patreon\u201d.';
       b.appendChild(p);
+      if (DBX && UID) membershipCards(b);
       if (IS_ADMIN) { var ab = document.createElement('button'); ab.type = 'button'; ab.className = 'go'; ab.textContent = 'Open the admin page'; ab.style.marginTop = '10px'; ab.addEventListener('click', function () { closeModal(); setTimeout(function () { document.getElementById('btnAdmin').click(); }, 50); }); b.appendChild(ab); }
     });
   });
@@ -5957,6 +6003,7 @@ var DECO = (function () {
     var top = el('div', 'acctop'), av = el('img', 'acctav'), who = el('div'), whoName = el('b', '', info.name);
     av.alt = ''; av.src = info.avatarUrl || DEFAULT_AV; who.appendChild(whoName); who.appendChild(el('small', '', info.email || ''));
     top.appendChild(av); top.appendChild(who); b.appendChild(top);
+    membershipCards(b);
     function sec(t, cls) { var card = el('div', 'accard' + (cls ? ' ' + cls : '')); card.appendChild(el('b', 'actitle', t)); var s = el('div', 'acctsec'); card.appendChild(s); b.appendChild(card); return s; }
     function busy(x, p, okText) {   // pressed look while saving, then a green tick
       var t = x.textContent; x.disabled = true; x.classList.add('busy'); x.textContent = 'Saving…';
@@ -6091,10 +6138,10 @@ var DECO = (function () {
     e.preventDefault(); histGo(k === 'y' || e.shiftKey ? 1 : -1);
   });
   if (window.claude && window.claude.use) {
-    window.claude.use('db').then(function (d) { DBX = d; kongLoad(); openShared(); loadPublished(); trackVisit(); });
+    window.claude.use('db').then(function (d) { DBX = d; kongLoad(); openShared(); loadPublished(); trackVisit(); passLoad(); });
     window.claude.use('user').then(function (u) {
       USR = u; if (!u) return;
-      u.id().then(function (id) { UID = id; loadCollection(); trackVisit(); clkLoad(); });
+      u.id().then(function (id) { UID = id; loadCollection(); trackVisit(); clkLoad(); passLoad(); });
       refreshAccount();
       Promise.all([u.isOwner(), u.canEdit()]).then(function (r) { IS_ADMIN = !!(r[0] || r[1]); applySiteSettings(); document.getElementById('btnAdmin').hidden = !IS_ADMIN; document.body.classList.toggle('is-admin', IS_ADMIN); if (IS_ADMIN) admBadgeStart(); }).catch(function () {});
     });
@@ -6166,7 +6213,8 @@ var DECO = (function () {
     DBX.collection('community').orderBy('created', 'desc').limit(60).get().then(function (snap) {
       done(snap.empty ? 'No community designs yet. Tick \u201cPost to the community gallery\u201d when you save a design.' : '');
       var ids = []; snap.docs.forEach(function (d) { if (d.data().by && ids.indexOf(d.data().by) < 0) ids.push(d.data().by); });
-      names(ids).then(function (ps) {
+      Promise.all([names(ids), loadFounders(ids)]).then(function (pr) {
+        var ps = pr[0];
         var gd = snap.docs.filter(function (d) { return IS_ADMIN || !ADM.gallery.hidden[d.id]; });
         gd.sort(function (a, b) { return (ADM.gallery.featured[b.id] ? 1 : 0) - (ADM.gallery.featured[a.id] ? 1 : 0); });
         gd.forEach(function (d) {
@@ -6174,7 +6222,7 @@ var DECO = (function () {
           if (ADM.gallery.featured[d.id]) card.appendChild(el('b', 'galfeat', '\u2605 Featured'));
           if (data.thumb) { var im = el('img'); im.src = data.thumb; im.alt = ''; open.appendChild(im); }
           open.appendChild(el('span', '', data.title || 'Boxedable'));
-          open.appendChild(el('small', '', 'by ' + ((ps[data.by] && ps[data.by].name) || 'a member')));
+          var byl = el('small', '', 'by ' + ((ps[data.by] && ps[data.by].name) || 'a member')); if (FOUNDERS[data.by]) byl.appendChild(founderTag()); open.appendChild(byl);
           open.addEventListener('click', function () { applyState(data.state); closeModal(); toast('Loaded \u201c' + (data.title || 'Boxedable') + '\u201d. Change it and save your own copy.'); });
           var row = el('div', 'galrow'), likes = (data.likes || []).slice(), like = el('button', 'like'); like.type = 'button';
           function paint() { var mine = likes.indexOf(UID) >= 0; like.textContent = (mine ? '\u2665 ' : '\u2661 ') + likes.length; like.setAttribute('aria-pressed', String(mine)); like.setAttribute('aria-label', (mine ? 'Unlike ' : 'Like ') + (data.title || 'design')); }
@@ -6204,6 +6252,7 @@ var DECO = (function () {
     body.appendChild(el('p', '', 'You\u2019ve collected ' + have.length + ' of ' + all.length + ' characters. A character counts once you download it.'));
     var bar = el('div', 'progress'); var fill = el('i'); fill.style.width = (all.length ? have.length / all.length * 100 : 0) + '%'; bar.appendChild(fill); body.appendChild(bar);
     var bd = el('div', 'badges');
+    if (FOUNDERS[UID]) { var fb = el('div', 'badge got founder'); fb.appendChild(el('b', '', '\u2605')); fb.appendChild(el('span', '', 'Founder')); fb.appendChild(el('small', '', 'campaign backer')); bd.appendChild(fb); }
     BADGES.forEach(function (b) { var got = have.length >= b[0] || (b[0] > all.length && have.length === all.length && all.length > 0 && b[0] === 100 && false); var x = el('div', 'badge' + (have.length >= b[0] ? ' got' : ''), ''); x.appendChild(el('b', '', b[2])); x.appendChild(el('span', '', b[1])); x.appendChild(el('small', '', b[0] + ' character' + (b[0] > 1 ? 's' : ''))); bd.appendChild(x); });
     if (all.length && have.length === all.length) { var c = el('div', 'badge got'); c.appendChild(el('b', '', '\ud83c\udf89')); c.appendChild(el('span', '', 'Complete set')); c.appendChild(el('small', '', 'every character')); bd.appendChild(c); }
     body.appendChild(bd);
@@ -6405,9 +6454,9 @@ var DECO = (function () {
   adminBtn.addEventListener('click', function () {
     openModal('Admin', function (b) {
       b.closest('.mpanel').classList.add('wide', 'gpanel');
-      tabs(b, ['Dashboard', 'Members', 'Characters', 'Inbox', 'Moderation', 'Settings', 'Files'], function (n, body) {
+      tabs(b, ['Dashboard', 'Members', 'Codes', 'Characters', 'Inbox', 'Moderation', 'Settings', 'Files'], function (n, body) {
         restash();
-        ({ Dashboard: adminDashboard, Members: adminMembers, Characters: adminCharacters, Inbox: adminInbox, Moderation: adminModeration, Settings: adminSettings, Files: adminFiles })[n](body);
+        ({ Dashboard: adminDashboard, Members: adminMembers, Codes: adminCodes, Characters: adminCharacters, Inbox: adminInbox, Moderation: adminModeration, Settings: adminSettings, Files: adminFiles })[n](body);
         cardify(body);
         if (!body._cardMo) { body._cardMo = new MutationObserver(function () { cardify(body); }); body._cardMo.observe(body, { childList: true }); }
       });
@@ -7184,7 +7233,7 @@ var DECO = (function () {
   }
   function adminMembers(body) {
     if (!DBX) { body.appendChild(el('p', 'note', 'Sign in on the live page to see this.')); return; }
-    var done = loading(body, 'Loading members\u2026'), rows = [], ps = {}, view = { q: '', sort: 'last', show: 'all' };
+    var done = loading(body, 'Loading members\u2026'), rows = [], ps = {}, pm = {}, view = { q: '', sort: 'last', show: 'all' };
     var bar = el('div', 'inboxbar'), count = el('p', 'memcount'), list = el('div');
     function when(t) { if (!t) return '\u2014'; var d = Math.floor((Date.now() - t) / 864e5); return d <= 0 ? 'today' : d === 1 ? 'yesterday' : d < 30 ? d + ' days ago' : new Date(t).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' }); }
     function nm(r) { return (ps[r.uid] && ps[r.uid].name) || 'Member'; }
@@ -7209,6 +7258,7 @@ var DECO = (function () {
         var who = el('div'); who.appendChild(el('b', '', nm(r))); who.title = 'User ID: ' + r.uid;
         if (banned) who.appendChild(el('small', 'ban', 'Banned')); else if (muted) who.appendChild(el('small', 'mute', 'Muted until ' + new Date(ADM.mod.muted[r.uid]).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })));
         else if (r.first && now - r.first < wk) who.appendChild(el('small', 'newm', 'New'));
+        var pp = pm[r.uid]; if (pp) { var pon = passOn(pp), pt = el('small', 'mempass ' + (pon ? pp.type : 'ended'), pon ? PASS_NAME[pp.type] + ' until ' + fmtDay(pp.end) : pp.cancelled ? 'Pass cancelled' : 'Pass ended'); who.appendChild(pt); if (pp.founder) who.appendChild(founderTag()); }
         var lb = el('button', 'memlogbtn', 'Download log'); lb.type = 'button'; lb.setAttribute('aria-expanded', 'false');
         lb.addEventListener('click', function () { toggleDlLog(row, lb, r, nm(r)); }); who.appendChild(lb);
         row.appendChild(who);
@@ -7221,7 +7271,8 @@ var DECO = (function () {
         row.appendChild(acts); list.appendChild(row);
       });
     }
-    membersLoad().then(function (r) { rows = r; return names(rows.map(function (x) { return x.uid; })).then(function (p) { ps = p; }); }).then(function () {
+    membersLoad().then(function (r) { rows = r; return Promise.all([names(rows.map(function (x) { return x.uid; })).then(function (p) { ps = p; }),
+      DBX.collection('passes').get().then(function (sn) { sn.docs.forEach(function (d) { pm[d.id] = d.data(); }); }, function () {})]); }).then(function () {
       done(rows.length ? '' : 'No members yet. Members show up here after their first visit.');
       if (!rows.length) return;
       bar.appendChild(seg([['all', 'All'], ['new', 'New this week'], ['active', 'Active this week'], ['blocked', 'Muted or banned']], 'show'));
@@ -7231,6 +7282,360 @@ var DECO = (function () {
       var q = el('input', 'inboxq'); q.type = 'search'; q.placeholder = 'Search by name'; q.setAttribute('aria-label', 'Search members'); q.addEventListener('input', function () { view.q = q.value; draw(); }); bar.appendChild(q);
       body.appendChild(bar); body.appendChild(count); body.appendChild(list); draw();
     }).catch(function () { done('Couldn\u2019t load the members.'); });
+  }
+  // ---------- Member access: license codes, passes, the Founder badge and the Commercial license card ----------
+  // codes/{BX-XXXX-XXXX}   made in Admin > Codes: { type: 'maker'|'commercial', founder, days, note, batch, made, by: null|uid, used: null|time, off }
+  // passes/{uid}           { type, start, end, code, codes: [...], founder, consent, redeemed, lic? }, written together with the code it uses
+  // licenses/{BXC-XXXX-XXXX}  { uid, type: 'commercial', start, end, shop }: anyone can check a license number
+  // badges/{uid}           { founder: true }: the Founder badge shown in chat, the gallery and the Collection
+  var PASS_DAY = 864e5, CODE_ABC = '23456789ABCDEFGHJKMNPQRSTUVWXYZ', PASS_NAME = { maker: 'Maker', commercial: 'Commercial' };
+  var PASS = { loaded: false, d: null, wait: null }, FOUNDERS = {};
+  function rndCode(prefix) { var a = new Uint32Array(8), s = ''; crypto.getRandomValues(a); for (var i = 0; i < 8; i++) s += CODE_ABC[a[i] % CODE_ABC.length]; return prefix + '-' + s.slice(0, 4) + '-' + s.slice(4); }
+  function cleanCode(v, prefix) {   // "bx 7k4q92md" -> "BX-7K4Q-92MD"
+    var r = String(v || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+    if (r.length === prefix.length + 8 && r.indexOf(prefix) === 0) r = r.slice(prefix.length);
+    return r.length === 8 ? prefix + '-' + r.slice(0, 4) + '-' + r.slice(4) : '';
+  }
+  function fmtDay(t) { return new Date(t).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' }); }
+  function passOn(d) { d = d === undefined ? PASS.d : d; return !!(d && !d.cancelled && d.end > Date.now()); }
+  function passLoad() {
+    if (!DBX || !UID) return Promise.resolve(null);
+    if (PASS.wait) return PASS.wait;
+    PASS.wait = DBX.collection('passes').doc(UID).get().then(function (s) { PASS.d = s.exists ? s.data() : null; }, function () {}).then(function () {
+      PASS.loaded = true; PASS.wait = null; FOUNDERS[UID] = !!(PASS.d && PASS.d.founder); return PASS.d;
+    });
+    return PASS.wait;
+  }
+  function loadFounders(ids) {   // resolves true when someone new turned out to be a Founder (so the caller repaints)
+    var need = (ids || []).filter(function (i, k, a) { return i && !(i in FOUNDERS) && a.indexOf(i) === k; });
+    if (!DBX || !need.length) return Promise.resolve(false);
+    need.forEach(function (i) { FOUNDERS[i] = false; });
+    var any = false;
+    return Promise.all(need.map(function (i) {
+      return DBX.collection('badges').doc(i).get().then(function (d) { if (d.exists && d.data().founder) { FOUNDERS[i] = true; any = true; } }, function () {});
+    })).then(function () { return any; });
+  }
+  function founderTag(cls) { var t = el('span', 'fbadge' + (cls ? ' ' + cls : ''), '★ Founder'); t.title = 'Backed Boxedables during the campaign'; return t; }
+  // several writes that must happen together (the database rules check them as one)
+  function dbWrite(ops) {
+    if (DBX.batch) {
+      var b = DBX.batch();
+      ops.forEach(function (o) { var r = DBX.collection(o[1]).doc(o[2]); if (o[0] === 'update') b.update(r, o[3]); else b.set(r, o[3]); });
+      return b.commit();
+    }
+    return ops.reduce(function (p, o) { return p.then(function () { var r = DBX.collection(o[1]).doc(o[2]); return o[0] === 'update' ? r.update(o[3]) : r.set(o[3]); }); }, Promise.resolve());
+  }
+  function bxErr(t) { var e = new Error(t); e.bx = true; return e; }
+  function redeemCode(raw) {
+    var code = cleanCode(raw, 'BX'), C, cur;
+    if (!code) return Promise.reject(bxErr('That doesn’t look like a code. Codes look like BX-7K4Q-92MD.'));
+    return DBX.collection('codes').doc(code).get().then(function (s) {
+      if (!s.exists) throw bxErr('We can’t find that code. Check it for typos.');
+      C = s.data();
+      if (C.off) throw bxErr('This code was cancelled.');
+      if (C.by === UID) throw bxErr('You already redeemed this code.');
+      if (C.by) throw bxErr('This code was already used on another account.');
+      PASS.wait = null; return passLoad();
+    }).then(function (d) {
+      cur = d;
+      if (passOn(cur) && cur.type === 'commercial' && C.type === 'maker') throw bxErr('You have a Commercial pass until ' + fmtDay(cur.end) + '. Use this Maker code after it ends.');
+      var shopP = cur && cur.lic ? DBX.collection('licenses').doc(cur.lic).get().then(function (s) { return s.exists ? s.data().shop || '' : ''; }, function () { return ''; }) : Promise.resolve('');
+      var meP = USR && USR.me ? USR.me().catch(function () { return null; }) : Promise.resolve(null);
+      return Promise.all([shopP, meP]);
+    }).then(function (r) {
+      var now = Date.now(), days = C.days || 365, same = passOn(cur) && cur.type === C.type;
+      var p = { type: C.type, start: same ? cur.start : now, end: (same ? cur.end : now) + days * PASS_DAY, code: code, codes: ((cur && cur.codes) || []).concat([code]),
+        founder: !!(C.founder || (cur && cur.founder)), consent: now, redeemed: now };
+      var ops = [['update', 'codes', code, { by: UID, used: now }]];
+      if (p.type === 'commercial') {
+        p.lic = (cur && cur.lic) || rndCode('BXC');
+        ops.push(['set', 'licenses', p.lic, { uid: UID, type: 'commercial', start: p.start, end: p.end, shop: (r[0] || (r[1] && r[1].name) || 'My shop').slice(0, 40) }]);
+      }
+      ops.push(['set', 'passes', UID, p]);
+      if (p.founder) ops.push(['set', 'badges', UID, { founder: true }]);
+      return dbWrite(ops).then(function () { PASS.d = p; PASS.loaded = true; FOUNDERS[UID] = p.founder; return { p: p, same: same }; });
+    });
+  }
+  // the Membership card (Account window, and the "Get a pass" window), plus "Check a license"
+  function membershipCards(b, opt) {
+    opt = opt || {};
+    function say(m, t, bad) { m.textContent = t; m.classList.toggle('bad', !!bad); }
+    var card = el('div', 'accard memcard'); card.appendChild(el('b', 'actitle', 'Membership'));
+    var st = el('div', 'memstate'), lic = el('div', 'memlic'); lic.hidden = true; card.appendChild(st); card.appendChild(lic);
+    var hint = el('small', 'memhint', ''), form = el('div', 'acctsec'), inp = el('input'), go = el('button', 'acbtn pri', 'Redeem');
+    inp.type = 'text'; inp.placeholder = 'Your code, like BX-7K4Q-92MD'; inp.setAttribute('aria-label', 'Your code'); inp.autocomplete = 'off'; inp.spellcheck = false; go.type = 'button';
+    form.appendChild(inp); form.appendChild(go);
+    var ok = el('label', 'check memok'), cb = el('input'); cb.type = 'checkbox';
+    ok.appendChild(cb); ok.appendChild(el('span', '', 'I want access right away, and I understand I can’t get a refund once I download a file.'));
+    var msg = el('span', 'acctmsg');
+    card.appendChild(hint); card.appendChild(form); card.appendChild(ok); card.appendChild(msg); b.appendChild(card);
+    function paint() {
+      var d = PASS.d, on = passOn(d); st.textContent = '';
+      if (!PASS.loaded) st.appendChild(el('p', '', 'Checking your pass…'));
+      else if (!d) st.appendChild(el('p', '', 'No pass yet. Redeem your code below to unlock downloads.'));
+      else {
+        var chips = el('div', 'memchips'); chips.appendChild(el('span', 'memchip ' + d.type, PASS_NAME[d.type] + ' pass')); if (d.founder) chips.appendChild(founderTag()); st.appendChild(chips);
+        var left = Math.ceil((d.end - Date.now()) / PASS_DAY);
+        st.appendChild(el('p', '', d.cancelled ? 'This pass was cancelled.' : on ? 'Valid until ' + fmtDay(d.end) + ' (' + left + ' day' + (left === 1 ? '' : 's') + ' left).' : 'Ended on ' + fmtDay(d.end) + '. Redeem a new code to keep downloading.'));
+        if (on) st.appendChild(el('small', '', 'Every character you download stays yours to keep after your pass ends.'));
+      }
+      hint.textContent = on ? 'Got another code? Redeem it to add another year.' : 'Got a code from the campaign? Type it here.';
+      paintLic();
+      var who = document.querySelector('#modal .acctop > div');   // the Founder badge next to your name at the top
+      if (who) { var old = who.querySelector('.fbadge'); if (old) old.remove(); if (d && d.founder) who.insertBefore(founderTag(), who.children[1] || null); }
+    }
+    function paintLic() {
+      var d = PASS.d; lic.textContent = ''; lic.hidden = !(d && d.type === 'commercial' && d.lic && passOn(d)); if (lic.hidden) return;
+      lic.appendChild(el('b', 'memlicno', 'License no. ' + d.lic));
+      lic.appendChild(el('small', '', 'Your shop name prints on your license card. Show the card where you sell, so buyers know your prints are licensed.'));
+      var row = el('div', 'acctsec'), sh = el('input'), sv = el('button', 'acbtn', 'Save name'), cardB = el('button', 'acbtn pri', 'Show license card');
+      sh.type = 'text'; sh.maxLength = 40; sh.placeholder = 'Shop name'; sh.setAttribute('aria-label', 'Shop name'); sv.type = cardB.type = 'button';
+      row.appendChild(sh); row.appendChild(sv); row.appendChild(cardB); lic.appendChild(row);
+      var m = el('span', 'acctmsg'), prev = el('div', 'licbox'); prev.hidden = true; lic.appendChild(m); lic.appendChild(prev);
+      DBX.collection('licenses').doc(d.lic).get().then(function (s) { if (s.exists && !sh.value) sh.value = s.data().shop || ''; }).catch(function () {});
+      sv.addEventListener('click', function () {
+        var v = sh.value.replace(/\s+/g, ' ').trim(); if (v.length < 2) { say(m, 'Use at least 2 characters.', true); return; }
+        sv.disabled = true; DBX.collection('licenses').doc(d.lic).update({ shop: v }).then(function () { say(m, 'Saved.'); if (!prev.hidden) showCard(); }, function () { say(m, 'Couldn’t save. Try again.', true); }).then(function () { sv.disabled = false; });
+      });
+      sh.addEventListener('keydown', function (e) { if (e.key === 'Enter') sv.click(); });
+      function showCard() {
+        prev.hidden = false; prev.textContent = ''; prev.appendChild(el('small', '', 'Drawing your card…'));
+        var meP = USR && USR.me ? USR.me().catch(function () { return null; }) : Promise.resolve(null);
+        meP.then(function (me) { return licenseCanvas(d, sh.value.trim() || 'My shop', (me && me.name) || ''); }).then(function (c) {
+          prev.textContent = '';
+          var im = el('img', 'licprev'); im.alt = 'Your Boxedables license card'; im.src = c.toDataURL('image/png'); prev.appendChild(im);
+          prev.appendChild(el('small', '', 'Print it at 89 × 51 mm, the size of a business card.'));
+          var r2 = el('div', 'acctsec'), dl = el('button', 'acbtn pri', 'Download card'); dl.type = 'button'; r2.appendChild(dl); prev.appendChild(r2);
+          dl.addEventListener('click', function () {
+            c.toBlob(function (blob) {
+              if (!downloads) { say(m, 'Downloads aren’t available in this view.', true); return; }
+              downloads.save({ filename: 'Boxedables-license-' + d.lic + '.png', data: blob }).then(function () { say(m, 'Card saved.'); }, function () {});
+            }, 'image/png');
+          });
+        }, function () { prev.textContent = ''; say(m, 'Couldn’t draw the card.', true); });
+      }
+      cardB.addEventListener('click', function () { if (!prev.hidden) { prev.hidden = true; cardB.textContent = 'Show license card'; return; } cardB.textContent = 'Hide license card'; showCard(); });
+    }
+    go.addEventListener('click', function () {
+      if (!inp.value.trim()) { inp.focus(); return; }
+      if (!cb.checked) { say(msg, 'Tick the box above first.', true); return; }
+      go.disabled = true; go.textContent = 'Checking…'; say(msg, '');
+      redeemCode(inp.value).then(function (r) {
+        inp.value = ''; cb.checked = false; paint();
+        say(msg, (r.same ? 'Added a year. ' : 'Done! ') + 'Your ' + PASS_NAME[r.p.type] + ' pass is on until ' + fmtDay(r.p.end) + '.' + (r.p.founder ? ' Welcome, Founder!' : ''));
+        try { confetti(); SFX.play('reward'); } catch (e) {}
+        if (CHAT.loaded) chatRender();
+      }, function (e) { say(msg, e && e.bx ? e.message : 'Couldn’t redeem the code right now. Try again.', true); }).then(function () { go.disabled = false; go.textContent = 'Redeem'; });
+    });
+    inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') go.click(); });
+    paint(); passLoad().then(paint);
+    if (opt.noCheck) return;
+    var ck = el('div', 'accard'); ck.appendChild(el('b', 'actitle', 'Check a license'));
+    ck.appendChild(el('small', '', 'Buying Boxedables prints? Type the number from the seller’s license card.'));
+    var r3 = el('div', 'acctsec'), ci = el('input'), cgo = el('button', 'acbtn', 'Check'), res = el('div', 'licres'); res.hidden = true;
+    ci.type = 'text'; ci.placeholder = 'BXC-7K4Q-92MD'; ci.setAttribute('aria-label', 'License number'); ci.autocomplete = 'off'; ci.spellcheck = false; cgo.type = 'button';
+    r3.appendChild(ci); r3.appendChild(cgo); ck.appendChild(r3); ck.appendChild(res); b.appendChild(ck);
+    function out(t, good) { res.hidden = false; res.textContent = t; res.className = 'licres ' + (good ? 'ok' : 'bad'); }
+    cgo.addEventListener('click', function () {
+      var n = cleanCode(ci.value, 'BXC'); if (!n) { out('License numbers look like BXC-7K4Q-92MD.', false); return; }
+      cgo.disabled = true;
+      DBX.collection('licenses').doc(n).get().then(function (s) {
+        if (!s.exists) { out('✗ No license with the number ' + n + '.', false); return; }
+        var x = s.data();
+        if (x.end > Date.now()) out('✓ Valid Commercial license for “' + (x.shop || 'a member') + '” until ' + fmtDay(x.end) + '.', true);
+        else out('✗ The license for “' + (x.shop || 'a member') + '” ended on ' + fmtDay(x.end) + '.', false);
+      }, function () { out('Couldn’t check right now. Try again.', false); }).then(function () { cgo.disabled = false; });
+    });
+    ci.addEventListener('keydown', function (e) { if (e.key === 'Enter') cgo.click(); });
+  }
+  // Admin > Codes > "Downloads need a pass": members without an active pass get this window instead of a download
+  function passBlock(which) {
+    if (!(ADM.settings && ADM.settings.needPass) || IS_ADMIN) return false;
+    if (DBX && UID && !PASS.loaded) { passLoad().then(function () { runDownload(which); }); return true; }
+    if (passOn()) return false;
+    openModal('Get a pass to download', function (b) {
+      b.closest('.mpanel').classList.add('gpanel');
+      b.appendChild(el('p', 'memlead', PASS.d ? 'Your pass has ended. Redeem a new code to download again.' : 'Downloads need a Maker or Commercial pass. Designing, saving and sharing stay free.'));
+      if (DBX && UID) membershipCards(b, { noCheck: true });
+    });
+    return true;
+  }
+  // the printable license card for Commercial members (1400 x 800 px, business-card shape)
+  function licenseCanvas(d, shop, name) {
+    var W = 1400, H = 800, c = document.createElement('canvas'); c.width = W; c.height = H; var x = c.getContext('2d'), INK = '#10302D';
+    function rr(px, py, w, h, r) { x.beginPath(); x.moveTo(px + r, py); x.arcTo(px + w, py, px + w, py + h, r); x.arcTo(px + w, py + h, px, py + h, r); x.arcTo(px, py + h, px, py, r); x.arcTo(px, py, px + w, py, r); x.closePath(); }
+    function fit(t, font, size, max) { do { x.font = font.replace('#', size); size -= 2; } while (x.measureText(t).width > max && size > 20); return size + 2; }
+    function stroked(t, px, py, sw) { x.lineJoin = 'round'; x.lineWidth = sw; x.strokeStyle = INK; x.strokeText(t, px, py); x.fillText(t, px, py); }
+    function img(src) { return new Promise(function (res) { if (!src) { res(null); return; } var i = new Image(); i.onload = function () { res(i); }; i.onerror = function () { res(null); }; i.src = src; }); }
+    var thumbs = realChars().filter(function (e) { return e.thumb; }).slice(0, 3).map(function (e) { return img(e.thumb); });
+    var fontsP = document.fonts && document.fonts.load ? Promise.all(['400 80px "Lilita One"', '800 30px "Figtree"', '700 30px "Figtree"'].map(function (f) { return document.fonts.load(f).catch(function () {}); })) : Promise.resolve();
+    return Promise.all([fontsP].concat(thumbs)).then(function (r) {
+      var ims = r.slice(1).filter(Boolean);
+      var g = x.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#5EE0D4'); g.addColorStop(0.5, '#01A096'); g.addColorStop(1, '#017E77');
+      rr(8, 8, W - 16, H - 16, 52); x.fillStyle = g; x.fill();
+      x.save(); rr(8, 8, W - 16, H - 16, 52); x.clip(); x.fillStyle = 'rgba(255,255,255,.09)';
+      for (var j = 0, row = 0; j < H + 46; j += 46, row++) for (var i = row % 2 ? 23 : 0; i < W + 46; i += 46) { x.beginPath(); x.arc(i, j, 6, 0, 7); x.fill(); }
+      x.restore();
+      rr(8, 8, W - 16, H - 16, 52); x.lineWidth = 14; x.strokeStyle = INK; x.stroke();
+      // logo, or the name in big letters
+      var logo = document.querySelector('.brandlogo');
+      if (logo && logo.complete && logo.naturalWidth) { var lw = 400, lh = lw * logo.naturalHeight / logo.naturalWidth; if (lh > 130) { lh = 130; lw = lh * logo.naturalWidth / logo.naturalHeight; } x.drawImage(logo, 64, 44 + (130 - lh) / 2, lw, lh); }
+      else { x.font = '400 84px "Lilita One", "Fredoka", sans-serif'; x.fillStyle = '#FFFFFF'; x.textBaseline = 'middle'; stroked('BOXEDABLES', 64, 110, 14); }
+      // gold "Official seller" tag
+      x.font = '400 44px "Lilita One", "Fredoka", sans-serif'; x.textBaseline = 'middle'; var tag = 'OFFICIAL SELLER', tw = x.measureText(tag).width + 64, tx = W - 64 - tw;
+      var gg = x.createLinearGradient(0, 70, 0, 150); gg.addColorStop(0, '#FFF09A'); gg.addColorStop(0.47, '#FFD84A'); gg.addColorStop(0.53, '#F7B500'); gg.addColorStop(1, '#E99E00');
+      rr(tx, 74, tw, 76, 38); x.fillStyle = INK; x.save(); x.translate(0, 7); x.fill(); x.restore(); rr(tx, 74, tw, 76, 38); x.fillStyle = gg; x.fill(); x.lineWidth = 7; x.strokeStyle = INK; x.stroke();
+      x.fillStyle = INK; x.fillText(tag, tx + 32, 114);
+      // white panel
+      var px = 64, py = 196, pw = W - 128, ph = 440;
+      rr(px, py + 10, pw, ph, 36); x.fillStyle = INK; x.fill(); rr(px, py, pw, ph, 36); x.fillStyle = '#FFFFFF'; x.fill(); x.lineWidth = 9; x.strokeStyle = INK; x.stroke();
+      var textW = ims.length ? pw - 120 - ims.length * 150 : pw - 96;
+      x.textBaseline = 'alphabetic'; x.fillStyle = '#01948C'; x.font = '800 28px "Figtree", sans-serif'; x.fillText('LICENSED TO', px + 48, py + 70);
+      x.fillStyle = INK; fit(shop, '400 #px "Lilita One", "Fredoka", sans-serif', 92, textW); x.fillText(shop, px + 48, py + 168);
+      if (name && name.toLowerCase() !== shop.toLowerCase()) { x.fillStyle = '#4A6B86'; fit('by ' + name, '700 #px "Figtree", sans-serif', 34, textW); x.fillText('by ' + name, px + 48, py + 220); }
+      ims.forEach(function (im, k) {   // a few characters peeking in on the right
+        var s = 190, cx = px + pw - 48 - s - (ims.length - 1 - k) * 140, cy = py + 40;
+        x.save(); rr(cx, cy, s, s, 28); x.fillStyle = '#E3F4F2'; x.fill(); x.clip(); var q = Math.min(im.width, im.height); x.drawImage(im, (im.width - q) / 2, (im.height - q) / 2, q, q, cx, cy, s, s); x.restore();
+        rr(cx, cy, s, s, 28); x.lineWidth = 6; x.strokeStyle = INK; x.stroke();
+      });
+      x.fillStyle = '#E3E8E9'; x.fillRect(px + 40, py + 268, pw - 80, 5);
+      var cols = [['LICENSE', 'Commercial'], ['VALID UNTIL', fmtDay(d.end)], ['LICENSE NO.', d.lic]], cw = (pw - 96) / 3;
+      cols.forEach(function (cc, k) {
+        var cx = px + 48 + k * cw; x.fillStyle = '#01948C'; x.font = '800 24px "Figtree", sans-serif'; x.fillText(cc[0], cx, py + 330);
+        x.fillStyle = INK; fit(cc[1], '800 #px "Figtree", sans-serif', 44, cw - 24); x.fillText(cc[1], cx, py + 390);
+      });
+      // footer
+      x.fillStyle = '#FFFFFF'; x.font = '800 32px "Figtree", sans-serif'; x.textBaseline = 'middle'; x.textAlign = 'center';
+      stroked('Check this license at boxedables.com', W / 2, 690, 8);
+      x.font = '700 22px "Figtree", sans-serif'; stroked('Physical prints only. The files may not be shared or sold.', W / 2, 738, 6);
+      x.textAlign = 'left';
+      return c;
+    });
+  }
+  // Admin > Codes: the access switch, making codes and the list of every code
+  function cancelPass(uid) {
+    return DBX.collection('passes').doc(uid).get().then(function (s) {
+      if (!s.exists) return;
+      var d = s.data(), now = Date.now(), end = Math.min(d.end || now, now);
+      var ops = [['update', 'passes', uid, { end: end, cancelled: true, founder: false }], ['set', 'badges', uid, { founder: false }]];
+      if (d.lic) ops.push(['update', 'licenses', d.lic, { end: end }]);
+      FOUNDERS[uid] = false;
+      return dbWrite(ops);
+    });
+  }
+  function adminCodes(body) {
+    if (!DBX) { body.appendChild(el('p', 'note', 'Sign in on the live page to see this.')); return; }
+    if (!admLoad.fresh) {
+      body.appendChild(el('p', 'note', 'Loading the current settings…'));
+      var tries = 0, w = setInterval(function () { if (admLoad.fresh || ++tries > 20) { clearInterval(w); if (body.isConnected) { body.textContent = ''; admLoad.fresh = true; adminCodes(body); } } }, 500);
+      return;
+    }
+    // 1. the switch
+    body.appendChild(el('b', 'admsub', 'Member access'));
+    var sl = el('label', 'check wrapcheck'), sc = el('input'); sc.type = 'checkbox'; sc.checked = !!(ADM.settings && ADM.settings.needPass);
+    sl.appendChild(sc); sl.appendChild(el('span', '', 'Downloads need a pass (admins can always download)')); body.appendChild(sl);
+    var sn = el('p', 'note'); body.appendChild(sn);
+    function swNote() { sn.textContent = sc.checked ? 'On: members without an active pass see “Get a pass to download” instead of a download.' : 'Off: every signed-in member can download. Turn this on before launch.'; }
+    swNote();
+    sc.addEventListener('change', function () {
+      sc.disabled = true;
+      admSave({ settings: Object.assign({}, ADM.settings, { needPass: sc.checked }) }).then(swNote, function () { sc.checked = !sc.checked; sn.textContent = 'Couldn’t save. Try again.'; }).then(function () { sc.disabled = false; });
+    });
+    // 2. make codes
+    body.appendChild(el('b', 'admsub', 'Make codes'));
+    body.appendChild(el('p', 'note', 'One code per backer. Paste the backer list (one email or name per line) to get one code for each, or just pick how many.'));
+    var form = el('div', 'codeform');
+    function field(label, input) { var l = el('label', 'field codefield'); l.appendChild(el('span', '', label)); l.appendChild(input); form.appendChild(l); return input; }
+    var ty = el('select', 'fbstatus'); [['maker', 'Maker'], ['commercial', 'Commercial']].forEach(function (o) { var op = el('option', '', o[1]); op.value = o[0]; ty.appendChild(op); }); field('Pass', ty);
+    var cn = el('input'); cn.type = 'number'; cn.min = 1; cn.max = 400; cn.value = 1; field('How many', cn);
+    var dy = el('input'); dy.type = 'number'; dy.min = 1; dy.max = 3650; dy.value = 365; field('Days', dy);
+    var lb = el('input'); lb.type = 'text'; lb.maxLength = 40; lb.value = 'MakerWorld campaign'; field('Label', lb);
+    body.appendChild(form);
+    var fl = el('label', 'check wrapcheck'), fc = el('input'); fc.type = 'checkbox'; fc.checked = true; fl.appendChild(fc); fl.appendChild(el('span', '', 'Founder badge (campaign backers only)')); body.appendChild(fl);
+    var ta = el('textarea', 'codeout'); ta.placeholder = 'Optional: backer list, one per line (email or name)'; ta.rows = 4; body.appendChild(ta);
+    ta.addEventListener('input', function () { var n = ta.value.split(/\n/).filter(function (s) { return s.trim(); }).length; if (n) cn.value = n; cn.disabled = !!n; });
+    var mk = el('button', 'go', 'Make codes'); mk.type = 'button'; mk.style.marginTop = '10px'; body.appendChild(mk);
+    var mkMsg = el('p', 'note'), outBox = el('div'); body.appendChild(mkMsg); body.appendChild(outBox);
+    function csv(rows) { var q = function (v) { v = String(v == null ? '' : v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }; return 'Code,Pass,Founder,Days,Note,Label\n' + rows.map(function (r) { return [r.id, PASS_NAME[r.type], r.founder ? 'yes' : 'no', r.days, r.note, r.batch].map(q).join(','); }).join('\n') + '\n'; }
+    function copyBtn(host, label, text) {
+      var b = el('button', 'galdel', label); b.type = 'button';
+      b.addEventListener('click', function () { var t = typeof text === 'function' ? text() : text, ok = function () { b.textContent = 'Copied'; setTimeout(function () { b.textContent = label; }, 1500); };
+        try { navigator.clipboard.writeText(t).then(ok, function () { window.prompt('Copy:', t); }); } catch (e) { window.prompt('Copy:', t); } });
+      host.appendChild(b); return b;
+    }
+    function csvBtn(host, rows, name) {
+      var b = el('button', 'galdel', 'Download CSV'); b.type = 'button';
+      b.addEventListener('click', function () { if (!downloads) { window.prompt('Copy:', csv(rows)); return; } downloads.save({ filename: name, data: new Blob([csv(rows)], { type: 'text/csv' }) }).catch(function () {}); });
+      host.appendChild(b);
+    }
+    mk.addEventListener('click', function () {
+      var lines = ta.value.split(/\n/).map(function (s) { return s.trim(); }).filter(Boolean), n = lines.length || Math.round(+cn.value || 0), days = Math.round(+dy.value || 0);
+      if (n < 1 || n > 400) { mkMsg.textContent = 'Make between 1 and 400 codes at a time.'; return; }
+      if (days < 1) { mkMsg.textContent = 'Days must be at least 1.'; return; }
+      var made = Date.now(), rows = [];
+      for (var i = 0; i < n; i++) rows.push({ id: rndCode('BX'), type: ty.value, founder: fc.checked, days: days, note: (lines[i] || '').slice(0, 120), batch: lb.value.trim().slice(0, 40), made: made - i, by: null, used: null, off: false });
+      mk.disabled = true; mkMsg.textContent = 'Making ' + n + ' code' + (n === 1 ? '' : 's') + '…';
+      var chunks = []; for (var k = 0; k < rows.length; k += 200) chunks.push(rows.slice(k, k + 200));
+      chunks.reduce(function (p, ch) { return p.then(function () { return dbWrite(ch.map(function (r) { var o = Object.assign({}, r); delete o.id; return ['set', 'codes', r.id, o]; })); }); }, Promise.resolve()).then(function () {
+        mkMsg.textContent = 'Made ' + n + ' ' + PASS_NAME[ty.value] + ' code' + (n === 1 ? '' : 's') + '. Copy them or download the list, then email each backer their code.';
+        outBox.textContent = '';
+        var out = el('textarea', 'codeout'); out.readOnly = true; out.rows = Math.min(10, n + 1); out.value = rows.map(function (r) { return r.id + (r.note ? '  ' + r.note : ''); }).join('\n'); outBox.appendChild(out);
+        var acts = el('div', 'memacts'); copyBtn(acts, 'Copy all', out.value); csvBtn(acts, rows, 'Boxedables-codes-' + new Date(made).toISOString().slice(0, 10) + '.csv'); outBox.appendChild(acts);
+        if (lines.length) cn.value = 1; ta.value = ''; cn.disabled = false; load();
+      }, function () { mkMsg.textContent = 'Couldn’t make the codes. Check the database rules are published, then try again.'; }).then(function () { mk.disabled = false; });
+    });
+    // 3. every code
+    body.appendChild(el('b', 'admsub', 'All codes'));
+    var view = { show: 'all', q: '' }, rows = [], ps = {};
+    var bar = el('div', 'inboxbar'), count = el('p', 'memcount'), list = el('div', 'codelist');
+    var g = el('div', 'seg'); [['all', 'All'], ['free', 'Unused'], ['used', 'Used'], ['off', 'Cancelled']].forEach(function (o) {
+      var b = el('button', '', o[1]); b.type = 'button'; b.setAttribute('aria-pressed', String(view.show === o[0]));
+      b.addEventListener('click', function () { view.show = o[0]; g.querySelectorAll('button').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); }); draw(); }); g.appendChild(b);
+    });
+    bar.appendChild(g);
+    var q = el('input', 'inboxq'); q.type = 'search'; q.placeholder = 'Search code, note or name'; q.setAttribute('aria-label', 'Search codes'); q.addEventListener('input', function () { view.q = q.value.toLowerCase(); draw(); }); bar.appendChild(q);
+    var tools = el('div', 'memacts'); body.appendChild(bar); body.appendChild(count); body.appendChild(tools); body.appendChild(list);
+    var listCsv = []; csvBtn(tools, listCsv, 'Boxedables-all-codes.csv');
+    function nm(uid) { return (ps[uid] && ps[uid].name) || 'a member'; }
+    function draw() {
+      list.textContent = '';
+      var shown = rows.filter(function (r) {
+        var s = r.off ? 'off' : r.by ? 'used' : 'free';
+        if (view.show !== 'all' && view.show !== s) return false;
+        return !view.q || (r.id + ' ' + (r.note || '') + ' ' + (r.batch || '') + ' ' + (r.by ? nm(r.by) : '')).toLowerCase().indexOf(view.q) >= 0;
+      });
+      listCsv.length = 0; shown.forEach(function (r) { listCsv.push(r); });
+      var used = rows.filter(function (r) { return r.by; }).length;
+      count.textContent = shown.length + ' shown · ' + rows.length + ' code' + (rows.length === 1 ? '' : 's') + ', ' + used + ' used';
+      if (!shown.length) list.appendChild(el('p', 'note', rows.length ? 'No codes match.' : 'No codes yet.'));
+      shown.slice(0, 500).forEach(function (r) {
+        var row = el('div', 'coderow'), info = el('div', 'cdinfo'), acts = el('div', 'memacts');
+        row.appendChild(el('code', '', r.id));
+        info.appendChild(el('span', 'cdtype ' + r.type, PASS_NAME[r.type] || r.type)); if (r.founder) info.appendChild(founderTag()); info.appendChild(el('span', '', (r.days || 365) + ' days'));
+        if (r.note) info.appendChild(el('span', 'cdnote', r.note)); if (r.batch) info.appendChild(el('small', '', r.batch));
+        info.appendChild(el('span', 'cdstat ' + (r.off ? 'off' : r.by ? 'used' : ''), r.off ? 'Cancelled' : r.by ? 'Used by ' + nm(r.by) + ' on ' + fmtDay(r.used) : 'Unused'));
+        row.appendChild(info);
+        copyBtn(acts, 'Copy', r.id);
+        function act(t, fn) {
+          var b = el('button', 'galdel danger', t); b.type = 'button';
+          b.addEventListener('click', function () { if (b.dataset.sure !== '1') { b.dataset.sure = '1'; b.textContent = 'Sure?'; return; } b.disabled = true; fn().then(load, function () { b.textContent = 'Couldn’t'; }); });
+          acts.appendChild(b);
+        }
+        if (!r.by && !r.off) act('Cancel code', function () { return DBX.collection('codes').doc(r.id).update({ off: true }); });
+        if (!r.by && r.off) { var rb = el('button', 'galdel', 'Restore'); rb.type = 'button'; rb.addEventListener('click', function () { rb.disabled = true; DBX.collection('codes').doc(r.id).update({ off: false }).then(load); }); acts.appendChild(rb); }
+        if (r.by) act('Cancel pass', function () { return cancelPass(r.by).then(function () { return DBX.collection('codes').doc(r.id).update({ off: true }); }); });
+        row.appendChild(acts); list.appendChild(row);
+      });
+    }
+    function load() {
+      count.textContent = 'Loading the codes…';
+      DBX.collection('codes').orderBy('made', 'desc').limit(2000).get().then(function (snap) {
+        rows = snap.docs.map(function (d) { return Object.assign({ id: d.id }, d.data()); });
+        return names(rows.map(function (r) { return r.by; }).filter(Boolean)).then(function (p) { ps = p; });
+      }).then(draw, function () { count.textContent = 'Couldn’t load the codes. Check the database rules are published.'; });
+    }
+    load();
+    body.appendChild(el('p', 'note', 'Cancel pass ends that member’s pass today and removes their Founder badge and license (use it after a refund). Characters they already downloaded stay theirs.'));
   }
   // ---------- Admin: one member's download log (proof for refund requests and card disputes) ----------
   var DL_WHAT = { all: 'Everything', char: 'Character only', box: 'Box only', blind: 'Blind box', display: 'Display box', tray: 'Seller tray', storage: 'Storage box' };
@@ -7381,7 +7786,7 @@ var DECO = (function () {
     var sv = el('button', 'go', 'Save settings'); sv.type = 'button'; sv.style.marginTop = '14px'; var msg = el('p', 'note'); body.appendChild(sv); body.appendChild(msg);
     sv.addEventListener('click', function () {
       var picked = [].slice.call(sw.querySelectorAll('input:checked')).map(function (c) { return c.value; });
-      var ns = { banner: { on: bOn.checked, text: bt.value.trim(), tone: ts.value }, maintenance: mOn.checked, musicDefault: mu.checked ? 'on' : 'off', boxPool: picked };
+      var ns = Object.assign({}, ADM.settings, { banner: { on: bOn.checked, text: bt.value.trim(), tone: ts.value }, maintenance: mOn.checked, musicDefault: mu.checked ? 'on' : 'off', boxPool: picked });
       sv.disabled = true; admSave({ settings: ns }).then(function () { applySiteSettings(); msg.textContent = 'Saved. Open pages update right away.'; goFlash(sv); }).catch(function () { msg.textContent = 'Couldn\u2019t save. Try again.'; }).then(function () { sv.disabled = false; });
     });
   }
@@ -8067,6 +8472,7 @@ var DECO = (function () {
         var who = el('div', 'who');
         if (!mine) { var nm = el('b', '', chatName(m.by)); nm.title = 'Mention'; nm.addEventListener('click', function () { chatMention(m.by); }); who.appendChild(nm); }
         if (isStaff(m.by)) who.appendChild(el('span', 'crown', '\ud83d\udc51 Creator'));
+        if (FOUNDERS[m.by]) who.appendChild(founderTag());
         who.appendChild(el('small', '', new Date(m.t).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })));
         body.appendChild(who);
       }
@@ -8163,6 +8569,7 @@ var DECO = (function () {
       var need = ids.filter(function (i) { return !CHAT.names[i]; });
       chatRender();
       if (need.length) names(need).then(function (ps) { Object.keys(ps).forEach(function (k) { CHAT.names[k] = ps[k]; }); chatRender(); });
+      loadFounders(ids).then(function (any) { if (any) chatRender(); });
     }, function () { chatLine.textContent = 'Chat is resting. Try again later.'; CHAT.unsub = null; });
   }
   // one write at a time to my own doc, always the whole doc
@@ -8616,6 +9023,7 @@ var DECO = (function () {
   }
   function runDownload(which) {
     if (!downloads || !S.parts.length || busy) return;
+    if (passBlock(which)) return;
     var parts = buildPieces(which);
     if (!parts.length) { dlNote.textContent = 'Nothing to download for that piece.'; return; }
     parts.forEach(function (o) { o.copies = PLAN.copies; });
