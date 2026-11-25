@@ -290,6 +290,8 @@ header p { color: #3B2A00 !important; }
 .topbtn.acct i { font-style: normal; border-radius: 50%; display: grid; place-items: center; background: #FFD000; color: var(--ink-dark); border: 2px solid var(--ink-dark); -webkit-text-stroke: 0; }
 .modelname { position: absolute; left: 14px; bottom: 14px; z-index: 3; padding: 6px 16px 7px; border-radius: 14px; border: 3px solid var(--ink-dark); box-shadow: inset 0 2px 0 rgba(255,255,255,.6), 0 4px 0 var(--ink-dark); color: #FFFFFF; font: 400 22px "Lilita One", "Fredoka", sans-serif; letter-spacing: .5px; -webkit-text-stroke: 3.5px var(--ink-dark); paint-order: stroke fill; pointer-events: none; }
 .modelname:empty { display: none; }
+.modelname small { display: block; text-align: center; font: 400 13px "Lilita One", "Fredoka", sans-serif; letter-spacing: .4px; -webkit-text-stroke: 2.5px var(--ink-dark); margin-top: -1px; opacity: .95; }
+@media (max-width: 640px) { .modelname small { font-size: 11px; -webkit-text-stroke: 2px var(--ink-dark); } }
 .modal { position: fixed; inset: 0; z-index: 50; background: rgba(1, 40, 37, .55); display: grid; place-items: center; padding: 16px; }
 .mpanel { width: min(560px, 100%); max-height: 86vh; overflow: auto; background: linear-gradient(180deg, #F4F6F7, #D7DEE0); border: 4px solid var(--ink-dark); border-radius: 22px; box-shadow: inset 0 0 0 4px #FFFFFF, 0 8px 0 var(--ink-dark); }
 .mhead { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: linear-gradient(180deg, #2FC4B8, var(--teal) 55%, #017A73); border-bottom: 3px solid var(--ink-dark); border-radius: 17px 17px 0 0; }
@@ -3187,6 +3189,12 @@ var DECO = (function () {
     COLOR_NAMES.forEach(function (n) { var d = Math.pow(r - n[1], 2) + Math.pow(g - n[2], 2) + Math.pow(b - n[3], 2); if (d < bd) { bd = d; best = n[0]; } });
     return best;
   }
+  function paintModelName(title) {   // "Rocco" with "Gorilla" under it; just the type when the character has no own name
+    var mn = document.getElementById('modelName'), list = typeof LIB !== 'undefined' ? LIB : [], sel = typeof libSel !== 'undefined' ? libSel : null;
+    var e = list.filter(function (x) { return x.id === sel && x.name === title; })[0];
+    mn.textContent = e && e.nick ? e.nick : title;
+    if (e && e.nick) { var sm = document.createElement('small'); sm.textContent = e.name; mn.appendChild(sm); }
+  }
   function loadDesign(title, rawParts, orient, objects, sw) {
     S.parts.forEach(function (p) { model.remove(p.mesh); });
     emptyEl.hidden = true;
@@ -3222,7 +3230,7 @@ var DECO = (function () {
       model.add(m);
       S.parts.push({ name: rp.name, obj: rp.obj || 0, cls: c, geom: rp.geom, mesh: m });
     });
-    document.getElementById('title').textContent = title; document.getElementById('modelName').textContent = title;
+    document.getElementById('title').textContent = title; paintModelName(title);
     document.title = title + ' customizer';
     var tris = 0; S.parts.forEach(function (p) { tris += (p.geom.index ? p.geom.index.count : p.geom.getAttribute('position').count) / 3; });
     document.getElementById('tag').textContent = (S.objects.length > 1 ? S.objects.length + ' pieces, ' : '') + S.parts.length + ' parts, ' + Math.round(tris / 1000) + 'k triangles' + (sw ? ', switch shown for reference' : '');
@@ -6305,8 +6313,8 @@ var DECO = (function () {
   function libCacheRead() { try { return (JSON.parse(localStorage.getItem('bx-libcache') || '[]') || []).filter(function (x) { return x && x.id && x.name; }); } catch (e) { return []; } }
   function libCacheSave() {
     try {
-      var list = LIB.filter(function (e) { return /^c-/.test(e.id) || e.id === 'kingkong'; }).map(function (e) { return { id: e.id, name: e.name, theme: e.theme, thumb: e.thumb, badge: e.badge || '', order: e.order, asset: e.asset || '', tv: THUMB_V }; });
-      PENDING.forEach(function (p) { if (p.thumb && !list.some(function (x) { return x.id === p.id; })) list.push({ id: p.id, name: p.name, theme: p.theme, thumb: p.thumb, badge: p.badge || '', order: p.order, asset: p.asset || '', tv: p.tv }); });
+      var list = LIB.filter(function (e) { return /^c-/.test(e.id) || e.id === 'kingkong'; }).map(function (e) { return { id: e.id, name: e.name, nick: e.nick || '', theme: e.theme, thumb: e.thumb, badge: e.badge || '', order: e.order, asset: e.asset || '', tv: THUMB_V }; });
+      PENDING.forEach(function (p) { if (p.thumb && !list.some(function (x) { return x.id === p.id; })) list.push({ id: p.id, name: p.name, nick: p.nick || '', theme: p.theme, thumb: p.thumb, badge: p.badge || '', order: p.order, asset: p.asset || '', tv: p.tv }); });
       localStorage.setItem('bx-libcache', JSON.stringify(list));
     } catch (e) {}   // full or blocked storage: tiles just appear a moment later
   }
@@ -6380,7 +6388,7 @@ var DECO = (function () {
     if (LIB.some(function (e) { return e.id === 'c-' + id; })) return;
     var parts = applySlotNames(BX.parse3MF(buf), data.slots); if (!parts.length) return;
     var sig = fileSig(data.asset, data.slots), seen = data.asset ? seenThumb('c-' + id, sig) : null;   // same file as last visit: reuse its picture (making one is the slow part on phones)
-    LIB.push({ id: 'c-' + id, name: data.name, theme: data.theme || 'Animals', colorable: data.colorable && data.colorable.length ? data.colorable : undefined, parts: parts, asset: sig, thumb: seen || makeThumb(parts), note: data.note || '', rest: typeof data.rest === 'number' ? data.rest : undefined, badge: data.badge || '', created: data.created || 0, order: typeof data.order === 'number' ? data.order : 1e6 + (1e13 - (data.created || 0)) / 1e13 });
+    LIB.push({ id: 'c-' + id, name: data.name, nick: data.nick || '', theme: data.theme || 'Animals', colorable: data.colorable && data.colorable.length ? data.colorable : undefined, parts: parts, asset: sig, thumb: seen || makeThumb(parts), note: data.note || '', rest: typeof data.rest === 'number' ? data.rest : undefined, badge: data.badge || '', created: data.created || 0, order: typeof data.order === 'number' ? data.order : 1e6 + (1e13 - (data.created || 0)) / 1e13 });
     LIB.sort(function (a, b) { return a.id === 'kingkong' ? -1 : b.id === 'kingkong' ? 1 : (a.order || 0) - (b.order || 0); });
     if (THEMES.indexOf(data.theme) < 0 && data.theme) THEMES.push(data.theme);
     var wanted = pendingPick === 'c-' + id; pendingDone('c-' + id);
@@ -6394,7 +6402,7 @@ var DECO = (function () {
     var kong = BX.decodeEmbedded(pack.meta, pack.data);
     var KC = pack.colors || {}; kong.forEach(function (p) { var g = BX.classify(p.name).group; if (KC[g]) p.filColor = KC[g]; });   // his colors from the file
     Object.keys(pack.labels || {}).forEach(function (g) { BX.labels[g] = pack.labels[g]; });
-    LIB.unshift({ id: 'kingkong', name: 'Gorilla', num: 1, theme: 'Animals', colorable: ['fur', 'skin', 'eyes'], parts: kong, asset: fileSig(KONG.asset, null), thumb: (KONG.asset && seenThumb('kingkong', fileSig(KONG.asset, null))) || makeThumb(kong), enforcers: pack.enforcers || [], note: pack.note || 'Turn on auto support: critical regions only', order: -1 });
+    LIB.unshift({ id: 'kingkong', name: 'Gorilla', nick: 'Rocco', num: 1, theme: 'Animals', colorable: ['fur', 'skin', 'eyes'], parts: kong, asset: fileSig(KONG.asset, null), thumb: (KONG.asset && seenThumb('kingkong', fileSig(KONG.asset, null))) || makeThumb(kong), enforcers: pack.enforcers || [], note: pack.note || 'Turn on auto support: critical regions only', order: -1 });
     pendingDone('kingkong'); renderLib(); libCacheSave();
   }
   // the test site's first admin visit moves Gorilla into its database from a one-time seed file
@@ -6425,6 +6433,7 @@ var DECO = (function () {
   function builtInSet(o) {
     var k = LIB.filter(function (e) { return e.id === 'kingkong'; })[0]; if (!k || !o) return;
     if (typeof o.note === 'string') { k.note = o.note; if (libSel === 'kingkong' && S.objects[0]) S.objects[0].note = o.note; }
+    if (typeof o.nick === 'string') { k.nick = o.nick.trim(); renderLib(); libCacheSave(); if (libSel === 'kingkong') paintModelName(S.title); }
     if (typeof o.rest === 'number') { k.rest = o.rest; if (libSel === 'kingkong') { CLICK_REST = o.rest; placeChar(); } }
     if (o.asset) KONG.asset = o.asset;
     if (Array.isArray(o.colorable) && o.colorable.join() !== (k.colorable || []).join()) { k.colorable = o.colorable.slice(); if (libSel === 'kingkong') selectChar('kingkong'); }
@@ -6443,7 +6452,7 @@ var DECO = (function () {
       var known = {}; PENDING.forEach(function (p) { known[p.id] = p; });
       PENDING = docs.filter(function (d) { return !LIB.some(function (e) { return e.id === 'c-' + d.id; }); }).map(function (d) {
         var data = d.data(), id = 'c-' + d.id, old = known[id] || {};
-        return { id: id, name: data.name, theme: data.theme || 'Animals', thumb: old.thumb || null, asset: old.asset || '', tv: old.tv, badge: data.badge || '', created: data.created || 0, order: typeof data.order === 'number' ? data.order : 1e6 + (1e13 - (data.created || 0)) / 1e7 };
+        return { id: id, name: data.name, nick: data.nick || '', theme: data.theme || 'Animals', thumb: old.thumb || null, asset: old.asset || '', tv: old.tv, badge: data.badge || '', created: data.created || 0, order: typeof data.order === 'number' ? data.order : 1e6 + (1e13 - (data.created || 0)) / 1e7 };
       });
       renderLib();
       if (!docs.length) libCacheSave();
@@ -6852,7 +6861,8 @@ var DECO = (function () {
     // ---- 4. Details ----
     var ds = secs.details; ds.appendChild(el('h4', 'wzh', 'Details'));
     function field(label, id, value, max) { var l = el('label', 'field', label), i = el('input'); i.type = 'text'; i.id = id + uid; if (max) i.maxLength = max; i.value = value; l.htmlFor = i.id; ds.appendChild(l); ds.appendChild(i); return i; }
-    var nmI = field('Name', 'admName', data.name || (opts.fname || '').replace(/\.3mf$/i, '').replace(/boxedables?|character|test/ig, '').replace(/([a-z])([A-Z])/g, '$1 $2').replace(/[_-]+/g, ' ').replace(/\s+/g, ' ').trim(), 30);
+    var nmI = field('Type (shown under the name, like Elephant)', 'admName', data.name || (opts.fname || '').replace(/\.3mf$/i, '').replace(/boxedables?|character|test/ig, '').replace(/([a-z])([A-Z])/g, '$1 $2').replace(/[_-]+/g, ' ').replace(/\s+/g, ' ').trim(), 30);
+    var nkI = field('Character name (on the box and the name plate, like Peanut; optional)', 'admNick', data.nick || '', 20);
     var thL = el('label', 'field', 'Theme'), thS = el('select'); thS.id = 'admTheme' + uid; thL.htmlFor = thS.id;
     var themes = THEMES.filter(function (t) { return t !== 'All'; }); if (themes.indexOf('Animals') < 0) themes.unshift('Animals');
     if (data.theme && themes.indexOf(data.theme) < 0) themes.push(data.theme);
@@ -6892,7 +6902,7 @@ var DECO = (function () {
       var im = el('img', 'admthumb'); im.src = thumb; im.alt = ''; sumBox.appendChild(im);
       var dl = el('dl', 'wzfacts');
       var rel = rdI.value ? new Date(rdI.value).toLocaleString([], { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' }) : 'Right away';
-      [['Name', nmI.value.trim() || '(no name yet)'], ['Theme', themeVal()], ['Badge', bdS.value ? bdS.options[bdS.selectedIndex].text : 'None'], ['Shows up', rel], ['Rest height', restVal() + ' mm']].forEach(function (r) { dl.appendChild(el('dt', '', r[0])); dl.appendChild(el('dd', '', r[1])); });
+      [['Character name', nkI.value.trim() || '(none: shows the type)'], ['Type', nmI.value.trim() || '(no type yet)'], ['Theme', themeVal()], ['Badge', bdS.value ? bdS.options[bdS.selectedIndex].text : 'None'], ['Shows up', rel], ['Rest height', restVal() + ' mm']].forEach(function (r) { dl.appendChild(el('dt', '', r[0])); dl.appendChild(el('dd', '', r[1])); });
       var cdd = el('dd', 'wzcols');
       slotRows.forEach(function (o) { var c = el('span', 'wzcol' + (o.cb.checked ? '' : ' locked')); var d = el('i'); d.style.background = ovr['s' + o.slot] || o.color; c.appendChild(d); c.appendChild(document.createTextNode(o.inp.value.trim() || colorName(o.color))); c.title = o.cb.checked ? 'Members can change' : 'Locked'; cdd.appendChild(c); });
       groups.forEach(function (g) { var c = el('span', 'wzcol'); c.appendChild(document.createTextNode(g.label)); cdd.appendChild(c); });
@@ -6909,7 +6919,7 @@ var DECO = (function () {
     }
     anyCb.addEventListener('change', paintSummary);
     function collect() {
-      var out = { name: nmI.value.trim(), theme: themeVal(), note: noI.value.trim(), rest: restVal(), badge: bdS.value, releaseAt: rdI.value ? new Date(rdI.value).getTime() : null,
+      var out = { name: nmI.value.trim(), nick: nkI.value.trim(), theme: themeVal(), note: noI.value.trim(), rest: restVal(), badge: bdS.value, releaseAt: rdI.value ? new Date(rdI.value).getTime() : null,
         colorable: [].slice.call(glist.querySelectorAll('input:checked')).map(function (x) { return x.value; }), slots: null };
       if (slotRows.length) {
         out.slots = {};
@@ -7049,6 +7059,8 @@ var DECO = (function () {
         var kb = el('button', 'galdel', 'Edit'); kb.type = 'button'; ka.appendChild(kb);
         kb.addEventListener('click', function () {
           kp.hidden = !kp.hidden; if (kp.hidden) return; kp.textContent = '';
+          var nl = el('label', 'field', 'Character name (on the box and the name plate)'), ni = el('input'); ni.type = 'text'; ni.id = 'admKKNick'; ni.maxLength = 20; ni.value = typeof kk.nick === 'string' ? kk.nick : 'Rocco'; nl.htmlFor = ni.id;
+          kp.appendChild(nl); kp.appendChild(ni);
           var l = el('label', 'field', 'Print note'), i = el('input'); i.type = 'text'; i.id = 'admKKNote'; i.maxLength = 80; i.value = kk.note || ''; l.htmlFor = i.id;
           var sv = el('button', 'go', 'Save'); sv.type = 'button'; sv.style.marginTop = '10px'; var m = el('p', 'note');
           var rl = el('label', 'field', 'Rest height in the preview (mm)'), ri = el('input'); ri.type = 'number'; ri.min = 0; ri.max = 12; ri.step = 0.5; ri.id = 'admKKRest'; ri.value = typeof kk.rest === 'number' ? kk.rest : 5; rl.htmlFor = ri.id;
@@ -7065,8 +7077,8 @@ var DECO = (function () {
             var n = i.value.trim(), rv = Math.max(0, Math.min(12, parseFloat(ri.value))); if (isNaN(rv)) rv = 5; sv.disabled = true;
             var prev = kk.colorable || [], on = function (g) { return kcb[g] && kcb[g].checked; };
             var cols = prev.filter(on).concat(kongGroups().filter(function (g) { return on(g) && prev.indexOf(g) < 0; }));   // keep the usual order, new ones at the end
-            var doc = { note: n, rest: rv, colorable: cols, updated: Date.now() }; if (KONG.asset) doc.asset = KONG.asset;   // keep the link to his file
-            DBX.collection('characters').doc('_kingkong').set(doc).then(function () { builtInSet({ note: n, rest: rv, colorable: cols }); m.textContent = 'Saved. The preview and downloads use it now.'; goFlash(sv); })
+            var nk = ni.value.trim(), doc = { note: n, rest: rv, colorable: cols, nick: nk, updated: Date.now() }; if (KONG.asset) doc.asset = KONG.asset;   // keep the link to his file
+            DBX.collection('characters').doc('_kingkong').set(doc).then(function () { kk.nick = nk; builtInSet({ note: n, rest: rv, colorable: cols, nick: nk }); m.textContent = 'Saved. The preview and downloads use it now.'; goFlash(sv); })
               .catch(function () { m.textContent = 'That didn\u2019t work. Try again.'; }).then(function () { sv.disabled = false; });
           });
         });
@@ -10633,24 +10645,25 @@ var DECO = (function () {
     all.sort(function (a, b) { return a.id === 'kingkong' ? -1 : b.id === 'kingkong' ? 1 : (a.order || 0) - (b.order || 0); });
     return all;
   }
+  function shownName(e) { return (e && (e.nick || e.name)) || ''; }   // the character's own name (Rocco), or its type (Gorilla) if it has none
   function libTile(e, after) {
     if (e.pending) {   // still downloading: same tile, with a small spinner
       var pb = document.createElement('button'); pb.type = 'button'; pb.className = 'libtile pending'; pb.setAttribute('role', 'option');
-      pb.setAttribute('aria-selected', String(e.id === pendingPick)); pb.title = e.name + ' (loading)'; pb.setAttribute('aria-label', e.name + ', loading');
+      pb.setAttribute('aria-selected', String(e.id === pendingPick)); pb.title = shownName(e) + ' (loading)'; pb.setAttribute('aria-label', shownName(e) + ', loading');
       if (e.thumb) { var pim = document.createElement('img'); pim.src = e.thumb; pim.alt = ''; pb.appendChild(pim); }
       else { var pph = document.createElement('span'); pph.className = 'ph'; pph.textContent = e.name.charAt(0); pb.appendChild(pph); }
-      var pnm = document.createElement('span'); pnm.textContent = e.name; pb.appendChild(pnm);
+      var pnm = document.createElement('span'); pnm.textContent = shownName(e); pb.appendChild(pnm);
       var pth = document.createElement('small'); pth.textContent = 'Loading…'; pb.appendChild(pth);
       pb.addEventListener('click', function () { pendingPick = e.id; renderLib(); LOADQ.kick(); if (after) after(); });   // opens as soon as it's ready
       return pb;
     }
     var b = document.createElement('button'); b.type = 'button'; b.className = 'libtile'; b.setAttribute('role', 'option');
-    b.setAttribute('aria-selected', String(e.id === libSel && !pendingPick)); b.title = e.name; b.dataset.id = e.id;
+    b.setAttribute('aria-selected', String(e.id === libSel && !pendingPick)); b.title = e.nick ? e.nick + ' the ' + e.name : e.name; b.dataset.id = e.id;
     if (e.thumb) { var im = document.createElement('img'); im.src = e.thumb; im.alt = ''; b.appendChild(im); }
     else { var ph = document.createElement('span'); ph.className = 'ph'; ph.textContent = e.name.charAt(0); b.appendChild(ph); }
     if (e.badge) { var bd = document.createElement('i'); bd.className = 'libbadge ' + e.badge; bd.textContent = e.badge === 'new' ? 'NEW' : '★'; bd.title = e.badge === 'new' ? 'New' : 'Featured'; b.appendChild(bd); }
-    var nm = document.createElement('span'); nm.textContent = e.name; b.appendChild(nm);
-    var th = document.createElement('small'); th.textContent = e.theme; b.appendChild(th);
+    var nm = document.createElement('span'); nm.textContent = shownName(e); b.appendChild(nm);
+    var th = document.createElement('small'); th.textContent = e.nick ? e.name : e.theme; b.appendChild(th);
     b.addEventListener('click', function () { selectChar(e.id); if (after) after(); });
     return b;
   }
@@ -10698,11 +10711,11 @@ var DECO = (function () {
         [['all', 'Everything'], ['new', 'New']].forEach(function (o) { chip(shows, o[1], BROWSE.show === o[0], function () { BROWSE.show = o[0]; draw(); }); });
         var list = all.filter(function (e) {
           if (BROWSE.theme !== 'All' && e.theme !== BROWSE.theme) return false;
-          if (words && (e.name + ' ' + e.theme).toLowerCase().indexOf(words) < 0) return false;
+          if (words && (e.name + ' ' + (e.nick || '') + ' ' + e.theme).toLowerCase().indexOf(words) < 0) return false;
           if (BROWSE.show === 'new' && e.badge !== 'new') return false;
           return true;
         });
-        if (BROWSE.sort === 'az') list.sort(function (a, b) { return a.name.localeCompare(b.name); });
+        if (BROWSE.sort === 'az') list.sort(function (a, b) { return shownName(a).localeCompare(shownName(b)); });
         else if (BROWSE.sort === 'newest') list.sort(function (a, b) { return (b.created || 0) - (a.created || 0); });
         grid.textContent = '';
         list.forEach(function (e) { grid.appendChild(libTile(e, closeModal)); });
@@ -10755,11 +10768,11 @@ var DECO = (function () {
     }
     S.palettes = e.palettes || {}; S.styles = e.styles || [];
     renderStyles();
-    S.defaultName = e.name; S.name = customName !== null ? customName : e.name;
+    S.defaultName = e.nick || e.name; S.name = customName !== null ? customName : S.defaultName;
     document.getElementById('name').value = S.name; rebuildName();
     Object.keys(keep).forEach(function (g) { if (S.groups[g]) setColor(g, keep[g]); });
     renderColors(); syncDownload();
-    libNote.textContent = e.name + ' is in the box. Your box settings stay the same when you switch.';
+    libNote.textContent = shownName(e) + ' is in the box. Your box settings stay the same when you switch.';
     var cc = document.getElementById('charColSec'); if (cc && !cc.hidden) cc.open = true;   // show the colors right away
     setTimeout(function () { S.parts.forEach(function (p) { if (p.obj === 0) proxyOf(p.mesh); }); }, 700);   // get the hover stand-ins ready ahead of the first mouse move
   }
