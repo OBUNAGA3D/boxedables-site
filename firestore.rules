@@ -161,6 +161,19 @@ service cloud.firestore {
       allow write: if isAdmin() || (signedIn() && uid == me());
     }
 
+    // members list for Admin: a small summary each member keeps up to date (name, email, visits, downloads, messages).
+    // Only that member and admins can read it; the email must be the member's own sign-in email.
+    match /members/{uid} {
+      allow read: if isAdmin() || (signedIn() && uid == me());
+      allow write: if isAdmin() || (signedIn() && uid == me()
+        && request.resource.data.keys().hasOnly(['name', 'email', 'provider', 'avatar', 'joined', 'first', 'last', 'visits', 'dl', 'lastDl', 'lastChar', 'msgs', 'lastMsg', 'updated'])
+        && (!('email' in request.resource.data) || request.resource.data.email == '' || request.resource.data.email == request.auth.token.get('email', '')));
+    }
+    // Admin's private note and tags for each member
+    match /memnotes/{uid} {
+      allow read, write: if isAdmin();
+    }
+
     // community chat: one document per member. Banned or muted members can still stay "online"
     // and delete their own messages, but can't add new ones. _meta (staff, pinned message) is admin only.
     match /chat/{id} {

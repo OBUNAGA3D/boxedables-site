@@ -71,7 +71,7 @@
           delAll(fs.collection('shares').where('by', '==', id))
         ]);
       }).then(function () {
-        return Promise.all(['chat', 'stats', 'feedback', 'profiles', 'badges'].map(function (c) { return fs.collection(c).doc(id).delete().catch(function () {}); }));
+        return Promise.all(['chat', 'stats', 'feedback', 'profiles', 'badges', 'members'].map(function (c) { return fs.collection(c).doc(id).delete().catch(function () {}); }));
       }).then(function () { return u.delete(); }).then(function () { setTimeout(function () { location.reload(); }, 1500); });
     }
   };
