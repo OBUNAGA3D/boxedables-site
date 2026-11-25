@@ -7447,12 +7447,18 @@ var DECO = (function () {
         meP.then(function (me) { return licenseCanvas(d, sh.value.trim() || 'My shop', (me && me.name) || ''); }).then(function (c) {
           prev.textContent = '';
           var im = el('img', 'licprev'); im.alt = 'Your Boxedables license card'; im.src = c.toDataURL('image/png'); prev.appendChild(im);
-          prev.appendChild(el('small', '', 'Print it at 89 × 51 mm, the size of a business card.'));
-          var r2 = el('div', 'acctsec'), dl = el('button', 'acbtn pri', 'Download card'); dl.type = 'button'; r2.appendChild(dl); prev.appendChild(r2);
+          prev.appendChild(el('small', '', 'The PDF prints at 89 × 51 mm, the size of a business card. The image is for sharing online.'));
+          var r2 = el('div', 'acctsec'), dp = el('button', 'acbtn pri', 'Download PDF to print'), dl = el('button', 'acbtn', 'Download image'); dp.type = dl.type = 'button'; r2.appendChild(dp); r2.appendChild(dl); prev.appendChild(r2);
+          dp.addEventListener('click', function () {
+            if (!downloads) { say(m, 'Downloads aren’t available in this view.', true); return; }
+            dp.disabled = true;
+            cardPdf(c).then(function (blob) { return downloads.save({ filename: 'Boxedables-license-' + d.lic + '.pdf', data: blob }); })
+              .then(function () { say(m, 'PDF saved.'); }, function () { say(m, 'Couldn’t make the PDF. Try again.', true); }).then(function () { dp.disabled = false; });
+          });
           dl.addEventListener('click', function () {
             c.toBlob(function (blob) {
               if (!downloads) { say(m, 'Downloads aren’t available in this view.', true); return; }
-              downloads.save({ filename: 'Boxedables-license-' + d.lic + '.png', data: blob }).then(function () { say(m, 'Card saved.'); }, function () {});
+              downloads.save({ filename: 'Boxedables-license-' + d.lic + '.png', data: blob }).then(function () { say(m, 'Image saved.'); }, function () {});
             }, 'image/png');
           });
         }, function () { prev.textContent = ''; say(m, 'Couldn’t draw the card.', true); });
@@ -7602,6 +7608,32 @@ var DECO = (function () {
     for (var m = 0; m < 8; m++) { apply(m); format(m); var pp = penalty(); if (pp < bestP) { bestP = pp; best = m; } apply(m); }
     apply(best); format(best);
     return M;
+  }
+  // the license card as a one-page PDF at business card size (89 mm wide), so it prints at the right size
+  function cardPdf(c) {
+    var w = c.width, h = c.height, flat = document.createElement('canvas'); flat.width = w; flat.height = h;
+    var fx = flat.getContext('2d'); fx.fillStyle = '#FFFFFF'; fx.fillRect(0, 0, w, h); fx.drawImage(c, 0, 0);   // a JPEG has no see-through corners
+    return new Promise(function (res, rej) { flat.toBlob(function (b) { if (b) res(b); else rej(new Error('jpeg')); }, 'image/jpeg', 0.95); })
+      .then(function (b) { return b.arrayBuffer(); }).then(function (buf) { return pdfFromJpeg(new Uint8Array(buf), w, h, 89); });
+  }
+  function pdfFromJpeg(jpg, w, h, widthMm) {
+    var pt = 72 / 25.4, PW = (widthMm * pt).toFixed(2), PH = (widthMm * h / w * pt).toFixed(2);
+    var chunks = [], len = 0, offs = [], enc = new TextEncoder(), NL = String.fromCharCode(10);
+    function add(x) { var u = typeof x === 'string' ? enc.encode(x) : x; chunks.push(u); len += u.length; }
+    function obj(n, body) { offs[n] = len; add(n + ' 0 obj' + NL + body + NL + 'endobj' + NL); }
+    add('%PDF-1.4' + NL); add(new Uint8Array([37, 226, 227, 207, 211, 10]));
+    obj(1, '<< /Type /Catalog /Pages 2 0 R >>');
+    obj(2, '<< /Type /Pages /Kids [3 0 R] /Count 1 >>');
+    obj(3, '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ' + PW + ' ' + PH + '] /Resources << /XObject << /Im0 4 0 R >> >> /Contents 5 0 R >>');
+    offs[4] = len; add('4 0 obj' + NL + '<< /Type /XObject /Subtype /Image /Width ' + w + ' /Height ' + h + ' /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ' + jpg.length + ' >>' + NL + 'stream' + NL);
+    add(jpg); add(NL + 'endstream' + NL + 'endobj' + NL);
+    var cs = 'q ' + PW + ' 0 0 ' + PH + ' 0 0 cm /Im0 Do Q';
+    obj(5, '<< /Length ' + cs.length + ' >>' + NL + 'stream' + NL + cs + NL + 'endstream');
+    obj(6, '<< /Title (Boxedables license card) /Producer (Boxedables) >>');
+    var xr = len, t = 'xref' + NL + '0 7' + NL + '0000000000 65535 f ' + NL;
+    for (var i = 1; i <= 6; i++) t += String(offs[i]).padStart(10, '0') + ' 00000 n ' + NL;
+    add(t + 'trailer' + NL + '<< /Size 7 /Root 1 0 R /Info 6 0 R >>' + NL + 'startxref' + NL + xr + NL + '%%EOF' + NL);
+    return new Blob(chunks, { type: 'application/pdf' });
   }
   var LIC_URL = 'https://boxedables.com/?l=';   // the card's QR code opens this with the license number, and the site checks it
   function licenseCanvas(d, shop, name) {
