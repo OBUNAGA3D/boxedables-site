@@ -7629,7 +7629,7 @@ var DECO = (function () {
   // ---------- Admin: members (everyone who has visited, downloaded or chatted) ----------
   function membersLoad() {
     var get = function (c, n) { return DBX.collection(c).limit(n).get().catch(function () { return { docs: [] }; }); };
-    return Promise.all([get('stats', 20000), get('chat', 20000), get('feedback', 20000), get('profiles', 20000)]).then(function (r) {
+    return Promise.all([get('stats', 10000), get('chat', 10000), get('feedback', 10000), get('profiles', 10000)]).then(function (r) {   // Firebase reads at most 10,000 at a time
       var M = {}, mx = function (a, b) { return Math.max(a || 0, b || 0); }, mn = function (a, b) { return !a ? b : !b ? a : Math.min(a, b); };
       function m(id) { return M[id] || (M[id] = { uid: id, first: 0, last: 0, visits: 0, dl: 0, msgs: 0 }); }
       r[0].docs.forEach(function (d) { var x = d.data(), o = m(d.id), ev = x.events || []; o.dl = ev.length; o.visits = x.visits || 0; o.first = mn(o.first, x.first); o.last = mx(o.last, x.last);
@@ -7680,7 +7680,7 @@ var DECO = (function () {
   function memLoad(force) {
     if (!force && MEMC.rows && Date.now() - MEMC.t < 10 * 6e4) return Promise.resolve(MEMC.rows);
     if (!force && MEMC.wait) return MEMC.wait;
-    var get = function (c) { return DBX.collection(c).limit(20000).get().then(function (s) { return s.docs; }, function () { return null; }); };
+    var get = function (c) { return DBX.collection(c).limit(10000).get().then(function (s) { return s.docs; }, function () { return null; }); };
     MEMC.wait = Promise.all([get('members'), get('passes'), get('memnotes'), get('licenses')]).then(function (r) {
       MEMC.ok = r[0] !== null;
       var P = {}, N = {}, L = {};
