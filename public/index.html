@@ -9187,11 +9187,7 @@ var DECO = (function () {
     parts.forEach(function (o) {
       var src = S.objects.filter(function (x) { return x.name === o.name; })[0];
       if (!o.box && src && src.note) {
-        // white card, black text: reuse a white and a black the character already prints with, so the note adds no filaments
-        var lite = null, dark = null;
-        o.parts.forEach(function (p) { var c = new THREE.Color(p.color), l = 0.2126 * c.r + 0.7152 * c.g + 0.0722 * c.b, sat = Math.max(c.r, c.g, c.b) - Math.min(c.r, c.g, c.b);
-          if (sat < 0.15 && l > 0.8 && (!lite || l > lite.l)) lite = { l: l, hex: p.color }; if (sat < 0.15 && l < 0.06 && (!dark || l < dark.l)) dark = { l: l, hex: p.color }; });
-        var n = makePrintNote(src.note, '#F4F4F2', '#2A2A2E'); if (n) o.extras = [n];   // print notes are always white with black text
+        var n = makePrintNote(src.note); if (n) o.extras = [n];   // its colors are picked below, from the piece's own filaments
       }
       if (o.socketPiece) o.extras = (o.extras || []).concat([o.socketPiece]);
     });
@@ -9202,13 +9198,25 @@ var DECO = (function () {
     parts.forEach(function (o) {
       var used = [];
       o.parts.concat(o.extras ? o.extras.reduce(function (a, x) { return a.concat(x.parts); }, []) : []).forEach(function (p) {
-        if (!p.color || p.enforcer || /^note /.test(p.name)) return;   // the print note keeps its own white and black
+        if (!p.color || p.enforcer || /^note /.test(p.name)) return;   // the print note gets its colors below
         var sw = swatchOf(p.color), lab = labOf(p.color), hit = used.filter(function (u) {
           if (sw && u.sw && sw !== u.sw) return false;   // two different swatches the member picked (like Sky and Mint) stay two filaments
           return Math.abs(u.lab[0] - lab[0]) <= 20 && Math.hypot(u.lab[1] - lab[1], u.lab[2] - lab[2]) <= 7;
         })[0];
         if (hit) p.color = hit.hex; else used.push({ hex: p.color, lab: lab, sw: sw });
       });
+    });
+    // The print note never adds a filament: its card prints with the piece's lightest color and its text with the darkest
+    // (white and black when the piece has them, otherwise the nearest it has), so the slicer shows only the piece's own colors.
+    parts.forEach(function (o) {
+      var notes = (o.extras || []).filter(function (x) { return x.name === 'Print note'; }); if (!notes.length) return;
+      var cols = [];
+      o.parts.concat((o.extras || []).filter(function (x) { return x.name !== 'Print note'; }).reduce(function (a, x) { return a.concat(x.parts); }, [])).forEach(function (p) {
+        if (p.color && !p.enforcer && cols.indexOf(p.color) < 0) cols.push(p.color);
+      });
+      if (!cols.length) return;
+      var L = function (h) { return labOf(h)[0]; }, lite = cols.reduce(function (a, b) { return L(b) > L(a) ? b : a; }), dark = cols.reduce(function (a, b) { return L(b) < L(a) ? b : a; });
+      notes.forEach(function (n) { n.parts.forEach(function (p) { p.color = /card/.test(p.name) ? lite : dark; }); });
     });
     return parts;
   }
