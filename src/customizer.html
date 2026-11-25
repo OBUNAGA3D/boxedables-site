@@ -6587,6 +6587,21 @@ var DECO = (function () {
     var s = new THREE.Box3().setFromObject(A.holder).getBoundingSphere(new THREE.Sphere());
     A.ctr.copy(s.center); A.dist = s.radius / Math.sin(THREE.MathUtils.degToRad(15)) * 1.02; A.dirty = true;
   }
+  // the name on the preview box, in the members' default lettering and size, so Admin sees it as members will
+  function apvName(text) {
+    var A = apvGet(); A.nameText = text || '';
+    if (A.nameG) { A.holder.remove(A.nameG); A.nameG.geometry.dispose(); A.nameG = null; }
+    A.dirty = true;
+    if (!A.boxG || !A.nameText || !fonts.joy) return;
+    var bg = A.boxG.children[0].geometry; bg.computeBoundingBox(); var bb = bg.boundingBox;
+    var lp = BOX_PARTS.filter(function (q) { return /^latch$/i.test(q.name); })[0], top = bb.max.z - 3, bot = bb.min.z + 2, back = false;
+    if (lp) { lp.geom.computeBoundingBox(); var lb = lp.geom.boundingBox; top = lb.min.z - 1.2; back = (lb.min.y + lb.max.y) / 2 > (bb.min.y + bb.max.y) / 2; }   // the latch marks the front
+    var cx = (bb.min.x + bb.max.x) / 2, res = layoutName(fonts.joy, A.nameText, DEFAULT_LETTER, Math.max(8, bb.max.x - bb.min.x - 6), back ? -cx : cx, (top + bot) / 2, back ? bb.max.y : -bb.min.y, top, bot);
+    if (!res) return;
+    res.geom.rotateX(Math.PI / 2); if (back) res.geom.rotateZ(Math.PI);   // lettering is laid out facing +Z; files are Z-up with the front at -Y (or +Y)
+    res.geom.computeVertexNormals();
+    A.nameG = new THREE.Mesh(res.geom, A.nameMat || (A.nameMat = apvMat('#FFFFFF'))); A.holder.add(A.nameG);
+  }
   function apvRest(rest) { var g = APV.charG; if (!g) return; var a = g.userData.fit.assemble; g.position.set(a[0], a[1], a[2] + (rest || 0)); APV.dirty = true; }
   // ---------- Admin: color wheel (hue around, strength outward, brightness slider, hex box) ----------
   function cwHexRgb(h) { h = h.replace('#', ''); return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)]; }
@@ -6949,7 +6964,9 @@ var DECO = (function () {
 
     checkNames(); checkName();
     go(opts.mode === 'edit' ? 3 : opts.mode === 'replace' ? 1 : 0);
-    function activate() { apvMount(pvHost); apvModel(fit, colorOf, restVal()); }
+    function pvName() { return nkI.value.trim() || nmI.value.trim(); }   // the character name, or the type if there's none
+    function activate() { apvMount(pvHost); apvModel(fit, colorOf, restVal()); apvName(pvName()); }
+    [nkI, nmI].forEach(function (inp) { inp.addEventListener('input', function () { if (APV.r && pvHost.contains(APV.r.domElement)) apvName(pvName()); }); });
     if (!opts.defer) activate();
     return { activate: activate, publish: publish, level: levelOf, isPublished: function () { return published; } };
   }
