@@ -243,6 +243,8 @@
       '.bxg .l:hover:not(:disabled){transform:none;box-shadow:none;color:#01948C}.bxg .l:active:not(:disabled){transform:scale(.96);box-shadow:none}' +
       '.bxg input{width:100%;box-sizing:border-box;font:16px Figtree,sans-serif;border:3px solid #10302D;border-radius:12px;padding:10px 12px;margin-top:8px;box-shadow:inset 0 3px 0 rgba(16,48,45,.08);color:#10302D}' +
       '.bxg input:focus{outline:3px solid #FFD000;outline-offset:1px}' +
+      '.bxg .lic{border:3px solid #10302D;border-radius:14px;padding:10px 12px;margin:0 0 16px;font-weight:700;background:#F1F5F4;color:#10302D}' +
+      '.bxg .lic b{display:block;font:400 20px/1.2 "Lilita One",Fredoka,sans-serif;color:#01948C;margin-bottom:4px}.bxg .lic.ok{background:#E3F7EF;color:#0B6B4F}.bxg .lic.bad{background:#FDECEA;color:#B3261E}' +
       '.bxg .or{margin:14px 0 2px;color:#5E6F6C;font-size:13px}.bxg .msg{min-height:20px;margin-top:8px;color:#B3261E;font-size:14px}' +
       '.bxchip{position:fixed;right:10px;bottom:10px;z-index:9999;font:600 12px Figtree,sans-serif;background:#fff;border:2px solid #10302D;border-radius:999px;padding:5px 10px;cursor:pointer;color:#10302D;opacity:.8}.bxchip:hover{opacity:1}';
     document.head.appendChild(css);
@@ -258,6 +260,7 @@
       '<button type="button" class="l f">Forgot password?</button>' +
       '<div class="msg" aria-live="polite"></div></div>';
     document.body.appendChild(g);
+    licenseOnGate(g);
     // use the site's own logo picture (falls back to the text if it isn't there yet)
     var useLogo = function () {
       var src = document.querySelector('header.brand .brandlogo, .brandlogo'), im = g.querySelector('.bxglogo');
@@ -292,6 +295,24 @@
     };
     g.querySelector('input[type=password]').addEventListener('keydown', function (e) { if (e.key === 'Enter') q('.e').click(); });
     return g;
+  }
+  // a scanned license card (boxedables.com/?l=BXC-…) shows the result here, no account needed (licenses can be read by anyone)
+  function licenseOnGate(g) {
+    var m = /[?&]l=([^&#]+)/.exec(location.search || ''); if (!m) return;
+    var r = decodeURIComponent(m[1]).toUpperCase().replace(/[^A-Z0-9]/g, '');
+    if (r.indexOf('BXC') === 0 && r.length === 11) r = r.slice(3);
+    if (r.length !== 8) return;
+    var n = 'BXC-' + r.slice(0, 4) + '-' + r.slice(4), box = document.createElement('div'), card = g.querySelector('.card');
+    box.className = 'lic'; box.setAttribute('aria-live', 'polite');
+    var head = document.createElement('b'), txt = document.createElement('span'); head.textContent = 'License check'; txt.textContent = 'Checking ' + n + '\u2026';
+    box.appendChild(head); box.appendChild(txt); card.insertBefore(box, card.querySelector('p'));
+    var day = function (t) { return new Date(t).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' }); };
+    fs.collection('licenses').doc(n).get().then(function (d) {
+      if (!d.exists) { box.className = 'lic bad'; txt.textContent = '\u2717 No license with the number ' + n + '.'; return; }
+      var x = d.data(), shop = x.shop || 'a member';
+      if (x.end > Date.now()) { box.className = 'lic ok'; txt.textContent = '\u2713 Valid Commercial license for \u201c' + shop + '\u201d until ' + day(x.end) + '.'; }
+      else { box.className = 'lic bad'; txt.textContent = '\u2717 The license for \u201c' + shop + '\u201d ended on ' + day(x.end) + '.'; }
+    }, function () { box.className = 'lic bad'; txt.textContent = 'Couldn\u2019t check ' + n + ' right now. Try again.'; });
   }
   var chipEl = null;
   function chip(u) {

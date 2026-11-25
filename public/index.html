@@ -6157,7 +6157,7 @@ var DECO = (function () {
     e.preventDefault(); histGo(k === 'y' || e.shiftKey ? 1 : -1);
   });
   if (window.claude && window.claude.use) {
-    window.claude.use('db').then(function (d) { DBX = d; kongLoad(); openShared(); loadPublished(); trackVisit(); passLoad(); });
+    window.claude.use('db').then(function (d) { DBX = d; kongLoad(); openShared(); loadPublished(); trackVisit(); passLoad(); licenseFromUrl(); });
     window.claude.use('user').then(function (u) {
       USR = u; if (!u) return;
       u.id().then(function (id) { UID = id; loadCollection(); trackVisit(); clkLoad(); passLoad(); });
@@ -7452,7 +7452,7 @@ var DECO = (function () {
     licenseCheck(b);
   }
   // "Check a license": type the BXC- number from a seller's license card and see whether it's valid (no sign-in needed)
-  function licenseCheck(b) {
+  function licenseCheck(b, preset) {
     var ck = el('div', 'accard'); ck.appendChild(el('b', 'actitle', 'Check a license'));
     ck.appendChild(el('small', '', 'Buying Boxedables prints? Type the number from the seller’s license card.'));
     var r3 = el('div', 'acctsec'), ci = el('input'), cgo = el('button', 'acbtn', 'Check'), res = el('div', 'licres'); res.hidden = true;
@@ -7470,7 +7470,15 @@ var DECO = (function () {
       }, function () { out('Couldn’t check right now. Try again.', false); }).then(function () { cgo.disabled = false; });
     });
     ci.addEventListener('keydown', function (e) { if (e.key === 'Enter') cgo.click(); });
-    setTimeout(function () { try { ci.focus(); } catch (e) {} }, 60);
+    if (preset) { ci.value = preset; setTimeout(function () { cgo.click(); }, 0); }
+    else setTimeout(function () { try { ci.focus(); } catch (e) {} }, 60);
+  }
+  // a scanned license card opens boxedables.com/?l=BXC-…: show the check right away
+  function licenseFromUrl() {
+    var m = /[?&]l=([^&#]+)/.exec(location.search || ''), n = m ? cleanCode(decodeURIComponent(m[1]), 'BXC') : '';
+    if (!n || !DBX) return;
+    try { history.replaceState(null, '', location.pathname + location.hash); } catch (e) {}
+    openModal('Check a license', function (b) { b.closest('.mpanel').classList.add('gpanel'); licenseCheck(b, n); });
   }
   document.getElementById('btnLicense').addEventListener('click', function () {
     openModal('Check a license', function (b) {
@@ -7491,13 +7499,95 @@ var DECO = (function () {
     return true;
   }
   // the printable license card for Commercial members (1400 x 800 px, business-card shape)
+  // a tiny QR code maker (byte mode, error correction M, versions 1 to 6: up to 106 characters), so the license card needs no extra library
+  function qrMatrix(text) {
+    var bytes = Array.prototype.map.call(unescape(encodeURIComponent(text)), function (ch) { return ch.charCodeAt(0); });
+    var V = [null, [16, 10, 1], [28, 16, 1], [44, 26, 1], [64, 18, 2], [86, 24, 2], [108, 16, 4]];   // data codewords, EC per block, blocks
+    var ALIGN = [null, [], [6, 18], [6, 22], [6, 26], [6, 30], [6, 34]], ver = 1;
+    while (ver < 7 && V[ver][0] * 8 < 12 + bytes.length * 8) ver++;
+    if (ver > 6) return null;
+    var nData = V[ver][0], ecLen = V[ver][1], nBlocks = V[ver][2], size = ver * 4 + 17;
+    var bits = [];
+    function put(v, n) { for (var i = n - 1; i >= 0; i--) bits.push((v >>> i) & 1); }
+    put(4, 4); put(bytes.length, 8); bytes.forEach(function (b) { put(b, 8); });
+    put(0, Math.min(4, nData * 8 - bits.length)); while (bits.length % 8) bits.push(0);
+    var data = []; for (var i = 0; i < bits.length; i += 8) { var b = 0; for (var j = 0; j < 8; j++) b = (b << 1) | bits[i + j]; data.push(b); }
+    for (var pad = 0xEC; data.length < nData; pad ^= 0xEC ^ 0x11) data.push(pad);
+    function mul(x, y) { var z = 0; for (var i = 7; i >= 0; i--) { z = (z << 1) ^ ((z >>> 7) * 0x11D); z ^= ((y >>> i) & 1) * x; } return z & 255; }
+    var div = []; for (i = 0; i < ecLen - 1; i++) div.push(0); div.push(1);
+    for (var root = 1, k = 0; k < ecLen; k++) { for (j = 0; j < div.length; j++) { div[j] = mul(div[j], root); if (j + 1 < div.length) div[j] ^= div[j + 1]; } root = mul(root, 2); }
+    function ecc(blk) { var r = div.map(function () { return 0; }); blk.forEach(function (b) { var f = b ^ r.shift(); r.push(0); for (var i = 0; i < r.length; i++) r[i] ^= mul(div[i], f); }); return r; }
+    var per = nData / nBlocks, blocks = [], ecs = [];
+    for (i = 0; i < nBlocks; i++) { blocks.push(data.slice(i * per, (i + 1) * per)); ecs.push(ecc(blocks[i])); }
+    var all = [];
+    for (i = 0; i < per; i++) blocks.forEach(function (bl) { all.push(bl[i]); });
+    for (i = 0; i < ecLen; i++) ecs.forEach(function (e) { all.push(e[i]); });
+    var M = [], F = [];
+    for (i = 0; i < size; i++) { M.push(new Array(size).fill(false)); F.push(new Array(size).fill(false)); }
+    function set(x, y, d) { M[y][x] = d; F[y][x] = true; }
+    for (i = 0; i < size; i++) { set(6, i, i % 2 === 0); set(i, 6, i % 2 === 0); }
+    [[3, 3], [size - 4, 3], [3, size - 4]].forEach(function (c) {
+      for (var dy = -4; dy <= 4; dy++) for (var dx = -4; dx <= 4; dx++) {
+        var x = c[0] + dx, y = c[1] + dy, d = Math.max(Math.abs(dx), Math.abs(dy));
+        if (x >= 0 && x < size && y >= 0 && y < size) set(x, y, d !== 2 && d !== 4);
+      }
+    });
+    var al = ALIGN[ver];
+    al.forEach(function (ay, a) { al.forEach(function (ax, b) {
+      if ((a === 0 && b === 0) || (a === 0 && b === al.length - 1) || (a === al.length - 1 && b === 0)) return;
+      for (var dy = -2; dy <= 2; dy++) for (var dx = -2; dx <= 2; dx++) set(ax + dx, ay + dy, Math.max(Math.abs(dx), Math.abs(dy)) !== 1);
+    }); });
+    function format(mask) {
+      var d = mask, r = d; for (var i = 0; i < 10; i++) r = (r << 1) ^ ((r >>> 9) * 0x537);   // error correction M = 00
+      var f = ((d << 10) | r) ^ 0x5412, bit = function (i) { return ((f >>> i) & 1) === 1; };
+      for (i = 0; i <= 5; i++) set(8, i, bit(i));
+      set(8, 7, bit(6)); set(8, 8, bit(7)); set(7, 8, bit(8));
+      for (i = 9; i < 15; i++) set(14 - i, 8, bit(i));
+      for (i = 0; i < 8; i++) set(size - 1 - i, 8, bit(i));
+      for (i = 8; i < 15; i++) set(8, size - 15 + i, bit(i));
+      set(8, size - 8, true);
+    }
+    format(0);   // reserves the format areas before the data goes in
+    var n = 0;
+    for (var right = size - 1; right >= 1; right -= 2) {
+      if (right === 6) right = 5;
+      for (var v = 0; v < size; v++) for (j = 0; j < 2; j++) {
+        var x = right - j, y = ((right + 1) & 2) === 0 ? size - 1 - v : v;
+        if (!F[y][x] && n < all.length * 8) { M[y][x] = ((all[n >>> 3] >>> (7 - (n & 7))) & 1) === 1; n++; }
+      }
+    }
+    var MASKS = [function (x, y) { return (x + y) % 2 === 0; }, function (x, y) { return y % 2 === 0; }, function (x) { return x % 3 === 0; },
+      function (x, y) { return (x + y) % 3 === 0; }, function (x, y) { return (Math.floor(x / 3) + Math.floor(y / 2)) % 2 === 0; },
+      function (x, y) { return x * y % 2 + x * y % 3 === 0; }, function (x, y) { return (x * y % 2 + x * y % 3) % 2 === 0; },
+      function (x, y) { return ((x + y) % 2 + x * y % 3) % 2 === 0; }];
+    function apply(m) { for (var y = 0; y < size; y++) for (var x = 0; x < size; x++) if (!F[y][x] && MASKS[m](x, y)) M[y][x] = !M[y][x]; }
+    function penalty() {   // runs, 2x2 blocks and dark balance (enough to pick a readable mask)
+      var p = 0, dark = 0;
+      for (var a = 0; a < 2; a++) for (var y = 0; y < size; y++) {
+        var run = 1;
+        for (var x = 1; x < size; x++) {
+          var c = a ? M[x][y] : M[y][x], pr = a ? M[x - 1][y] : M[y][x - 1];
+          if (c === pr) { run++; if (run === 5) p += 3; else if (run > 5) p++; } else run = 1;
+        }
+      }
+      for (y = 0; y < size - 1; y++) for (x = 0; x < size - 1; x++) if (M[y][x] === M[y][x + 1] && M[y][x] === M[y + 1][x] && M[y][x] === M[y + 1][x + 1]) p += 3;
+      for (y = 0; y < size; y++) for (x = 0; x < size; x++) if (M[y][x]) dark++;
+      return p + Math.floor(Math.abs(dark * 20 - size * size * 10) / (size * size)) * 10;
+    }
+    var best = 0, bestP = Infinity;
+    for (var m = 0; m < 8; m++) { apply(m); format(m); var pp = penalty(); if (pp < bestP) { bestP = pp; best = m; } apply(m); }
+    apply(best); format(best);
+    return M;
+  }
+  var LIC_URL = 'https://boxedables.com/?l=';   // the card's QR code opens this with the license number, and the site checks it
   function licenseCanvas(d, shop, name) {
+    var QR = d.lic ? qrMatrix(LIC_URL + d.lic) : null;
     var W = 1400, H = 800, c = document.createElement('canvas'); c.width = W; c.height = H; var x = c.getContext('2d'), INK = '#10302D';
     function rr(px, py, w, h, r) { x.beginPath(); x.moveTo(px + r, py); x.arcTo(px + w, py, px + w, py + h, r); x.arcTo(px + w, py + h, px, py + h, r); x.arcTo(px, py + h, px, py, r); x.arcTo(px, py, px + w, py, r); x.closePath(); }
     function fit(t, font, size, max) { do { x.font = font.replace('#', size); size -= 2; } while (x.measureText(t).width > max && size > 20); return size + 2; }
     function stroked(t, px, py, sw) { x.lineJoin = 'round'; x.lineWidth = sw; x.strokeStyle = INK; x.strokeText(t, px, py); x.fillText(t, px, py); }
     function img(src) { return new Promise(function (res) { if (!src) { res(null); return; } var i = new Image(); i.onload = function () { res(i); }; i.onerror = function () { res(null); }; i.src = src; }); }
-    var thumbs = realChars().filter(function (e) { return e.thumb; }).slice(0, 3).map(function (e) { return img(e.thumb); });
+    var thumbs = realChars().filter(function (e) { return e.thumb; }).slice(0, QR ? 2 : 3).map(function (e) { return img(e.thumb); });
     var fontsP = document.fonts && document.fonts.load ? Promise.all(['400 80px "Lilita One"', '800 30px "Figtree"', '700 30px "Figtree"'].map(function (f) { return document.fonts.load(f).catch(function () {}); })) : Promise.resolve();
     return Promise.all([fontsP].concat(thumbs)).then(function (r) {
       var ims = r.slice(1).filter(Boolean);
@@ -7519,15 +7609,23 @@ var DECO = (function () {
       // white panel
       var px = 64, py = 196, pw = W - 128, ph = 440;
       rr(px, py + 10, pw, ph, 36); x.fillStyle = INK; x.fill(); rr(px, py, pw, ph, 36); x.fillStyle = '#FFFFFF'; x.fill(); x.lineWidth = 9; x.strokeStyle = INK; x.stroke();
-      var textW = ims.length ? pw - 120 - ims.length * 150 : pw - 96;
+      var QS = 200, qx = px + pw - 48 - QS, qy = py + 30, qGap = QR ? QS + 34 : 0;   // the QR code sits top right in the white panel
+      var textW = (ims.length ? pw - 120 - ims.length * 150 : pw - 96) - qGap;
       x.textBaseline = 'alphabetic'; x.fillStyle = '#01948C'; x.font = '800 28px "Figtree", sans-serif'; x.fillText('LICENSED TO', px + 48, py + 70);
       x.fillStyle = INK; fit(shop, '400 #px "Lilita One", "Fredoka", sans-serif', 92, textW); x.fillText(shop, px + 48, py + 168);
       if (name && name.toLowerCase() !== shop.toLowerCase()) { x.fillStyle = '#4A6B86'; fit('by ' + name, '700 #px "Figtree", sans-serif', 34, textW); x.fillText('by ' + name, px + 48, py + 220); }
       ims.forEach(function (im, k) {   // a few characters peeking in on the right
-        var s = 190, cx = px + pw - 48 - s - (ims.length - 1 - k) * 140, cy = py + 40;
+        var s = 190, cx = px + pw - 48 - qGap - s - (ims.length - 1 - k) * 140, cy = py + 40;
         x.save(); rr(cx, cy, s, s, 28); x.fillStyle = '#E3F4F2'; x.fill(); x.clip(); var q = Math.min(im.width, im.height); x.drawImage(im, (im.width - q) / 2, (im.height - q) / 2, q, q, cx, cy, s, s); x.restore();
         rr(cx, cy, s, s, 28); x.lineWidth = 6; x.strokeStyle = INK; x.stroke();
       });
+      if (QR) {
+        rr(qx, qy, QS, QS, 20); x.fillStyle = '#FFFFFF'; x.fill(); x.lineWidth = 5; x.strokeStyle = INK; x.stroke();
+        var qn = QR.length, qm = Math.floor((QS - 28) / qn), qo = (QS - qm * qn) / 2;
+        x.fillStyle = INK;
+        for (var qr_ = 0; qr_ < qn; qr_++) for (var qc = 0; qc < qn; qc++) if (QR[qr_][qc]) x.fillRect(qx + qo + qc * qm, qy + qo + qr_ * qm, qm, qm);
+        x.fillStyle = '#01948C'; x.font = '800 20px "Figtree", sans-serif'; x.textAlign = 'center'; x.fillText('SCAN TO CHECK', qx + QS / 2, py + 256); x.textAlign = 'left';
+      }
       x.fillStyle = '#E3E8E9'; x.fillRect(px + 40, py + 268, pw - 80, 5);
       var cols = [['LICENSE', 'Commercial'], ['VALID UNTIL', fmtDay(d.end)], ['LICENSE NO.', d.lic]], cw = (pw - 96) / 3;
       cols.forEach(function (cc, k) {
@@ -7536,7 +7634,7 @@ var DECO = (function () {
       });
       // footer
       x.fillStyle = '#FFFFFF'; x.font = '800 32px "Figtree", sans-serif'; x.textBaseline = 'middle'; x.textAlign = 'center';
-      stroked('Check this license at boxedables.com', W / 2, 690, 8);
+      stroked(QR ? 'Scan the code or check this license at boxedables.com' : 'Check this license at boxedables.com', W / 2, 690, 8);
       x.font = '700 22px "Figtree", sans-serif'; stroked('Physical prints only. The files may not be shared or sold.', W / 2, 738, 6);
       x.textAlign = 'left';
       return c;
