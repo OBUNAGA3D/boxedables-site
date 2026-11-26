@@ -4130,6 +4130,26 @@ var DECO = (function () {
     var out = new THREE.BufferGeometry(); out.setAttribute('position', new THREE.BufferAttribute(pos, 3)); out.computeVertexNormals();
     return out;
   }
+  // Join meshes but keep each one's own corners: the 3MF writer only merges identical corners for loose triangles,
+  // so pieces that merely touch (the box's own parts, the texture sleeve) don't get welded into edges shared by four faces.
+  function concatKeep(geoms) {
+    var list = geoms.filter(Boolean); if (!list.length) return null;
+    var nv = 0, nt = 0, parts = list.map(function (g) {
+      var P = g.getAttribute('position').array, I;
+      if (g.index) I = g.index.array;
+      else {   // loose triangles: share identical corners within this one mesh only
+        var map = {}, uniq = [], n = 0; I = new Uint32Array(P.length / 3);
+        for (var v = 0; v < P.length / 3; v++) { var key = P[v * 3].toFixed(4) + ',' + P[v * 3 + 1].toFixed(4) + ',' + P[v * 3 + 2].toFixed(4);
+          if (map[key] === undefined) { map[key] = n++; uniq.push(P[v * 3], P[v * 3 + 1], P[v * 3 + 2]); } I[v] = map[key]; }
+        P = uniq;
+      }
+      var r = { P: P, I: I, o: nv }; nv += P.length / 3; nt += I.length; return r;
+    });
+    var pos = new Float32Array(nv * 3), idx = new Uint32Array(nt), po = 0, io = 0;
+    parts.forEach(function (r) { pos.set(r.P, po * 3); for (var k = 0; k < r.I.length; k++) idx[io++] = r.I[k] + r.o; po += r.P.length / 3; });
+    var out = new THREE.BufferGeometry(); out.setAttribute('position', new THREE.BufferAttribute(pos, 3)); out.setIndex(new THREE.BufferAttribute(idx, 1)); out.computeVertexNormals();
+    return out;
+  }
   function boxInfo() {
     var bp = partsIn('box'); if (!bp.length) return null;
     var bb = new THREE.Box3(); bp.forEach(function (p) { p.geom.computeBoundingBox(); bb.union(p.geom.boundingBox); });
@@ -9946,7 +9966,7 @@ var DECO = (function () {
     if (S.nameMesh) { var no = (partsIn('name')[0] || { obj: 0 }).obj; objs[no].parts.push({ name: 'name', geom: S.nameMesh.geometry, color: S.groups.name.color }); }
     if (decoMeshes.texture && objs[decoMeshes.texture.userData.obj]) {   // the sculpted texture is part of the box itself
       var bxp = objs[decoMeshes.texture.userData.obj].parts.filter(function (p) { return /^box$/i.test(p.name); })[0];
-      if (bxp) bxp.geom = concat([bxp.geom, decoMeshes.texture.geometry]);
+      if (bxp) bxp.geom = concatKeep([bxp.geom, decoMeshes.texture.geometry]);   // not welded together (that made 8 bad edges)
     }
     ['pattern', 'hook', 'emoji', 'logo'].forEach(function (k) { var m = decoMeshes[k]; if (m && objs[m.userData.obj]) objs[m.userData.obj].parts.push({ name: k === 'emoji' ? 'icon' : k, geom: m.geometry, color: S.groups[k].color }); });
     var parts = objs.filter(function (o) { return o.parts.some(function (p) { return !p.enforcer; }) && (which === 'all' || (which === 'box') === o.box); });
