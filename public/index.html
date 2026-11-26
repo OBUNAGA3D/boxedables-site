@@ -2632,7 +2632,9 @@ var BX = (function () {
     if (loose) {
       // parts can arrive as loose triangles (each with its own corners): share identical corners so the slicer sees a closed mesh
       var map = {}, n = 0; remap = new Uint32Array(P.length / 3);
+      var pcs = geom.userData && geom.userData.pieces, pi = 0, cut = pcs ? pcs[0] : Infinity;   // pieces that only touch keep their own corners
       for (var v = 0; v < P.length / 3; v++) {
+        if (v === cut) { map = {}; pi++; cut += pcs[pi] || Infinity; }
         var x = P[v * 3].toFixed(4), y = P[v * 3 + 1].toFixed(4), z = P[v * 3 + 2].toFixed(4), key = x + ',' + y + ',' + z;
         if (map[key] === undefined) { map[key] = n++; chunks.push('<vertex x="' + x + '" y="' + y + '" z="' + z + '"/>'); }
         remap[v] = map[key];
@@ -4127,32 +4129,13 @@ var DECO = (function () {
     if (S.groupOrder.indexOf(g) < 0) S.groupOrder.push(g);
   }
   function dropGroup(g) { var i = S.groupOrder.indexOf(g); if (i >= 0) S.groupOrder.splice(i, 1); }
-  function concat(geoms) {
-    var list = geoms.filter(Boolean).map(function (g) { return g.index ? g.toNonIndexed() : g; });
+  function concat(geoms, keep) {   // keep: remember each piece's corner count, so the 3MF writer never welds one piece to another
+    var src = geoms.filter(Boolean), list = src.map(function (g) { return g.index ? g.toNonIndexed() : g; });
     if (!list.length) return null;
     var n = 0; list.forEach(function (g) { n += g.getAttribute('position').array.length; });
     var pos = new Float32Array(n), o = 0; list.forEach(function (g) { pos.set(g.getAttribute('position').array, o); o += g.getAttribute('position').array.length; });
     var out = new THREE.BufferGeometry(); out.setAttribute('position', new THREE.BufferAttribute(pos, 3)); out.computeVertexNormals();
-    return out;
-  }
-  // Join meshes but keep each one's own corners: the 3MF writer only merges identical corners for loose triangles,
-  // so pieces that merely touch (the box's own parts, the texture sleeve) don't get welded into edges shared by four faces.
-  function concatKeep(geoms) {
-    var list = geoms.filter(Boolean); if (!list.length) return null;
-    var nv = 0, nt = 0, parts = list.map(function (g) {
-      var P = g.getAttribute('position').array, I;
-      if (g.index) I = g.index.array;
-      else {   // loose triangles: share identical corners within this one mesh only
-        var map = {}, uniq = [], n = 0; I = new Uint32Array(P.length / 3);
-        for (var v = 0; v < P.length / 3; v++) { var key = P[v * 3].toFixed(4) + ',' + P[v * 3 + 1].toFixed(4) + ',' + P[v * 3 + 2].toFixed(4);
-          if (map[key] === undefined) { map[key] = n++; uniq.push(P[v * 3], P[v * 3 + 1], P[v * 3 + 2]); } I[v] = map[key]; }
-        P = uniq;
-      }
-      var r = { P: P, I: I, o: nv }; nv += P.length / 3; nt += I.length; return r;
-    });
-    var pos = new Float32Array(nv * 3), idx = new Uint32Array(nt), po = 0, io = 0;
-    parts.forEach(function (r) { pos.set(r.P, po * 3); for (var k = 0; k < r.I.length; k++) idx[io++] = r.I[k] + r.o; po += r.P.length / 3; });
-    var out = new THREE.BufferGeometry(); out.setAttribute('position', new THREE.BufferAttribute(pos, 3)); out.setIndex(new THREE.BufferAttribute(idx, 1)); out.computeVertexNormals();
+    if (keep) { var pcs = []; src.forEach(function (g, i) { var pc = g.userData && g.userData.pieces; if (pc) pcs.push.apply(pcs, pc); else pcs.push(list[i].getAttribute('position').count); }); out.userData.pieces = pcs; }
     return out;
   }
   function boxInfo() {
@@ -9971,7 +9954,7 @@ var DECO = (function () {
     if (S.nameMesh) { var no = (partsIn('name')[0] || { obj: 0 }).obj; objs[no].parts.push({ name: 'name', geom: S.nameMesh.geometry, color: S.groups.name.color }); }
     if (decoMeshes.texture && objs[decoMeshes.texture.userData.obj]) {   // the sculpted texture is part of the box itself
       var bxp = objs[decoMeshes.texture.userData.obj].parts.filter(function (p) { return /^box$/i.test(p.name); })[0];
-      if (bxp) bxp.geom = concatKeep([bxp.geom, decoMeshes.texture.geometry]);   // not welded together (that made 8 bad edges)
+      if (bxp) bxp.geom = concat([bxp.geom, decoMeshes.texture.geometry], true);   // pieces stay apart in the file (welded together they made 8 bad edges)
     }
     ['pattern', 'hook', 'emoji', 'logo'].forEach(function (k) { var m = decoMeshes[k]; if (m && objs[m.userData.obj]) objs[m.userData.obj].parts.push({ name: k === 'emoji' ? 'icon' : k, geom: m.geometry, color: S.groups[k].color }); });
     var parts = objs.filter(function (o) { return o.parts.some(function (p) { return !p.enforcer; }) && (which === 'all' || (which === 'box') === o.box); });
@@ -11015,7 +10998,7 @@ var DECO = (function () {
     var frame = rrect(-18.081, 18.081, -18.051, 18.399, 0); frame.holes.push(rrect(-7.421, 7.421, -7.242, 7.591, 0, new THREE.Path()));
     parts.push(slab(frame, -9.039, -5.392));
     // each slab keeps its own corners: welded together, the slabs' shared outlines became edges with four faces (8 non-manifold edges in Bambu Studio)
-    var g = concatKeep(parts); parts.forEach(function (p) { p.dispose(); }); return g;
+    var g = concat(parts, true); parts.forEach(function (p) { p.dispose(); }); return g;
   }
   function currentBoxParts() {
     var d = boxDims(BOXSHAPE.shape);
