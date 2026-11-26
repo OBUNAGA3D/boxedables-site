@@ -11014,7 +11014,8 @@ var DECO = (function () {
     parts.push(slab(rrect(-18.081, 18.081, -18.051, 18.399, 0), d.floor, -9.039));
     var frame = rrect(-18.081, 18.081, -18.051, 18.399, 0); frame.holes.push(rrect(-7.421, 7.421, -7.242, 7.591, 0, new THREE.Path()));
     parts.push(slab(frame, -9.039, -5.392));
-    var g = concat(parts); parts.forEach(function (p) { p.dispose(); }); return g;
+    // each slab keeps its own corners: welded together, the slabs' shared outlines became edges with four faces (8 non-manifold edges in Bambu Studio)
+    var g = concatKeep(parts); parts.forEach(function (p) { p.dispose(); }); return g;
   }
   function currentBoxParts() {
     var d = boxDims(BOXSHAPE.shape);
